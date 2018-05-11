@@ -1,0 +1,31 @@
+{
+  "name": "speed-snitch-admin-ui",
+  "version": "1.0.0",
+  "description": "Speed snitch Administration",
+  "author": "Billy Clark <billy_clark@sil.org>",
+  "private": true,
+  "scripts": {
+    "//": "https://nuxtjs.org/guide/commands#list-of-commands",
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "moment": "^2.22.1",
+    "normalize.css": "^8.0.0",
+    "nuxt": "^1.0.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/dotenv": "^1.1.1",
+    "babel-eslint": "^8.2.3",
+    "eslint": "^4.19.1",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-loader": "^1.7.1",
+    "eslint-plugin-vue": "^4.5.0",
+    "rimraf": "^2.6.2"
+  }
+}
