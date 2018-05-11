@@ -13,8 +13,6 @@ Project is managed with [Nuxt.js](https://github.com/nuxt/nuxt.js).
 `cp .env.dist .env` and populate with appropriate values.
 
 `GOOGLE_MAPS_API_KEY` needed to retrieve maps for a given node.
-`ADMIN_API_BASE_URL` needed for data retrievals.
-`ADMIN_API_KEY` needed for permission to data.
 
 ## Run locally
 
