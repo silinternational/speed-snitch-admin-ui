@@ -3,7 +3,7 @@ start:
 	docker-compose up -d
 
 dist:
-	docker-compose build
+	npm run build
 
 errors:
 	docker-compose logs
