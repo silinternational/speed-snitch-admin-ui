@@ -50,7 +50,7 @@
       <tfoot v-if="availableTags.length == 0">
         <tr>
           <td :colspan="numCols">
-            No tags currently associated with this node.
+            No tags currently available for this node.
           </td>
         </tr>
       </tfoot>
@@ -115,9 +115,17 @@ export default {
   },
   computed: {
     availableTags: function() {
-      // TODO: this will probably require a nested for loop to obtain the Set difference
-      // this.allTags | exclude(this.associatedTags)
-      let availableTags = this.allTags;
+      let availableTags = this.allTags.filter(candidateTag => {
+        for (let i = 0; i < this.associatedTags.length; i++) {
+          const associatedTag = this.associatedTags[i];
+          if (associatedTag.UID == candidateTag.UID) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
       return availableTags;
     }
   }
