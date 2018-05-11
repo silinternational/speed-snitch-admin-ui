@@ -4,7 +4,7 @@ Speed snitch administrator UI
 
 # Getting started
 
-Install [Docker](https://docs.docker.com/install), [Docker Compose](https://docs.docker.com/compose/install) and [Make](https://www.gnu.org/software/make)
+Install [Docker](https://docs.docker.com/install), [Docker Compose](https://docs.docker.com/compose/install) and [Make](https://www.gnu.org/software/make). For local deployment, install [Node](https://nodejs.org/en/download).
 
 Project is managed with [Nuxt.js](https://github.com/nuxt/nuxt.js).
 
@@ -24,4 +24,4 @@ Project is managed with [Nuxt.js](https://github.com/nuxt/nuxt.js).
 # Build for deployment
 
 1.  Review Environment settings.
-1.  `make dist` will produce a docker image with the production-ready app in the image's `/data/dist` folder.
+1.  `make dist` will produce the production-ready app in the project root's `dist` folder.
