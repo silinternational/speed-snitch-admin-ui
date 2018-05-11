@@ -2,7 +2,10 @@ start:
 	docker-compose pull
 	docker-compose up -d
 
-dist:
+deps:
+	npm install
+
+dist: deps
 	npm run build
 
 errors:
