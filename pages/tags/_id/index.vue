@@ -82,7 +82,7 @@ export default {
       try {
         let response = await ADMIN_API.delete(`tag/${this.tag.UID}`);
 
-        this.$router.push(`/tags?removed=${this.tag.Name}`);
+        this.$router.push(`/tags?removed=${this.tag.Name}/`);
       } catch (error) {
         console.log(`error caught while DELETE tag: ${error}`);
       }

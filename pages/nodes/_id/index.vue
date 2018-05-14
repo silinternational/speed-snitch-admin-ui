@@ -62,7 +62,7 @@
       <dt>Tags</dt>
       <dd v-if="! hasTags">
         <router-link 
-          :to="`${ node.MacAddr }/tags`" 
+          :to="`${ node.MacAddr }/tags/`" 
           tag="button">Add</router-link>
       </dd>
       <dd v-else>

@@ -51,7 +51,7 @@ export default {
       try {
         let response = await ADMIN_API.post(`tag`, this.newTag);
 
-        this.$router.push(`/tags?new=${response.data.UID}`);
+        this.$router.push(`/tags?new=${response.data.UID}/`);
       } catch (error) {
         console.log(`error caught while POSTing tag: ${error}`);
       }
