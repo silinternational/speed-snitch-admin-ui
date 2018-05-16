@@ -53,6 +53,7 @@
               </select>
             </td>
             <td>
+              <!-- TODO: add the ability to request the time, e.g., daily at 11:00 pm or every x hours. -->
               <button @click="addTask">Add</button>
             </td>
           </tr>

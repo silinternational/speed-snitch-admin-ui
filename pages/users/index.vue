@@ -2,72 +2,85 @@
   <section>
     <h1>Users</h1>
 
-    <table>
+    <DataTable>
       <thead>
         <tr>
           <th>Name</th>
           <th>Email</th>
-          <th>Phone</th>
           <th>Role</th>
+          <th/>
         </tr>
       </thead>
       <tbody>
-        <tr
+        <ClickableRow
           v-for="_user in users"
-          :key="_user.id"
+          :key="_user.UID"
+          :to="`users/${ _user.UID }/`"
         >
-          <td>{{ _user.name }}</td>
-          <td>{{ _user.email }}</td>
-          <td>{{ _user.phone }}</td>
-          <td>{{ _user.role }}</td>
+          <td>{{ _user.Name }}</td>
+          <td>{{ _user.Email }}</td>
+          <td>{{ _user.Role }}</td>
           <td>
-            <button>Manage</button>
+            <router-link 
+              :to="`users/${ _user.UID }`" 
+              tag="button" 
+              class="secondary">Manage</router-link>
+          </td>
+        </ClickableRow>
+      </tbody> 
+      <tfoot v-if="users.length == 0">
+        <tr>
+          <td :colspan="numCols">
+            No users at this time.
           </td>
         </tr>
-      </tbody> 
-    </table>
+      </tfoot>
+    </DataTable>
 
     <ButtonBar>
       <Spacer/>
-      
-      <button>
-        Add
-      </button>
+        
+      <router-link 
+        to="users/new" 
+        tag="button">
+        Add a new user
+      </router-link>
     </ButtonBar>
+
   </section>
 </template>
 
 <script>
+import { ADMIN_API } from "~/plugins/admin-api-service.js";
+import DataTable from "~/components/DataTable";
+import ClickableRow from "~/components/ClickableRow";
 import ButtonBar from "~/components/ButtonBar";
 import Spacer from "~/components/Spacer";
 
 export default {
   components: {
+    DataTable,
+    ClickableRow,
     ButtonBar,
     Spacer
   },
-  data() {},
-  computed: {
-    users() {
-      return this.$store.state.users.list;
+  data() {
+    return {
+      users: [],
+      numCols: 4
+    };
+  },
+  async asyncData() {
+    let response = await ADMIN_API.get("user");
+
+    return {
+      users: response.data
+    };
+  },
+  methods: {
+    manage: function(id) {
+      this.$router.push(`users/${id}`);
     }
   }
 };
 </script>
-
-<style scoped>
-/* table {
-  border-spacing: initial;
-}
-tbody tr:nth-child(odd) {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-td {
-  padding: 0.5em;
-}
-td > button {
-  background-color: var(--secondary-color);
-  color: white;
-  border-radius: 1em;
-} */
-</style>

@@ -49,4 +49,7 @@ table>>>td > button.caution {
 table>>>td > button.secondary {
   background-color: var(--secondary-color);
 }
+table>>>td > button:hover {
+  cursor: pointer;
+}
 </style>

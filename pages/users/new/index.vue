@@ -1,18 +1,28 @@
 <template>
   <section>
-    <h1>Add a new tag</h1>
+    <h1>Add a new user</h1>
 
     <form @submit.prevent="add">
       <label>
         Name:
         <input 
-          v-model="newTag.Name" 
+          v-model="newUser.Name" 
           v-autofocus>
       </label>
       <label>
-        Description:
-        <textarea 
-          v-model="newTag.Description" />
+        Email:
+        <input 
+          type="email" 
+          v-model="newUser.Email">
+      </label>
+      <label>
+        Role:
+        <select v-model="newUser.Role">
+          <option 
+            v-for="_role in roles" 
+            :key="_role" 
+            :value="_role">{{ _role }}</option>
+        </select>
       </label>
 
       <ButtonBar>
@@ -40,20 +50,22 @@ export default {
   },
   data() {
     return {
-      newTag: {
+      newUser: {
         Name: "",
-        Description: ""
-      }
+        Email: "",
+        Role: "reporting"
+      },
+      roles: ["superAdmin", "admin", "reporting"]
     };
   },
   methods: {
     add: async function() {
       try {
-        let response = await ADMIN_API.post(`tag`, this.newTag);
+        let response = await ADMIN_API.post(`user`, this.newUser);
 
-        this.$router.push(`/tags?new=${response.data.UID}/`);
+        this.$router.push(`/users?new=${response.data.UID}/`);
       } catch (error) {
-        console.log(`error caught while POSTing tag: ${error}`);
+        console.log(`error caught while POSTing user: ${error}`);
       }
     }
   }

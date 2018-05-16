@@ -20,7 +20,7 @@
         <ClickableRow
           v-for="_node in scheduledNodes"
           :key="_node.MacAddr"
-          :to="`nodes/${ _node.MacAddr }/`"
+          :to="`nodes/${ _node.MacAddr }`"
         >
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
@@ -32,8 +32,8 @@
           <td>{{ _node.Arch }}</td>
           <td>
             <router-link 
-              :to="`nodes/${ _node.MacAddr }/`" 
-              tag="button/">Manage</router-link>
+              :to="`nodes/${ _node.MacAddr }`" 
+              tag="button">Manage</router-link>
           </td>
         </ClickableRow>
       </tbody> 
@@ -63,7 +63,7 @@
         <ClickableRow
           v-for="_node in unscheduledNodes"
           :key="_node.MacAddr" 
-          :to="`nodes/${ _node.MacAddr }/`"
+          :to="`nodes/${ _node.MacAddr }`"
         >
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
@@ -75,7 +75,7 @@
           <td>{{ _node.Arch }}</td>
           <td>
             <router-link
-              :to="`nodes/${ _node.MacAddr }/`" 
+              :to="`nodes/${ _node.MacAddr }`" 
               tag="button">Manage</router-link>
           </td>
         </ClickableRow>
@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     manage: function(id) {
-      this.$router.push(`nodes/${id}/`);
+      this.$router.push(`nodes/${id}`);
     },
     locale: function(location) {
       return location.split(",").pop();

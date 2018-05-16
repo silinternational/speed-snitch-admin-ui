@@ -14,13 +14,13 @@
         <ClickableRow
           v-for="_tag in tags"
           :key="_tag.UID"
-          :to="`tags/${ _tag.UID }/`"
+          :to="`tags/${ _tag.UID }`"
         >
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
           <td>
             <router-link 
-              :to="`tags/${ _tag.UID }/`" 
+              :to="`tags/${ _tag.UID }`" 
               tag="button" 
               class="secondary">Manage</router-link>
           </td>
@@ -39,7 +39,7 @@
       <Spacer/>
         
       <router-link 
-        to="tags/new/" 
+        to="tags/new" 
         tag="button">
         Add a new tag
       </router-link>
@@ -81,7 +81,7 @@ export default {
   },
   methods: {
     manage: function(id) {
-      this.$router.push(`tags/${id}/`);
+      this.$router.push(`tags/${id}`);
     }
   }
 };
