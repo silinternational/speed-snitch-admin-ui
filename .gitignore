@@ -3,3 +3,6 @@ npm-debug.log*
 .nuxt
 dist
 .env
+.idea/
+*.aes
+aws.env
