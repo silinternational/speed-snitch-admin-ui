@@ -10,7 +10,7 @@
         {{ user.Email }}
       </dd>
       <dt>Role</dt>
-      <dd>{{ user.Role }}</dd>
+      <dd><code>{{ user.Role }}</code></dd>
     </dl>
 
     <ButtonBar>

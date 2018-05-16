@@ -19,7 +19,7 @@
         >
           <td>{{ _user.Name }}</td>
           <td>{{ _user.Email }}</td>
-          <td>{{ _user.Role }}</td>
+          <td><code>{{ _user.Role }}</code></td>
           <td>
             <router-link 
               :to="`users/${ _user.UID }`" 
