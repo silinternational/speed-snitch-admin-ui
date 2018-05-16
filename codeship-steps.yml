@@ -19,3 +19,18 @@
   tag: master
   registry: https://index.docker.io/v1/
   encrypted_dockercfg_path: dockercfg.encrypted
+
+- name: deploy_stg
+  service: ecsdeploy
+  tag: develop
+  command: "-c appsdev-stg -n speedsnitch-ui -i silintl/speed-snitch-admin-ui -e CI_TIMESTAMP -t 300"
+
+- name: deploy_prod
+  service: ecsdeploy
+  tag: master
+  command: "-c appsdev-prod -n speedsnitch-ui -i silintl/speed-snitch-admin-ui -e CI_TIMESTAMP -t 300"
+
+- name: track_deployment
+  service: tracker
+  tag: ^(master|develop)
+  command: "true"
