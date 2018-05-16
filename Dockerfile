@@ -17,5 +17,8 @@ COPY ./ /data
 # build the app into dist folder
 RUN npm run build
 
+# Entrypoint gets required env vars from env and puts them in .env
+ENTRYPOINT ["/data/entrypoint.sh"]
+
 # default command at runtime spins http server up in production mode
 CMD [ "npm", "start" ] 
