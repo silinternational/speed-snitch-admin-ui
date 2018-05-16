@@ -1,0 +1,5 @@
+app:
+  build:
+    image: silintl/speed-snitch-admin-ui
+    dockerfile_path: Dockerfile
+  working_dir: /data
