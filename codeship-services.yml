@@ -2,4 +2,5 @@ app:
   build:
     image: silintl/speed-snitch-admin-ui
     dockerfile_path: Dockerfile
+    cached: true
   working_dir: /data

@@ -1,6 +1,6 @@
 - name: build
   service: app
-  command: exit 0
+  command: ash -c "exit 0"
 
 - name: push_develop
   service: app
