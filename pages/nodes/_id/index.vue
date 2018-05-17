@@ -13,7 +13,34 @@
       
       <dt>Location</dt>
       <dd>{{ node.Location }}</dd>
-      <!-- TODO: add Nickname and Notes as editable fields. -->      
+
+      <dt>Nickname</dt>
+      <dd>
+        <DataTable>
+          <tr>
+            <td v-if="node.Nickname && ! isNicknameEditable">
+              {{ node.Nickname }}
+            </td>
+            <td v-else>
+              <input v-model="newNickname">
+            </td>
+
+            <td v-if="node.Nickname && ! isNicknameEditable">
+              <button @click="editNickname">Update</button>
+            </td>
+            <td v-else-if="isNicknameEditable">
+              <button @click="updateNickname">Change</button>
+            </td>
+            <td v-else>
+              <button @click="updateNickname">Add</button>
+            </td>
+          </tr>
+        </DataTable>
+      </dd>
+
+      <dt>Notes</dt>
+      <dd>{{ node.Notes }}</dd>
+
       <dt>Tasks</dt>
       <dd>
         <DataTable>
@@ -63,7 +90,7 @@
       <dt>Tags</dt>
       <dd v-if="! hasTags">
         <router-link 
-          :to="`${ node.MacAddr }/tags/`" 
+          :to="`${ node.MacAddr }/tags`" 
           tag="button">Add</router-link>
       </dd>
       <dd v-else>
@@ -127,7 +154,9 @@ export default {
         }
       ],
       newTaskType: "ping",
-      newTaskSchedule: "0 * * * *"
+      newTaskSchedule: "0 * * * *",
+      isNicknameEditable: false,
+      newNickname: ""
     };
   },
   async asyncData({ params }) {
@@ -174,6 +203,25 @@ export default {
       );
 
       return matchingSchedule ? matchingSchedule.name : cron;
+    },
+    editNickname: function() {
+      this.newNickname = this.node.Nickname;
+
+      this.isNicknameEditable = true;
+    },
+    updateNickname: async function() {
+      this.node.Nickname = this.newNickname;
+
+      try {
+        let response = await ADMIN_API.put(
+          `node/${this.node.MacAddr}`,
+          this.node
+        );
+
+        this.$router.go();
+      } catch (error) {
+        console.log(`error caught while updating nickname: ${error}`);
+      }
     }
   },
   computed: {

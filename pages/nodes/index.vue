@@ -7,7 +7,7 @@
       <thead v-if="scheduledNodes.length > 0">
         <tr>
           <th>Location</th>
-          <!-- TODO: add Nickname -->
+          <th>Nickname</th>
           <th>Last seen</th>
           <th>Uptime</th>
           <th>Reported version</th>
@@ -25,6 +25,7 @@
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
+          <td>{{ _node.Nickname }}</td>
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion }}</td>
@@ -51,6 +52,7 @@
       <thead v-if="unscheduledNodes.length > 0">
         <tr>
           <th>Location</th>
+          <th>Nickname</th>
           <th>Last seen</th>
           <th>Uptime</th>
           <th>Reported version</th>
@@ -68,6 +70,7 @@
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
+          <td>{{ _node.Nickname }}</td>
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion }}</td>
@@ -112,7 +115,7 @@ export default {
   data() {
     return {
       nodes: [],
-      numCols: 6
+      numCols: 7
     };
   },
   async asyncData() {
