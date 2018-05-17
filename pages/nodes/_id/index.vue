@@ -113,8 +113,25 @@
       <dd><code>{{ node.RunningVersion }}</code></dd>
       
       <dt>Configured version</dt>
-      <!-- TODO: make this editable, should be "latest" or any version from the versions api -->
-      <dd>{{ node.ConfiguredVersion || 'N/A' }}</dd>
+      <dd>
+        <DataTable>
+          <tr>
+            <td>
+              <select v-model="node.ConfiguredVersion">
+                <option value="">latest</option>
+                <option 
+                  v-for="_version in versions" 
+                  :key="_version.ID" 
+                  :value="_version.Number">{{ _version.Number }}</option>
+              </select>
+            </td>
+            <td>
+              <!-- TODO: add the ability to request the time, e.g., daily at 11:00 pm or every x hours. -->
+              <button @click="updateVersion">Set</button>
+            </td>
+          </tr>
+        </DataTable>
+      </dd>
       
       <dt>Configured by</dt>
       <dd>{{ node.ConfiguredBy || 'N/A' }}</dd>
@@ -162,14 +179,17 @@ export default {
       newTaskType: "ping",
       newTaskSchedule: "0 * * * *",
       isNicknameEditable: false,
-      newNickname: ""
+      newNickname: "",
+      versions: []
     };
   },
   async asyncData({ params }) {
-    let response = await ADMIN_API.get(`node/${params.id}`);
+    let nodeResponse = await ADMIN_API.get(`node/${params.id}`);
+    let versionsResponse = await ADMIN_API.get("version");
 
     return {
-      node: response.data
+      node: nodeResponse.data,
+      versions: versionsResponse.data
     };
   },
   methods: {
@@ -227,6 +247,18 @@ export default {
         this.$router.go();
       } catch (error) {
         console.log(`error caught while updating nickname: ${error}`);
+      }
+    },
+    updateVersion: async function() {
+      try {
+        let response = await ADMIN_API.put(
+          `node/${this.node.MacAddr}`,
+          this.node
+        );
+
+        this.$router.go();
+      } catch (error) {
+        console.log(`error caught while updating version: ${error}`);
       }
     }
   },
