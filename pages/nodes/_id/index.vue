@@ -4,7 +4,7 @@
 
     <img :src="mapUrl">
 
-    <dl>
+    <DefinitionList>
       <dt>MAC address</dt>
       <dd><code>{{ node.MacAddr }}</code></dd>
       
@@ -94,7 +94,7 @@
           tag="button">Add</router-link>
       </dd>
       <dd v-else>
-        {{ node.TagUIDs }}<button>Edit/Remove?</button>
+        {{ node.TagUIDs }}<button>Edit/Remove?</button> <!-- TODO: get this link right -->
       </dd>
       
       <dt>First seen</dt>
@@ -110,6 +110,7 @@
       <dd><code>{{ node.RunningVersion }}</code></dd>
       
       <dt>Configured version</dt>
+      <!-- TODO: make this editable, should be "latest" or any version from the versions api -->
       <dd>{{ node.ConfiguredVersion || 'N/A' }}</dd>
       
       <dt>Configured by</dt>
@@ -120,17 +121,19 @@
       
       <dt>Architecture</dt>
       <dd><code>{{ node.Arch }}</code></dd>
-    </dl>
+    </DefinitionList>
   </section>
 </template>
 
 <script>
 import { ADMIN_API } from "~/plugins/admin-api-service.js";
 import DataTable from "~/components/DataTable";
+import DefinitionList from "~/components/DefinitionList";
 
 export default {
   components: {
-    DataTable
+    DataTable,
+    DefinitionList
   },
   data() {
     return {
@@ -238,19 +241,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-dt {
-  font-weight: bold;
-  padding-bottom: 0.5em;
-}
-dd {
-  padding-bottom: 1em;
-}
-table {
-  border-spacing: 0.5em;
-}
-tr > td:last-child {
-  text-align: center;
-}
-</style>

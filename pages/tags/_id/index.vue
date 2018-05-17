@@ -2,7 +2,7 @@
   <section>
     <h1>Tag</h1>
 
-    <dl>
+    <DefinitionList>
       <dt>Name</dt>
       <dd>{{ tag.Name }}</dd>
       <dt>Description</dt>
@@ -15,7 +15,7 @@
         <button @click="cancelEditDescription">Cancel</button>
         <button @click="saveDescription">Save</button>
       </dd>
-    </dl>
+    </DefinitionList>
 
     <ButtonBar>
       <GoBackButton/>
@@ -35,12 +35,14 @@ import { ADMIN_API } from "~/plugins/admin-api-service.js";
 import ButtonBar from "~/components/ButtonBar";
 import GoBackButton from "~/components/GoBackButton";
 import Spacer from "~/components/Spacer";
+import DefinitionList from "~/components/DefinitionList";
 
 export default {
   components: {
     ButtonBar,
     GoBackButton,
-    Spacer
+    Spacer,
+    DefinitionList
   },
   data() {
     return {
@@ -94,20 +96,6 @@ export default {
 <style scoped>
 textarea {
   display: block;
-}
-/* TODO: refactor these styles to be shared with the node/{id} page as well */
-dt {
-  font-weight: bold;
-  padding-bottom: 0.5em;
-}
-dd {
-  padding-bottom: 1em;
-}
-table {
-  border-spacing: 0.5em;
-}
-tr > td:last-child {
-  text-align: center;
 }
 
 section {
