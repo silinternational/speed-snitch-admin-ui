@@ -5,10 +5,25 @@
     <dl>
       <dt>Name</dt>
       <dd>{{ user.Name }}</dd>
+      
       <dt>Email</dt>
       <dd>
         {{ user.Email }}
       </dd>
+      
+      <dt>Tags</dt>
+      <dd v-if="! hasTags">
+        <router-link 
+          to="tags" 
+          tag="button">Add</router-link>
+      </dd>
+      <dd v-else>
+        {{ user.TagUIDs }}
+        <router-link 
+          to="tags" 
+          tag="button">Edit/Remove?</router-link>
+      </dd>
+
       <dt>Role</dt>
       <dd><code>{{ user.Role }}</code></dd>
     </dl>
@@ -59,6 +74,11 @@ export default {
       } catch (error) {
         console.log(`error caught while DELETE user: ${error}`);
       }
+    }
+  },
+  computed: {
+    hasTags() {
+      return this.user.TagUIDs;
     }
   }
 };
