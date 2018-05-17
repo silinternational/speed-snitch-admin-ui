@@ -94,7 +94,10 @@
           tag="button">Add</router-link>
       </dd>
       <dd v-else>
-        {{ node.TagUIDs }}<button>Edit/Remove?</button> <!-- TODO: get this link right -->
+        {{ node.TagUIDs }}
+        <router-link 
+          :to="`${ node.MacAddr }/tags`" 
+          tag="button">Edit/Remove?</router-link>
       </dd>
       
       <dt>First seen</dt>
