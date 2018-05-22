@@ -1,0 +1,12 @@
+version: '2.0'
+
+services:
+  ui:
+    build: .
+    ports:
+      - "8000:80"
+    env_file:
+      - ./.env
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "80"

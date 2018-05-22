@@ -1,0 +1,15 @@
+app:
+  build:
+    image: silintl/speed-snitch-admin-ui
+    dockerfile_path: Dockerfile
+    cached: true
+  working_dir: /data
+
+ecsdeploy:
+  image: silintl/ecs-deploy:latest
+  encrypted_env_file: aws.env.encrypted
+
+tracker:
+  image: silintl/app-deployment-tracker-ga:latest
+  environment:
+    TRACKING_ID: UA-56269387-10

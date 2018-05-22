@@ -2,5 +2,7 @@ node_modules
 npm-debug.log*
 .nuxt
 dist
-local.env
-cert
+.env
+.idea/
+*.aes
+aws.env
