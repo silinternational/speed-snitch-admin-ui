@@ -36,6 +36,8 @@
     </DataTable>
 
     <ButtonBar>
+      <GoBackButton/>
+      
       <Spacer/>
         
       <router-link 
@@ -54,6 +56,7 @@ import DataTable from "~/components/DataTable";
 import ClickableRow from "~/components/ClickableRow";
 import Info from "~/components/Info";
 import ButtonBar from "~/components/ButtonBar";
+import GoBackButton from "~/components/GoBackButton";
 import Spacer from "~/components/Spacer";
 import Truncate from "~/components/Truncate";
 
@@ -63,6 +66,7 @@ export default {
     ClickableRow,
     Info,
     ButtonBar,
+    GoBackButton,
     Spacer,
     Truncate
   },

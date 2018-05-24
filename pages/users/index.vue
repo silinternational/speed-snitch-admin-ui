@@ -38,6 +38,8 @@
     </DataTable>
 
     <ButtonBar>
+      <GoBackButton/>
+      
       <Spacer/>
         
       <router-link 
@@ -55,6 +57,7 @@ import { ADMIN_API } from "~/plugins/admin-api-service.js";
 import DataTable from "~/components/DataTable";
 import ClickableRow from "~/components/ClickableRow";
 import ButtonBar from "~/components/ButtonBar";
+import GoBackButton from "~/components/GoBackButton";
 import Spacer from "~/components/Spacer";
 
 export default {
@@ -62,6 +65,7 @@ export default {
     DataTable,
     ClickableRow,
     ButtonBar,
+    GoBackButton,
     Spacer
   },
   data() {
