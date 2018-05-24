@@ -48,6 +48,7 @@
             <tr>
               <th>Type</th>
               <th>Frequency</th>
+              <th>Server</th>
               <th/>
             </tr>
           </thead>
@@ -58,6 +59,7 @@
               {{ _task.Type }}
             </td>
             <td>{{ name(_task.Schedule) }}</td>
+            <td>{{ _task.NamedServerID || "–" }}</td>
             <td>
               <button 
                 @click="removeTask(_i)" 
@@ -77,6 +79,17 @@
                   v-for="_schedule in schedules" 
                   :key="_schedule.name" 
                   :value="_schedule.cron">{{ _schedule.name }}</option>
+              </select>
+            </td>
+            <td>
+              <select v-model="newTaskNamedServerID">
+                <option 
+                  value="" 
+                  disabled>Select server</option>
+                <option 
+                  v-for="_server in servers" 
+                  :key="_server.UID" 
+                  :value="_server.UID">{{ _server.Name }}</option>
               </select>
             </td>
             <td>
@@ -178,18 +191,22 @@ export default {
       ],
       newTaskType: "ping",
       newTaskSchedule: "0 * * * *",
+      newTaskNamedServerID: "",
       isNicknameEditable: false,
       newNickname: "",
-      versions: []
+      versions: [],
+      servers: []
     };
   },
   async asyncData({ params }) {
     let nodeResponse = await ADMIN_API.get(`node/${params.id}`);
     let versionsResponse = await ADMIN_API.get("version");
+    let serversResponse = await ADMIN_API.get("namedserver");
 
     return {
       node: nodeResponse.data,
-      versions: versionsResponse.data
+      versions: versionsResponse.data,
+      servers: serversResponse.data
     };
   },
   methods: {
@@ -199,9 +216,11 @@ export default {
         this.node.Tasks = [];
       }
 
+      // TODO: this needs the try-catch approach as in other pages.
       this.node.Tasks.push({
         Type: this.newTaskType,
-        Schedule: this.newTaskSchedule
+        Schedule: this.newTaskSchedule,
+        NamedServerID: this.newTaskNamedServerID
       });
 
       let response = await ADMIN_API.put(
