@@ -116,7 +116,7 @@ export default {
     typeChosen: async function() {
       if (this.newServer.ServerType == "speedTestNet") {
         try {
-          let response = await ADMIN_API.get("speedtestnetserver/countries");
+          let response = await ADMIN_API.get("speedtestnetserver/country");
           this.countries = response.data;
         } catch (error) {
           console.log(`error caught while GETting countries: ${error}`);
@@ -126,7 +126,7 @@ export default {
     countryChosen: async function() {
       try {
         let response = await ADMIN_API.get(
-          `speedtestnetserver?country=${this.newServer.Country.Code}`
+          `speedtestnetserver/country/${this.newServer.Country.Code}`
         );
         this.servers = response.data;
       } catch (error) {
