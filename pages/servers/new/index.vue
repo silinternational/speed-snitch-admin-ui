@@ -128,7 +128,7 @@ export default {
         let response = await ADMIN_API.get(
           `speedtestnetserver/country/${this.newServer.Country.Code}`
         );
-        this.servers = response.data;
+        this.servers = response.data.Servers;
       } catch (error) {
         console.log(`error caught while GETting speedtestservers: ${error}`);
       }

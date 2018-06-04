@@ -18,7 +18,7 @@
           :to="`servers/${ _server.UID }`"
         >
           <td>{{ _server.Name }}</td>
-          <td>{{ _server.Country.Name }}</td>
+          <td>{{ _server.Country.Name || "N/A" }}</td>
           <td>{{ _server.ServerType }}</td>
           <td>
             <router-link 
