@@ -39,7 +39,7 @@
       </dd>
 
       <dt>Notes</dt>
-      <dd>{{ node.Notes }}</dd>
+      <dd>{{ node.Notes || "–" }}</dd>
 
       <dt>Tasks</dt>
       <dd>
