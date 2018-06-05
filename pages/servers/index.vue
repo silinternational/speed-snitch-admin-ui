@@ -18,7 +18,7 @@
           :to="`servers/${ _server.UID }`"
         >
           <td>{{ _server.Name }}</td>
-          <td>{{ _server.TargetRegion }}</td> <!-- TODO: this will change to Country.name -->
+          <td>{{ _server.Country.Name || "N/A" }}</td>
           <td>{{ _server.ServerType }}</td>
           <td>
             <router-link 
@@ -46,7 +46,6 @@
         Add a new server
       </router-link>
     </ButtonBar>
-
   </section>
 </template>
 

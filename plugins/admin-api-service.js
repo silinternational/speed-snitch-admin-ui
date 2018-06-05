@@ -15,5 +15,10 @@ ADMIN_API.interceptors.response.use(
       window.location.href = `${process.env.ADMIN_API_BASE_URL}/login`;
     }
 
+    // TODO: may need to try again when we get 504's back to deal with lambda's cold start
+    // if (error.response && error.response.status == 504) {
+    //   return axios.request(error.config);
+    // }
+
     return Promise.reject(error);
   });

@@ -39,7 +39,7 @@
       </dd>
 
       <dt>Notes</dt>
-      <dd>{{ node.Notes }}</dd>
+      <dd>{{ node.Notes || "–" }}</dd>
 
       <dt>Tasks</dt>
       <dd>
@@ -48,6 +48,7 @@
             <tr>
               <th>Type</th>
               <th>Frequency</th>
+              <th>Server</th>
               <th/>
             </tr>
           </thead>
@@ -57,7 +58,8 @@
             <td >
               {{ _task.Type }}
             </td>
-            <td>{{ name(_task.Schedule) }}</td>
+            <td>{{ _task.Schedule }}</td>
+            <td>{{ _task.NamedServerID || "–" }}</td>
             <td>
               <button 
                 @click="removeTask(_i)" 
@@ -72,32 +74,130 @@
               </select>
             </td>
             <td>
-              <select v-model="newTaskSchedule">
+              <select 
+                v-model="newTaskScheduleName" 
+                @change="clearPreviousSchedules()">
                 <option 
-                  v-for="_schedule in schedules" 
-                  :key="_schedule.name" 
-                  :value="_schedule.cron">{{ _schedule.name }}</option>
+                  v-for="_freq in frequencies" 
+                  :key="_freq" 
+                  :value="_freq">{{ _freq }}</option>
               </select>
             </td>
             <td>
-              <!-- TODO: add the ability to request the time, e.g., daily at 11:00 pm or every x hours. -->
+              <select v-model="newTaskNamedServerID">
+                <option 
+                  value="" 
+                  disabled>Select server</option>
+                <option 
+                  v-for="_server in servers" 
+                  :key="_server.UID" 
+                  :value="_server.UID">{{ _server.Name }}</option>
+              </select>
+            </td>
+            <td>
               <button @click="addTask">Add</button>
+            </td>
+          </tr>
+          <tr v-if="newTaskScheduleName">
+            <td/>
+            <td 
+              v-if="newTaskScheduleName.includes('Daily')" 
+              class="no-wrap">
+              Starting at 
+              <select
+                v-model="customStartTimeHour" 
+                @change="convertStartTimeToCron()">
+                <option 
+                  value="null" 
+                  disabled>Select hour</option>
+                <option 
+                  v-for="_hr in Array.from(Array(24).keys())" 
+                  :key="_hr" 
+                  :value="_hr">{{ String(_hr).padStart(2, '0') }}</option>
+              </select> 
+              <select 
+                v-model="customStartTimeMin" 
+                @change="convertStartTimeToCron()">
+                <option 
+                  value="null" 
+                  disabled>Select min</option>
+                <option value="0">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
+              </select> 
+              hours.
+            </td>
+            <td 
+              v-else-if="newTaskScheduleName.includes('hour')" 
+              class="no-wrap">
+              Every
+              <select
+                v-model="customNumHours" 
+                @change="convertHoursToCron()">
+                <option 
+                  value="null" 
+                  disabled>Select one</option>
+                <option 
+                  v-for="_hr in Array.from(Array(12).keys())" 
+                  :key="_hr" 
+                  :value="_hr + 1">{{ _hr + 1 }}</option>
+              </select> 
+              hour(s).
+            </td>
+            <td 
+              v-else-if="newTaskScheduleName.includes('minute')" 
+              class="no-wrap">
+              Every
+              <select
+                v-model="customNumMins" 
+                @change="convertMinutesToCron()">
+                <option 
+                  value="null" 
+                  disabled>Select one</option>
+                <option 
+                  v-for="_min in Array.from(Array(30).keys())" 
+                  :key="_min" 
+                  :value="_min + 1">{{ _min + 1 }}</option>
+              </select> 
+              minute(s).
+            </td>
+            <td 
+              v-else 
+              class="no-wrap">
+              Cron schedule: 
+              <input 
+                v-model="customCron" 
+                v-autofocus>
             </td>
           </tr>
         </DataTable>
       </dd>
       
       <dt>Tags</dt>
-      <dd v-if="! hasTags">
-        <router-link 
-          :to="`${ node.MacAddr }/tags`" 
-          tag="button">Add</router-link>
-      </dd>
-      <dd v-else>
-        {{ node.TagUIDs }}
-        <router-link 
-          :to="`${ node.MacAddr }/tags`" 
-          tag="button">Edit/Remove?</router-link>
+      <dd>
+        <DataTable>
+          <tr v-if="hasTags">
+            <td>
+              <span 
+                v-for="_tag in node.TagUIDs" 
+                :key="_tag">{{ _tag }}</span>
+            </td>
+            <td>
+              <router-link 
+                :to="`${ node.MacAddr }/tags`" 
+                tag="button">manage</router-link>
+            </td>
+          </tr>
+          <tr v-else>
+            <td/>
+            <td>
+              <router-link 
+                :to="`${ node.MacAddr }/tags`" 
+                tag="button">add</router-link>
+            </td>
+          </tr>
+        </DataTable>
       </dd>
       
       <dt>First seen</dt>
@@ -126,7 +226,6 @@
               </select>
             </td>
             <td>
-              <!-- TODO: add the ability to request the time, e.g., daily at 11:00 pm or every x hours. -->
               <button @click="updateVersion">Set</button>
             </td>
           </tr>
@@ -158,38 +257,35 @@ export default {
   data() {
     return {
       node: {},
-      schedules: [
-        {
-          name: "Every 2 minutes",
-          cron: "*/2 * * * *"
-        },
-        {
-          name: "Hourly",
-          cron: "0 * * * *"
-        },
-        {
-          name: "Every 4 hours",
-          cron: "0 */4 * * *"
-        },
-        {
-          name: "Daily",
-          cron: "59 23 * * *"
-        }
+      frequencies: [
+        "Daily",
+        "Every X hour(s)",
+        "Every X minute(s)",
+        "Advanced"
       ],
       newTaskType: "ping",
-      newTaskSchedule: "0 * * * *",
+      newTaskScheduleName: "Daily",
+      newTaskNamedServerID: "",
       isNicknameEditable: false,
       newNickname: "",
-      versions: []
+      versions: [],
+      servers: [],
+      customNumHours: null,
+      customNumMins: null,
+      customStartTimeHour: null,
+      customStartTimeMin: null,
+      customCron: ""
     };
   },
   async asyncData({ params }) {
     let nodeResponse = await ADMIN_API.get(`node/${params.id}`);
     let versionsResponse = await ADMIN_API.get("version");
+    let serversResponse = await ADMIN_API.get("namedserver");
 
     return {
       node: nodeResponse.data,
-      versions: versionsResponse.data
+      versions: versionsResponse.data,
+      servers: serversResponse.data
     };
   },
   methods: {
@@ -201,34 +297,55 @@ export default {
 
       this.node.Tasks.push({
         Type: this.newTaskType,
-        Schedule: this.newTaskSchedule
+        Schedule: this.customCron,
+        NamedServerID: this.newTaskNamedServerID
       });
 
-      let response = await ADMIN_API.put(
-        `node/${this.node.MacAddr}`,
-        this.node
-      );
+      try {
+        let response = await ADMIN_API.put(
+          `node/${this.node.MacAddr}`,
+          this.node
+        );
 
-      // need to retain intial reference to node since that's what vue is watching.
-      Object.assign(this.node, response.data);
+        this.node = response.data;
+      } catch (error) {
+        console.log(`error caught while PUTting tasks: ${error}`);
+      }
+    },
+    clearPreviousSchedules: function() {
+      this.customCron = "";
+      this.customNumHours = null;
+      this.customNumMins = null;
+      this.customStartTimeHour = null;
+      this.customStartTimeMin = null;
+    },
+    convertStartTimeToCron: function() {
+      // daily at 2345 => 45 23 * * *
+      this.customCron = `${this.customStartTimeMin} ${
+        this.customStartTimeHour
+      } * * *`;
+    },
+    convertHoursToCron: function() {
+      // every 7 hours => 0 */7 * * *
+      this.customCron = `0 */${this.customNumHours} * * *`;
+    },
+    convertMinutesToCron: function() {
+      // every 2 minutes => */2 * * * *
+      this.customCron = `*/${this.customNumMins} * * * *`;
     },
     removeTask: async function(i) {
       this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
 
-      let response = await ADMIN_API.put(
-        `node/${this.node.MacAddr}`,
-        this.node
-      );
+      try {
+        let response = await ADMIN_API.put(
+          `node/${this.node.MacAddr}`,
+          this.node
+        );
 
-      // need to retain intial reference to node since that's what vue is watching.
-      Object.assign(this.node, response.data);
-    },
-    name: function(cron) {
-      const matchingSchedule = this.schedules.find(
-        schedule => schedule.cron == cron
-      );
-
-      return matchingSchedule ? matchingSchedule.name : cron;
+        this.node = response.data;
+      } catch (error) {
+        console.log(`error caught while DELETEing task: ${error}`);
+      }
     },
     editNickname: function() {
       this.newNickname = this.node.Nickname;
@@ -276,3 +393,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+dt > small {
+  font-weight: lighter;
+  font-size: 50%;
+}
+
+td.no-wrap {
+  white-space: nowrap;
+}
+</style>
+

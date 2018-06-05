@@ -7,7 +7,7 @@
       <dd>{{ server.Name }}</dd>
 
       <dt>Country</dt>
-      <dd>{{ server.TargetRegion || "–" }}</dd> <!-- TODO: this will change to Country.name -->
+      <dd>{{ server.Country.Name || "–" }}</dd>
 
       <dt>Type</dt>
       <dd>{{ server.ServerType }}</dd>
