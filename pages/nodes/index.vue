@@ -130,7 +130,20 @@ export default {
       this.$router.push(`nodes/${id}`);
     },
     locale: function(location) {
-      return location.split(",").pop();
+      // sometimes the data is missing for the location so this will try to
+      // get the most specific, available, locale, e.g.:
+      //
+      //     "US, North Carolina, Waxhaw" => "Waxhaw"
+      //     "US, North Carolina, "       => "North Carolina"
+      //     "US, , "                     => "US"
+      //     ", , "                       => "–"
+      //     ""                           => "–"
+      return (
+        location
+          .split(",")
+          .reverse()
+          .filter(x => x != false)[0] || "–"
+      );
     }
   },
   computed: {
