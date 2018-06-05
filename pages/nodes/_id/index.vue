@@ -175,16 +175,29 @@
       </dd>
       
       <dt>Tags</dt>
-      <dd v-if="! hasTags">
-        <router-link 
-          :to="`${ node.MacAddr }/tags`" 
-          tag="button">Add</router-link>
-      </dd>
-      <dd v-else>
-        {{ node.TagUIDs }}
-        <router-link 
-          :to="`${ node.MacAddr }/tags`" 
-          tag="button">Edit/Remove?</router-link>
+      <dd>
+        <DataTable>
+          <tr v-if="hasTags">
+            <td>
+              <span 
+                v-for="_tag in node.TagUIDs" 
+                :key="_tag">{{ _tag }}</span>
+            </td>
+            <td>
+              <router-link 
+                :to="`${ node.MacAddr }/tags`" 
+                tag="button">manage</router-link>
+            </td>
+          </tr>
+          <tr v-else>
+            <td/>
+            <td>
+              <router-link 
+                :to="`${ node.MacAddr }/tags`" 
+                tag="button">add</router-link>
+            </td>
+          </tr>
+        </DataTable>
       </dd>
       
       <dt>First seen</dt>
