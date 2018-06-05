@@ -2,7 +2,6 @@
   <header>
     <img src="/logo.svg">
     <ol>
-      <li><a href="/">Home</a></li>
       <li><a href="/nodes">Nodes</a></li>
       <li><a href="/users">Users</a></li>
       <li><a href="/tags">Tags</a></li>
