@@ -21,4 +21,4 @@ RUN npm run build
 ENTRYPOINT ["/data/entrypoint.sh"]
 
 # default command at runtime spins http server up in production mode
-CMD [ "npm", "start" ] 
+CMD [ "npm", "run", "serve" ] 
