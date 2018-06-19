@@ -177,11 +177,11 @@
       <dt>Tags</dt>
       <dd>
         <DataTable>
-          <tr v-if="hasTags">
+          <tr>
             <td>
               <span 
-                v-for="_tag in node.TagUIDs" 
-                :key="_tag">{{ _tag }}</span>
+                v-for="(_tag, _i) in node.Tags" 
+                :key="_tag.UID">{{ _i > 0 ? ', ': ''}}{{ _tag.Name }}</span>
             </td>
             <td>
               <router-link 
@@ -383,9 +383,6 @@ export default {
       }&zoom=10&size=640x200&sensor=false&markers=${
         this.node.Coordinates
       }&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`;
-    },
-    hasTags() {
-      return this.node.TagUIDs;
     }
   }
 };
