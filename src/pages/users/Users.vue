@@ -12,21 +12,19 @@
         </tr>
       </thead>
       <tbody>
-        <ClickableRow
+        <tr
           v-for="_user in users"
-          :key="_user.UID"
-          :to="`users/${ _user.UID }/`"
-        >
+          :key="_user.UID">
           <td>{{ _user.Name }}</td>
           <td>{{ _user.Email }}</td>
           <td><code>{{ _user.Role }}</code></td>
           <td>
             <router-link 
-              :to="_user.UID" 
+              :to="`users/${ _user.UID }`" 
               tag="button" 
               class="secondary">Manage</router-link>
           </td>
-        </ClickableRow>
+        </tr>
       </tbody> 
       <tfoot v-if="users.length == 0">
         <tr>
@@ -53,14 +51,12 @@
 <script>
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import DataTable from "@/components/DataTable";
-import ClickableRow from "@/components/ClickableRow";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
 
 export default {
   components: {
     DataTable,
-    ClickableRow,
     ButtonBar,
     Spacer
   },

@@ -19,7 +19,7 @@ table > caption {
 
   padding: 2em 0;
 }
-table>>>th {
+table >>> th {
   padding: 0.5em 0;
 }
 table > tfoot > tr > td[colspan] {
@@ -30,26 +30,26 @@ table > tfoot > tr > td[colspan] {
 /*
     '>>>' https://vue-loader.vuejs.org/guide/scoped-css.html#deep-selectors
 
-    this will ensure if there are child components, the styles will "leak" to them, e.g., "ClickableRow"
+    this will ensure if there are child components, the styles will "leak" to them
  */
-table>>>td {
+table >>> td {
   padding: 0.5em;
   text-align: center;
 }
-table>>>td > button {
+table >>> td > button {
   background-color: var(--primary-color);
   color: white;
   border-radius: 1em;
   text-transform: lowercase;
   padding: 0.2em 0.5em;
 }
-table>>>td > button.caution {
+table >>> td > button.caution {
   background-color: red;
 }
-table>>>td > button.secondary {
+table >>> td > button.secondary {
   background-color: var(--secondary-color);
 }
-table>>>td > button:hover {
+table >>> td > button:hover {
   cursor: pointer;
 }
 </style>

@@ -12,21 +12,19 @@
         </tr>
       </thead>
       <tbody>
-        <ClickableRow
+        <tr
           v-for="_server in servers"
-          :key="_server.UID"
-          :to="`servers/${ _server.UID }`"
-        >
+          :key="_server.UID">
           <td>{{ _server.Name }}</td>
           <td>{{ _server.Country.Name || "N/A" }}</td>
           <td>{{ _server.ServerType }}</td>
           <td>
             <router-link 
-              :to="_server.UID" 
+              :to="`servers/${ _server.UID }`" 
               tag="button" 
               class="secondary">Manage</router-link>
           </td>
-        </ClickableRow>
+        </tr>
       </tbody> 
       <tfoot v-if="servers.length == 0">
         <tr>
@@ -52,14 +50,12 @@
 <script>
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import DataTable from "@/components/DataTable";
-import ClickableRow from "@/components/ClickableRow";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
 
 export default {
   components: {
     DataTable,
-    ClickableRow,
     ButtonBar,
     Spacer
   },

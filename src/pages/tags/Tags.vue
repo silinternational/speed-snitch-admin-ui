@@ -11,20 +11,18 @@
         </tr>
       </thead>
       <tbody>
-        <ClickableRow
+        <tr
           v-for="_tag in tags"
-          :key="_tag.UID"
-          :to="`tags/${ _tag.UID }`"
-        >
+          :key="_tag.UID">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
           <td>
             <router-link 
-              :to="_tag.UID" 
+              :to="`tags/${ _tag.UID }`" 
               tag="button" 
               class="secondary">Manage</router-link>
           </td>
-        </ClickableRow>
+        </tr>
       </tbody> 
       <tfoot v-if="tags.length == 0">
         <tr>
@@ -51,7 +49,6 @@
 <script>
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import DataTable from "@/components/DataTable";
-import ClickableRow from "@/components/ClickableRow";
 import Info from "@/components/Info";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
@@ -60,7 +57,6 @@ import Truncate from "@/components/Truncate";
 export default {
   components: {
     DataTable,
-    ClickableRow,
     Info,
     ButtonBar,
     Spacer,

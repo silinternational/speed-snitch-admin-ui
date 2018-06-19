@@ -17,11 +17,9 @@
         </tr>
       </thead>
       <tbody>
-        <ClickableRow
+        <tr
           v-for="_node in scheduledNodes"
-          :key="_node.MacAddr"
-          :to="`nodes/${ _node.MacAddr }`"
-        >
+          :key="_node.MacAddr">
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
@@ -33,10 +31,10 @@
           <td><code>{{ _node.MacAddr }}</code></td>
           <td>
             <router-link 
-              :to="_node.MacAddr" 
+              :to="`nodes/${_node.MacAddr}`" 
               tag="button">Manage</router-link>
           </td>
-        </ClickableRow>
+        </tr>
       </tbody> 
       <tfoot v-if="scheduledNodes.length == 0">
         <tr>
@@ -62,11 +60,9 @@
         </tr>
       </thead>
       <tbody>
-        <ClickableRow
+        <tr
           v-for="_node in unscheduledNodes"
-          :key="_node.MacAddr" 
-          :to="`nodes/${ _node.MacAddr }`"
-        >
+          :key="_node.MacAddr">
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
@@ -78,10 +74,10 @@
           <td><code>{{ _node.MacAddr }}</code></td>
           <td>
             <router-link
-              :to="_node.MacAddr" 
+              :to="`nodes/${_node.MacAddr}`" 
               tag="button">Manage</router-link>
           </td>
-        </ClickableRow>
+        </tr>
       </tbody>
       <tfoot v-if="unscheduledNodes.length == 0">
         <tr>
@@ -102,14 +98,12 @@
 <script>
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import DataTable from "@/components/DataTable";
-import ClickableRow from "@/components/ClickableRow";
 import Info from "@/components/Info";
 
 export default {
   // TODO: add a timer on this page for node retrievals?
   components: {
     DataTable,
-    ClickableRow,
     Info
   },
   data() {
