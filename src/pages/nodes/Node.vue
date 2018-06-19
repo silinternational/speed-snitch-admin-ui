@@ -189,14 +189,6 @@
                 tag="button">manage</router-link>
             </td>
           </tr>
-          <tr v-else>
-            <td/>
-            <td>
-              <router-link 
-                :to="`${ node.MacAddr }/tags`" 
-                tag="button">add</router-link>
-            </td>
-          </tr>
         </DataTable>
       </dd>
       
