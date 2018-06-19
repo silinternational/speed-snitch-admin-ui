@@ -13,6 +13,7 @@ Project is managed with [vue-cli](https://github.com/vuejs/vue-cli).
 `cp .env.dist .env` and populate with appropriate values.
 
 `VUE_APP_GOOGLE_MAPS_API_KEY` needed to retrieve maps for a given node.
+
 `VUE_APP_ADMIN_API_BASE_URL` needed for data calls.
 
 ## Run locally
