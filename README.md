@@ -21,6 +21,11 @@ Project is managed with [vue-cli](https://github.com/vuejs/vue-cli).
 1.  Run `make` from the project root.
 1.  The app will be running on the localhost at [http://localhost:3000](http://localhost:3000).
 
+## Local development
+
+1.  Run `make dev` from the project root.
+1.  The app will be running on the localhost at [http://localhost:3000](http://localhost:3000).
+
 # Build for deployment
 
 1.  Review Environment settings.

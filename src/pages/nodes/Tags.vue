@@ -44,7 +44,7 @@
           :key="_tag.UID">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
-          <td><button @click="add(_tag.UID)">add</button></td>
+          <td><button @click="add(_tag)">add</button></td>
         </tr>
       </tbody> 
       <tfoot v-if="availableTags.length == 0">
@@ -92,12 +92,12 @@ export default {
     this.allTags = allTagsResponse.data || [];
   },
   methods: {
-    add: async function(tagId) {
+    add: async function(tag) {
       // some nodes may not have any associated tags yet
-      if (!this.node.TagUIDs) {
-        this.node.TagUIDs = [];
+      if (!this.node.Tags) {
+        this.node.Tags = [];
       }
-      this.node.TagUIDs.push(tagId);
+      this.node.Tags.push(tag);
 
       let response = await ADMIN_API.put(
         `node/${this.node.MacAddr}`,
@@ -107,7 +107,7 @@ export default {
       this.$router.go();
     },
     remove: async function(i) {
-      this.node.TagUIDs.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
+      this.node.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
 
       let response = await ADMIN_API.put(
         `node/${this.node.MacAddr}`,
