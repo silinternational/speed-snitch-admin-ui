@@ -11,8 +11,8 @@
           <th>Last seen</th>
           <th>Uptime</th>
           <th>Reported version</th>
-          <th>OS</th>
-          <th>Architecture</th>
+          <th>OS/Arch</th>
+          <th>MAC</th>
           <th/>
         </tr>
       </thead>
@@ -29,8 +29,8 @@
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion }}</td>
-          <td>{{ _node.OS }}</td>
-          <td>{{ _node.Arch }}</td>
+          <td>{{ _node.OS }}/{{ _node.Arch }}</td>
+          <td><code>{{ _node.MacAddr }}</code></td>
           <td>
             <router-link 
               :to="_node.MacAddr" 
@@ -56,8 +56,8 @@
           <th>Last seen</th>
           <th>Uptime</th>
           <th>Reported version</th>
-          <th>OS</th>
-          <th>Architecture</th>
+          <th>OS/Arch</th>
+          <th>MAC</th>
           <th/>
         </tr>
       </thead>
@@ -74,8 +74,8 @@
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion }}</td>
-          <td>{{ _node.OS }}</td>
-          <td>{{ _node.Arch }}</td>
+          <td>{{ _node.OS }}/{{ _node.Arch }}</td>
+          <td><code>{{ _node.MacAddr }}</code></td>
           <td>
             <router-link
               :to="_node.MacAddr" 
