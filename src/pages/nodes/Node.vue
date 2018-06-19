@@ -59,7 +59,7 @@
               {{ _task.Type }}
             </td>
             <td>{{ _task.Schedule }}</td>
-            <td>{{ _task.NamedServerID || "–" }}</td>
+            <td>{{ _task.NamedServer.Name || "–" }}</td>
             <td>
               <button 
                 @click="removeTask(_i)" 
@@ -84,14 +84,14 @@
               </select>
             </td>
             <td>
-              <select v-model="newTaskNamedServerID">
+              <select v-model="newTaskNamedServer">
                 <option 
-                  value="" 
+                  :value="{}" 
                   disabled>Select server</option>
                 <option 
                   v-for="_server in servers" 
                   :key="_server.UID" 
-                  :value="_server.UID">{{ _server.Name }}</option>
+                  :value="_server">{{ _server.Name }}</option>
               </select>
             </td>
             <td>
@@ -260,7 +260,7 @@ export default {
       ],
       newTaskType: "ping",
       newTaskScheduleName: "Daily",
-      newTaskNamedServerID: "",
+      newTaskNamedServer: {},
       isNicknameEditable: false,
       newNickname: "",
       versions: [],
@@ -293,7 +293,7 @@ export default {
       this.node.Tasks.push({
         Type: this.newTaskType,
         Schedule: this.customCron,
-        NamedServerID: this.newTaskNamedServerID
+        NamedServer: this.newTaskNamedServer
       });
 
       try {
