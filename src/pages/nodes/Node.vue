@@ -193,13 +193,16 @@
       </dd>
       
       <dt>First seen</dt>
-      <dd>{{ node.FirstSeen | format }}</dd>
+      <dd v-if="node.FirstSeen">{{ node.FirstSeen | format }}</dd>
+      <dd v-else>–</dd>
       
       <dt>Last seen</dt>
-      <dd>{{ node.LastSeen | format }}</dd>
+      <dd v-if="node.LastSeen">{{ node.LastSeen | format }}</dd>
+      <dd v-else>–</dd>
       
       <dt>Uptime</dt>
-      <dd>{{ node.Uptime | duration }}</dd>
+      <dd v-if="node.Uptime">{{ node.Uptime | duration }}</dd>
+      <dd v-else>–</dd>
       
       <dt>Running version</dt>
       <dd><code>{{ node.RunningVersion }}</code></dd>
