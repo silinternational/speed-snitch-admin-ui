@@ -201,7 +201,11 @@
       <dd v-else>–</dd>
       
       <dt>Uptime</dt>
-      <dd v-if="node.Uptime">{{ node.Uptime | duration }}</dd>
+      <dd v-if="node.Uptime">
+        {{ node.Uptime | duration }}
+        <router-link 
+          :to="`${ node.MacAddr }/charts`"><small>(charts)</small></router-link>
+      </dd>
       <dd v-else>–</dd>
       
       <dt>Running version</dt>

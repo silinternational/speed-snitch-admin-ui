@@ -13,7 +13,7 @@
 <style scoped>
 header {
   background-color: var(--primary-color);
-  color: whitesmoke;
+  color: var(--white);
   min-height: 2em;
   max-height: 4em;
   padding: 0.5em;
@@ -39,7 +39,7 @@ ol > li {
 }
 
 header > ol > li > a {
-  color: whitesmoke;
+  color: var(--white);
   text-decoration: none;
 }
 </style>

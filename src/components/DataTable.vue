@@ -38,7 +38,7 @@ table >>> td {
 }
 table >>> td > button {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--white);
   border-radius: 1em;
   text-transform: lowercase;
   padding: 0.2em 0.5em;
