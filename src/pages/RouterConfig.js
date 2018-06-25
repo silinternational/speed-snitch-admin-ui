@@ -3,6 +3,7 @@ import Router from "vue-router";
 import Nodes from "@/pages/nodes/Nodes";
 import Node from "@/pages/nodes/Node";
 import NodeTags from "@/pages/nodes/Tags";
+import Charts from "@/pages/nodes/Charts";
 import Servers from "@/pages/servers/Servers";
 import Server from "@/pages/servers/Server";
 import NewServer from "@/pages/servers/New";
@@ -33,6 +34,10 @@ export default new Router({
     {
       path: "/nodes/:macaddr/tags",
       component: NodeTags
+    },
+    {
+      path: "/nodes/:macaddr/charts",
+      component: Charts
     },
     {
       path: "/servers",
