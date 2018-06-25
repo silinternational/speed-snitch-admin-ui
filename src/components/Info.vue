@@ -22,7 +22,7 @@ div {
   font-size: xx-small;
 
   /* now give it a bubble */
-  color: whitesmoke;
+  color: var(--white);
   background-color: var(--secondary-color);
   border-radius: 1em;
 }

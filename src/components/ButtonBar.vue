@@ -14,7 +14,7 @@ div {
 
 div button:last-child {
   background-color: var(--primary-color);
-  color: white;
+  color: var(--white);
 
   padding: 0.5em;
   text-transform: uppercase;

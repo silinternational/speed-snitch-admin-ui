@@ -23,6 +23,7 @@ div#app {
   --primary-color: rgb(121, 31, 94);
   --primary-color-light: rgb(121, 31, 94, 0.05);
   --secondary-color: rgb(14, 105, 164);
+  --white: whitesmoke;
   height: 100vh;
   width: 100vw;
 }
