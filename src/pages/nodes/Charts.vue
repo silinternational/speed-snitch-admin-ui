@@ -13,9 +13,9 @@
       </form>
     </header>
 
-    <figure v-if="data.datasets">
+    <!-- <figure> -->
       <LineChart v-if="data.datasets" :chart-data="data" :options="chartOptions"/>
-    </figure>
+    <!-- </figure> -->
   </section>
 </template>
 
@@ -58,7 +58,8 @@ export default {
             this.$route.params.macaddr
           }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
         );
-        this.data = transformData(speedDataResponse.data);
+
+        this.data = convertToChartConfig(speedDataResponse.data);
       } catch (error) {
         console.log(`error caught while GETting speed data: ${error}`);
       }
@@ -66,51 +67,24 @@ export default {
   }
 };
 
-// TODO: fiddle with tooltips:  http://www.chartjs.org/docs/latest/configuration/tooltip.html#tooltip-configuration
 const chartOptions = {
-  maintainAspectRatio: false,
-  elements: {
-    line: {
-      fill: false
-    },
-    point: {
-      radius: 0,
-      backgroundColor: "white"
-    }
-  },
   title: {
     display: true,
     text: "Speed"
   },
-  legend: {
-    position: "right",
-    labels: {
-      boxWidth: 0.1
-    }
-  },
   scales: {
-    xAxes: [
-      {
-        ticks: {
-          autoSkip: false
-        }
-      }
-    ],
     yAxes: [
       {
         scaleLabel: {
           display: true,
           labelString: "Megabits per second"
-        },
-        ticks: {
-          beginAtZero: true
         }
       }
     ]
   }
 };
 
-function transformData(rawData) {
+function convertToChartConfig(rawData) {
   let labels = [];
   let download = {
     maxes: [],
@@ -124,7 +98,12 @@ function transformData(rawData) {
   };
 
   rawData.forEach(point => {
-    labels.push(moment.unix(point.Timestamp).format("MMM DD"));
+    labels.push(
+      moment
+        .unix(point.Timestamp)
+        .utc() // see UTC note:  https://momentjs.com/docs/#/parsing/unix-timestamp
+        .format("MMM DD")
+    );
 
     download.maxes.push(point.DownloadMax);
     download.avgs.push(point.DownloadAvg);
@@ -140,32 +119,32 @@ function transformData(rawData) {
     // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
     datasets: [
       {
-        label: `Max download (${max(download.maxes)})`,
+        label: `Max download (${max(download.maxes)} Mbps)`,
         borderColor: "rgba(255, 130, 0, 0.6)",
         data: download.maxes
       },
       {
-        label: `Average download (${avg(download.avgs)})`,
+        label: `Average download (${avg(download.avgs)} Mbps)`,
         borderColor: "rgba(255, 130, 0, 1)",
         data: download.avgs
       },
       {
-        label: `Min download (${min(download.mins)})`,
+        label: `Min download (${min(download.mins)} Mbps)`,
         borderColor: "rgba(255, 130, 0, 0.2)",
         data: download.mins
       },
       {
-        label: `Max upload (${max(upload.maxes)})`,
+        label: `Max upload (${max(upload.maxes)} Mbps)`,
         borderColor: "rgba(3, 74, 97, 0.6)",
         data: upload.maxes
       },
       {
-        label: `Average upload (${avg(upload.avgs)})`,
+        label: `Average upload (${avg(upload.avgs)} Mbps)`,
         borderColor: "rgba(3, 74, 97, 1)",
         data: upload.avgs
       },
       {
-        label: `Min upload (${max(upload.mins)})`,
+        label: `Min upload (${max(upload.mins)} Mbps)`,
         borderColor: "rgba(3, 74, 97, 0.2)",
         data: upload.mins
       }
