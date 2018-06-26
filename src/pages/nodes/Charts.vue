@@ -13,9 +13,10 @@
       </form>
     </header>
 
-    <!-- <figure> -->
-      <LineChart v-if="data.datasets" :chart-data="data" :options="chartOptions"/>
-    <!-- </figure> -->
+    <LineChart v-if="speed.data.datasets" :chart-data="speed.data" :options="speed.options"/>
+    
+    <hr v-if="latency.data.datasets">
+    <LineChart v-if="latency.data.datasets" :chart-data="latency.data" :options="latency.options"/>
   </section>
 </template>
 
@@ -33,12 +34,18 @@ export default {
   data() {
     return {
       node: {},
-      chartOptions: chartOptions,
-      data: {},
       startDate: null,
       endDate: null,
       tomorrow: {
         from: new Date()
+      },
+      speed: {
+        options: {},
+        data: {}
+      },
+      latency: {
+        options: {},
+        data: {}
       }
     };
   },
@@ -53,49 +60,48 @@ export default {
         const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
         const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
 
-        let speedDataResponse = await ADMIN_API.get(
+        let chartDataResponse = await ADMIN_API.get(
           `report/node/${
             this.$route.params.macaddr
           }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
         );
 
-        this.data = convertToChartConfig(speedDataResponse.data);
+        let chartData = convertToChartData(chartDataResponse.data);
+
+        this.speed = createSpeedChartConfig(
+          chartData.labels,
+          chartData.speed.downloads,
+          chartData.speed.uploads
+        );
+
+        this.latency = createLatencyChartConfig(
+          chartData.labels,
+          chartData.latencies
+        );
       } catch (error) {
-        console.log(`error caught while GETting speed data: ${error}`);
+        console.error(`error caught while GETting speed data: ${error}`);
       }
     }
   }
 };
 
-const chartOptions = {
-  title: {
-    display: true,
-    text: "Speed"
-  },
-  scales: {
-    yAxes: [
-      {
-        scaleLabel: {
-          display: true,
-          labelString: "Megabits per second"
-        }
-      }
-    ]
-  }
-};
-
-function convertToChartConfig(rawData) {
-  let labels = [];
-  let download = {
-    maxes: [],
-    avgs: [],
-    mins: []
-  };
-  let upload = {
-    maxes: [],
-    avgs: [],
-    mins: []
-  };
+function convertToChartData(rawData) {
+  let labels = [],
+    downloads = {
+      maxes: [],
+      avgs: [],
+      mins: []
+    },
+    uploads = {
+      maxes: [],
+      avgs: [],
+      mins: []
+    },
+    latencies = {
+      maxes: [],
+      avgs: [],
+      mins: []
+    };
 
   rawData.forEach(point => {
     labels.push(
@@ -105,50 +111,125 @@ function convertToChartConfig(rawData) {
         .format("MMM DD")
     );
 
-    download.maxes.push(point.DownloadMax);
-    download.avgs.push(point.DownloadAvg);
-    download.mins.push(point.DownloadMin);
+    downloads.maxes.push(point.DownloadMax);
+    downloads.avgs.push(point.DownloadAvg);
+    downloads.mins.push(point.DownloadMin);
 
-    upload.maxes.push(point.UploadMax);
-    upload.avgs.push(point.UploadAvg);
-    upload.mins.push(point.UploadMin);
+    uploads.maxes.push(point.UploadMax);
+    uploads.avgs.push(point.UploadAvg);
+    uploads.mins.push(point.UploadMin);
+
+    latencies.maxes.push(point.LatencyMax);
+    latencies.avgs.push(point.LatencyAvg);
+    latencies.mins.push(point.LatencyMin);
   });
 
   return {
     labels: labels,
-    // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
-    datasets: [
-      {
-        label: `Max download (${max(download.maxes)} Mbps)`,
-        borderColor: "rgba(255, 130, 0, 0.6)",
-        data: download.maxes
+    speed: {
+      downloads: downloads,
+      uploads: uploads
+    },
+    latencies: latencies
+  };
+}
+
+function createSpeedChartConfig(labels, downloads, uploads) {
+  return {
+    options: {
+      title: {
+        display: true,
+        text: "Speed"
       },
-      {
-        label: `Average download (${avg(download.avgs)} Mbps)`,
-        borderColor: "rgba(255, 130, 0, 1)",
-        data: download.avgs
-      },
-      {
-        label: `Min download (${min(download.mins)} Mbps)`,
-        borderColor: "rgba(255, 130, 0, 0.2)",
-        data: download.mins
-      },
-      {
-        label: `Max upload (${max(upload.maxes)} Mbps)`,
-        borderColor: "rgba(3, 74, 97, 0.6)",
-        data: upload.maxes
-      },
-      {
-        label: `Average upload (${avg(upload.avgs)} Mbps)`,
-        borderColor: "rgba(3, 74, 97, 1)",
-        data: upload.avgs
-      },
-      {
-        label: `Min upload (${max(upload.mins)} Mbps)`,
-        borderColor: "rgba(3, 74, 97, 0.2)",
-        data: upload.mins
+      scales: {
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: "Megabits per second"
+            }
+          }
+        ]
       }
-    ]
+    },
+    data: {
+      labels: labels,
+      // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
+      datasets: [
+        {
+          label: `Max download (${max(downloads.maxes)} Mbps)`,
+          borderColor: "rgba(255, 130, 0, 0.6)",
+          data: downloads.maxes
+        },
+        {
+          label: `Average download (${avg(downloads.avgs)} Mbps)`,
+          borderColor: "rgba(255, 130, 0, 1)",
+          data: downloads.avgs
+        },
+        {
+          label: `Min download (${min(downloads.mins)} Mbps)`,
+          borderColor: "rgba(255, 130, 0, 0.2)",
+          data: downloads.mins
+        },
+        {
+          label: `Max upload (${max(uploads.maxes)} Mbps)`,
+          borderColor: "rgba(3, 74, 97, 0.6)",
+          data: uploads.maxes
+        },
+        {
+          label: `Average upload (${avg(uploads.avgs)} Mbps)`,
+          borderColor: "rgba(3, 74, 97, 1)",
+          data: uploads.avgs
+        },
+        {
+          label: `Min upload (${max(uploads.mins)} Mbps)`,
+          borderColor: "rgba(3, 74, 97, 0.2)",
+          data: uploads.mins
+        }
+      ]
+    }
+  };
+}
+
+function createLatencyChartConfig(labels, latencies) {
+  return {
+    options: {
+      title: {
+        display: true,
+        text: "Latency"
+      },
+      scales: {
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: "Milliseconds"
+            }
+          }
+        ]
+      }
+    },
+    data: {
+      labels: labels,
+      // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
+      datasets: [
+        {
+          label: `Max latency (${max(latencies.maxes)} ms)`,
+          borderColor: "rgba(255, 130, 0, 0.6)",
+          data: latencies.maxes
+        },
+        {
+          label: `Average latency (${avg(latencies.avgs)} ms)`,
+          borderColor: "rgba(255, 130, 0, 1)",
+          data: latencies.avgs
+        },
+        {
+          label: `Min latency (${min(latencies.mins)} ms)`,
+          borderColor: "rgba(255, 130, 0, 0.2)",
+          data: latencies.mins
+        }
+      ]
+    }
   };
 }
 
@@ -176,6 +257,7 @@ form {
   align-items: center;
 }
 
+/* this is the selector for Datepicker */
 form > div {
   padding: 0 0.5em;
 }
@@ -183,6 +265,10 @@ form > div {
 form > button {
   background-color: var(--primary-color);
   color: var(--white);
+}
+
+hr {
+  margin: 2em 0;
 }
 </style>
 
