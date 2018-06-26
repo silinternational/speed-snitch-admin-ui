@@ -1,22 +1,19 @@
 <template>
   <section>
-    <h1>Charts {{ node.Nickname ? `for ${node.Nickname}` : '' }}</h1>
-    
-    <form>
-      From
-      <Datepicker placeholder="Start date" v-model="startDate" :disabledDates="tomorrow" format="MMM d yyyy" />
-      to
-      <Datepicker placeholder="End date" v-model="endDate" :disabledDates="tomorrow" format="MMM d yyyy" />
-      
-      <button @click.prevent="getChartData()">See chart</button>
-    </form>
+    <header>
+      <h1>Charts {{ node.Nickname ? `for ${node.Nickname}` : '' }}</h1>
+
+      <form>
+        From
+        <Datepicker placeholder="Start date" v-model="startDate" :disabledDates="tomorrow" format="MMM d yyyy" />
+        to
+        <Datepicker placeholder="End date" v-model="endDate" :disabledDates="tomorrow" format="MMM d yyyy" />
+        
+        <button @click.prevent="getChartData()">See chart</button>
+      </form>
+    </header>
 
     <figure v-if="data.datasets">
-      <figcaption>
-        <span>download speeds (max/avg/min): <code>{{download.max}}/{{download.avg}}/{{download.min}} Mbps</code></span>
-        <span>upload speeds (max/avg/min): <code>{{upload.max}}/{{upload.avg}}/{{upload.min}} Mbps</code></span>
-      </figcaption>
-      
       <LineChart v-if="data.datasets" :chart-data="data" :options="chartOptions"/>
     </figure>
   </section>
@@ -66,14 +63,6 @@ export default {
         console.log(`error caught while GETting speed data: ${error}`);
       }
     }
-  },
-  computed: {
-    download: function() {
-      return this.data.aggregates().download;
-    },
-    upload: function() {
-      return this.data.aggregates().upload;
-    }
   }
 };
 
@@ -89,10 +78,14 @@ const chartOptions = {
       backgroundColor: "white"
     }
   },
+  title: {
+    display: true,
+    text: "Speed"
+  },
   legend: {
     position: "right",
     labels: {
-      boxWidth: 1
+      boxWidth: 0.1
     }
   },
   scales: {
@@ -147,60 +140,55 @@ function transformData(rawData) {
     // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
     datasets: [
       {
-        label: "Max download speed",
+        label: `Max download (${max(download.maxes)})`,
         borderColor: "rgba(255, 130, 0, 0.6)",
         data: download.maxes
       },
       {
-        label: "Average download speed",
+        label: `Average download (${avg(download.avgs)})`,
         borderColor: "rgba(255, 130, 0, 1)",
         data: download.avgs
       },
       {
-        label: "Min download speed",
+        label: `Min download (${min(download.mins)})`,
         borderColor: "rgba(255, 130, 0, 0.2)",
         data: download.mins
       },
       {
-        label: "Max upload speed",
+        label: `Max upload (${max(upload.maxes)})`,
         borderColor: "rgba(3, 74, 97, 0.6)",
         data: upload.maxes
       },
       {
-        label: "Avg upload speed",
+        label: `Average upload (${avg(upload.avgs)})`,
         borderColor: "rgba(3, 74, 97, 1)",
         data: upload.avgs
       },
       {
-        label: "Min upload speed",
+        label: `Min upload (${max(upload.mins)})`,
         borderColor: "rgba(3, 74, 97, 0.2)",
         data: upload.mins
       }
-    ],
-    aggregates: function() {
-      return {
-        download: {
-          max: Math.max(...download.maxes).toFixed(),
-          avg: average(download.avgs).toFixed(),
-          min: Math.min(...download.mins).toFixed()
-        },
-        upload: {
-          max: Math.max(...upload.maxes).toFixed(),
-          avg: average(upload.avgs).toFixed(),
-          min: Math.min(...upload.mins).toFixed()
-        }
-      };
-    }
+    ]
   };
 }
 
-const average = numbers =>
-  numbers.reduce((sum, number) => sum + number, 0) / numbers.length;
+const max = numbers => Math.max(...numbers).toFixed();
+const min = numbers => Math.min(...numbers).toFixed();
+const avg = numbers =>
+  (numbers.reduce((sum, number) => sum + number, 0) / numbers.length).toFixed();
 </script>
 
 <style scoped>
 section {
-  width: 100%;
+  width: 90%; /* so the chart is wider */
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 1em;
 }
 
 form {
@@ -209,7 +197,6 @@ form {
   align-items: center;
 }
 
-/* this is Datepicker's resulting HTML */
 form > div {
   padding: 0 0.5em;
 }
@@ -217,13 +204,6 @@ form > div {
 form > button {
   background-color: var(--primary-color);
   color: var(--white);
-}
-
-figcaption {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 1em;
 }
 </style>
 
