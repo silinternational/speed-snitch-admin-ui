@@ -19,8 +19,11 @@ Chart.defaults.global.tooltips.intersect = false;
 Chart.defaults.global.legend.position = "bottom";
 Chart.defaults.global.legend.labels.boxWidth = 0.1;
 
+//www.chartjs.org/docs/latest/charts/line.html
+https: Chart.defaults.global.elements.line.fill = false;
+Chart.defaults.global.elements.line.tension = 0;
+
 // https://www.chartjs.org/docs/latest/configuration/elements.html#point-configuration
-Chart.defaults.global.elements.line.fill = false;
 Chart.defaults.global.elements.point.radius = 0;
 
 // couldn't find docs for this...
