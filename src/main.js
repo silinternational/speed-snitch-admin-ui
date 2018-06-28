@@ -2,8 +2,6 @@ import Vue from "vue";
 import App from "@/pages/App";
 import configuredRouter from "@/pages/RouterConfig";
 
-Vue.config.productionTip = false; // TODO: research this
-
 //TODO: find a better way to load directives:
 Vue.directive("autofocus", {
   inserted: function(el) {
