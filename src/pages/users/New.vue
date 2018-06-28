@@ -42,11 +42,15 @@
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import { autofocus } from "@/shared/directives";
 
 export default {
   components: {
     ButtonBar,
     Spacer
+  },
+  directives: {
+    autofocus
   },
   data() {
     return {

@@ -2,13 +2,6 @@ import Vue from "vue";
 import App from "@/pages/App";
 import configuredRouter from "@/pages/RouterConfig";
 
-//TODO: find a better way to load directives:
-Vue.directive("autofocus", {
-  inserted: function(el) {
-    el.focus();
-  }
-});
-
 //TODO: find a better way to load filters:
 import moment from "moment";
 // http://momentjs.com/docs/#/displaying

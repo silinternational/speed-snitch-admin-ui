@@ -253,11 +253,15 @@
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import DataTable from "@/components/DataTable";
 import DefinitionList from "@/components/DefinitionList";
+import { autofocus } from "@/shared/directives";
 
 export default {
   components: {
     DataTable,
     DefinitionList
+  },
+  directives: {
+    autofocus
   },
   data() {
     return {
