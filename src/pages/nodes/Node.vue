@@ -1,6 +1,14 @@
 <template>
   <section>
-    <h1>Node</h1>
+    <h1>
+      Node 
+      <span v-if="node.Nickname">
+        ({{ node.Nickname }})
+        <router-link :to="`${ node.MacAddr }/charts`">
+          <small>charts</small>
+        </router-link>
+      </span>
+    </h1>
 
     <img :src="mapUrl">
 
@@ -203,8 +211,6 @@
       <dt>Uptime</dt>
       <dd v-if="node.Uptime">
         {{ node.Uptime | duration }}
-        <router-link 
-          :to="`${ node.MacAddr }/charts`"><small>(charts)</small></router-link>
       </dd>
       <dd v-else>–</dd>
       
