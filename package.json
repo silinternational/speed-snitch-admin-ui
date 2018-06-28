@@ -5,27 +5,51 @@
   "author": "Billy Clark <billy_clark@sil.org>",
   "private": true,
   "scripts": {
-    "//": "https://nuxtjs.org/guide/commands#list-of-commands",
-    "dev": "nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "precommit": "npm run lint",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
     "clean": "rimraf dist"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "chart.js": "^2.7.2",
     "moment": "^2.22.1",
     "normalize.css": "^8.0.0",
-    "nuxt": "^1.0.0"
+    "vue": "^2.5.16",
+    "vue-chartjs": "^3.3.2",
+    "vue-router": "^3.0.1",
+    "vuejs-datepicker": "^1.5.2"
   },
   "devDependencies": {
-    "@nuxtjs/dotenv": "^1.1.1",
-    "babel-eslint": "^8.2.3",
-    "eslint": "^4.19.1",
-    "eslint-friendly-formatter": "^3.0.0",
-    "eslint-loader": "^1.7.1",
-    "eslint-plugin-vue": "^4.5.0",
+    "@vue/cli-plugin-babel": "^3.0.0-beta.15",
+    "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
+    "@vue/cli-service": "^3.0.0-beta.15",
+    "vue-template-compiler": "^2.5.16",
     "rimraf": "^2.6.2"
-  }
+  },
+  "TODO:": "does it make more sense to have eslint settings built into project like this or in vscode??? I'm going to uninstall the vscode extension for now",
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }
