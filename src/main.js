@@ -8,11 +8,6 @@ Vue.directive("autofocus", {
     el.focus();
   }
 });
-Vue.directive("no-submit", {
-  inserted: function(button) {
-    button.setAttribute("type", "button");
-  }
-});
 
 //TODO: find a better way to load filters:
 import moment from "moment";

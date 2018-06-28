@@ -29,7 +29,9 @@
     </DefinitionList>
 
     <ButtonBar>
-      <GoBackButton/>
+      <router-link 
+        to="/users" 
+        tag="button">Back</router-link>
       
       <Spacer/>
       
@@ -44,14 +46,12 @@
 <script>
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import ButtonBar from "@/components/ButtonBar";
-import GoBackButton from "@/components/GoBackButton";
 import Spacer from "@/components/Spacer";
 import DefinitionList from "@/components/DefinitionList";
 
 export default {
   components: {
     ButtonBar,
-    GoBackButton,
     Spacer,
     DefinitionList
   },

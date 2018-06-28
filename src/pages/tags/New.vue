@@ -16,7 +16,9 @@
       </label>
 
       <ButtonBar>
-        <GoBackButton/>
+        <router-link 
+          to="/tags" 
+          tag="button">Back</router-link>
         
         <Spacer/>
         
@@ -28,14 +30,12 @@
 
 <script>
 import ButtonBar from "@/components/ButtonBar";
-import GoBackButton from "@/components/GoBackButton";
 import Spacer from "@/components/Spacer";
 import { ADMIN_API } from "@/plugins/admin-api-service.js";
 
 export default {
   components: {
     ButtonBar,
-    GoBackButton,
     Spacer
   },
   data() {
