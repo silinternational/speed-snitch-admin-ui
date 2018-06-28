@@ -39,6 +39,8 @@ main {
 </style>
 
 <style>
+@import "~normalize.css";
+
 body {
   font-family: sans-serif;
 }

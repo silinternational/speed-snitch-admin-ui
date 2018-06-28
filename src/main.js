@@ -1,7 +1,6 @@
 import Vue from "vue";
 import App from "@/pages/App";
 import configuredRouter from "@/pages/RouterConfig";
-import "normalize.css"; //TODO: is there a more appropriate place to load this?
 
 Vue.config.productionTip = false; // TODO: research this
 
