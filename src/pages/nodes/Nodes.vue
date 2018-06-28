@@ -8,6 +8,7 @@
         <tr>
           <th>Location</th>
           <th>Nickname</th>
+          <th></th>
           <th>Last seen</th>
           <th>Uptime</th>
           <th>Reported version</th>
@@ -24,6 +25,11 @@
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
           <td>{{ _node.Nickname }}</td>
+          <td>
+            <router-link :to="`nodes/${ _node.MacAddr }/charts`" title="charts">
+              📈
+            </router-link>   
+          </td>
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion }}</td>
@@ -51,6 +57,7 @@
         <tr>
           <th>Location</th>
           <th>Nickname</th>
+          <th></th>
           <th>Last seen</th>
           <th>Uptime</th>
           <th>Reported version</th>
@@ -67,6 +74,11 @@
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
           <td>{{ _node.Nickname }}</td>
+          <td>
+            <router-link :to="`nodes/${ _node.MacAddr }/charts`" title="charts">
+              📈
+            </router-link>   
+          </td>
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion }}</td>
@@ -109,7 +121,7 @@ export default {
   data() {
     return {
       nodes: [],
-      numCols: 7
+      numCols: 8
     };
   },
   async mounted() {
