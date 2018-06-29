@@ -254,6 +254,7 @@ import { ADMIN_API } from "@/plugins/admin-api-service.js";
 import DataTable from "@/components/DataTable";
 import DefinitionList from "@/components/DefinitionList";
 import { autofocus } from "@/shared/directives";
+import { format, duration } from "@/shared/filters";
 
 export default {
   components: {
@@ -262,6 +263,10 @@ export default {
   },
   directives: {
     autofocus
+  },
+  filters: {
+    format,
+    duration
   },
   data() {
     return {
