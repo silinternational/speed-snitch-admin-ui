@@ -111,17 +111,17 @@ function convertToChartData(rawData) {
         .format("MMM DD")
     );
 
-    downloads.maxes.push(point.DownloadMax);
-    downloads.avgs.push(point.DownloadAvg);
-    downloads.mins.push(point.DownloadMin);
+    downloads.maxes.push(point.DownloadMax.toFixed());
+    downloads.avgs.push(point.DownloadAvg.toFixed());
+    downloads.mins.push(point.DownloadMin.toFixed());
 
-    uploads.maxes.push(point.UploadMax);
-    uploads.avgs.push(point.UploadAvg);
-    uploads.mins.push(point.UploadMin);
+    uploads.maxes.push(point.UploadMax.toFixed());
+    uploads.avgs.push(point.UploadAvg.toFixed());
+    uploads.mins.push(point.UploadMin.toFixed());
 
-    latencies.maxes.push(point.LatencyMax);
-    latencies.avgs.push(point.LatencyAvg);
-    latencies.mins.push(point.LatencyMin);
+    latencies.maxes.push(point.LatencyMax.toFixed());
+    latencies.avgs.push(point.LatencyAvg.toFixed());
+    latencies.mins.push(point.LatencyMin.toFixed());
   });
 
   return {
@@ -233,10 +233,18 @@ function createLatencyChartConfig(labels, latencies) {
   };
 }
 
-const max = numbers => Math.max(...numbers).toFixed();
-const min = numbers => Math.min(...numbers).toFixed();
-const avg = numbers =>
-  (numbers.reduce((sum, number) => sum + number, 0) / numbers.length).toFixed();
+const max = numbers => Math.max(...numbers);
+const min = numbers => Math.min(...numbers);
+const avg = numbers => {
+  const sum = numbers.reduce(
+    (sum, number) => sum + Number.parseFloat(number),
+    0
+  );
+
+  const avg = sum / numbers.length;
+
+  return avg.toFixed();
+};
 </script>
 
 <style scoped>
