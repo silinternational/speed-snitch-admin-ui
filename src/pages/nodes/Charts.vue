@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import LineChart from "@/components/LineChart";
 import moment from "moment";
 import Datepicker from "vuejs-datepicker";
@@ -50,7 +50,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get(`node/${this.$route.params.macaddr}`);
+    let response = await API.get(`node/${this.$route.params.macaddr}`);
 
     this.node = response.data;
   },
@@ -60,7 +60,7 @@ export default {
         const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
         const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
 
-        let chartDataResponse = await ADMIN_API.get(
+        let chartDataResponse = await API.get(
           `report/node/${
             this.$route.params.macaddr
           }?interval=daily&start=${formattedStart}&end=${formattedEnd}`

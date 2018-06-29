@@ -90,7 +90,7 @@
 <script>
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import { autofocus } from "@/shared/directives";
 
 export default {
@@ -120,7 +120,7 @@ export default {
     typeChosen: async function() {
       if (this.newServer.ServerType == "speedTestNet") {
         try {
-          let response = await ADMIN_API.get("speedtestnetserver/country");
+          let response = await API.get("speedtestnetserver/country");
           this.countries = response.data;
         } catch (error) {
           console.log(`error caught while GETting countries: ${error}`);
@@ -129,7 +129,7 @@ export default {
     },
     countryChosen: async function() {
       try {
-        let response = await ADMIN_API.get(
+        let response = await API.get(
           `speedtestnetserver/country/${this.newServer.Country.Code}`
         );
         this.servers = response.data.Servers;
@@ -139,7 +139,7 @@ export default {
     },
     add: async function() {
       try {
-        let response = await ADMIN_API.post(`namedserver`, this.newServer);
+        let response = await API.post(`namedserver`, this.newServer);
         this.$router.push(`/servers?new=${response.data.UID}/`);
       } catch (error) {
         console.log(`error caught while POSTing namedserver: ${error}`);

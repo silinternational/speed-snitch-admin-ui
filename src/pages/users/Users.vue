@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
@@ -67,7 +67,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get("user");
+    let response = await API.get("user");
 
     this.users = response.data;
   },

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
 import DefinitionList from "@/components/DefinitionList";
@@ -52,7 +52,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get(`tag/${this.$route.params.id}`);
+    let response = await API.get(`tag/${this.$route.params.id}`);
 
     this.tag = response.data;
   },
@@ -69,7 +69,7 @@ export default {
         // TODO: create a new Object for the PUT and don't update this.tag until the response is good.
         this.tag.Description = this.newDescription;
 
-        let response = await ADMIN_API.put(`tag/${this.tag.UID}`, this.tag);
+        let response = await API.put(`tag/${this.tag.UID}`, this.tag);
 
         // need to retain intial reference to node since that's what vue is watching.
         Object.assign(this.tag, response.data);
@@ -80,7 +80,7 @@ export default {
     },
     remove: async function() {
       try {
-        let response = await ADMIN_API.delete(`tag/${this.tag.UID}`);
+        let response = await API.delete(`tag/${this.tag.UID}`);
 
         this.$router.push(`/tags?removed=${this.tag.Name}/`);
       } catch (error) {

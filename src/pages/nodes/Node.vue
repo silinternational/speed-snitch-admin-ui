@@ -250,7 +250,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import DefinitionList from "@/components/DefinitionList";
 import { autofocus } from "@/shared/directives";
@@ -292,11 +292,9 @@ export default {
     };
   },
   async mounted() {
-    let nodeResponse = await ADMIN_API.get(
-      `node/${this.$route.params.macaddr}`
-    );
-    let versionsResponse = await ADMIN_API.get("version");
-    let serversResponse = await ADMIN_API.get("namedserver");
+    let nodeResponse = await API.get(`node/${this.$route.params.macaddr}`);
+    let versionsResponse = await API.get("version");
+    let serversResponse = await API.get("namedserver");
 
     this.node = nodeResponse.data;
     this.versions = versionsResponse.data;
@@ -316,10 +314,7 @@ export default {
       });
 
       try {
-        let response = await ADMIN_API.put(
-          `node/${this.node.MacAddr}`,
-          this.node
-        );
+        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.node = response.data;
       } catch (error) {
@@ -351,10 +346,7 @@ export default {
       this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
 
       try {
-        let response = await ADMIN_API.put(
-          `node/${this.node.MacAddr}`,
-          this.node
-        );
+        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.node = response.data;
       } catch (error) {
@@ -370,10 +362,7 @@ export default {
       this.node.Nickname = this.newNickname;
 
       try {
-        let response = await ADMIN_API.put(
-          `node/${this.node.MacAddr}`,
-          this.node
-        );
+        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.$router.go();
       } catch (error) {
@@ -382,7 +371,7 @@ export default {
     },
     updateVersion: async function() {
       try {
-        await ADMIN_API.put(`node/${this.node.MacAddr}`, this.node);
+        await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.$router.go();
       } catch (error) {

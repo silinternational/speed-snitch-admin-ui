@@ -41,7 +41,7 @@
 <script>
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import { autofocus } from "@/shared/directives";
 
 export default {
@@ -65,7 +65,7 @@ export default {
   methods: {
     add: async function() {
       try {
-        let response = await ADMIN_API.post(`user`, this.newUser);
+        let response = await API.post(`user`, this.newUser);
 
         this.$router.push(`/users?new=${response.data.UID}/`);
       } catch (error) {

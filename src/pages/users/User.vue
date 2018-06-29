@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
 import DefinitionList from "@/components/DefinitionList";
@@ -61,14 +61,14 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get(`user/${this.$route.params.id}`);
+    let response = await API.get(`user/${this.$route.params.id}`);
 
     this.user = response.data;
   },
   methods: {
     remove: async function() {
       try {
-        let response = await ADMIN_API.delete(`user/${this.user.UID}`);
+        let response = await API.delete(`user/${this.user.UID}`);
 
         this.$router.push(`/users?removed=${this.user.UID}/`);
       } catch (error) {

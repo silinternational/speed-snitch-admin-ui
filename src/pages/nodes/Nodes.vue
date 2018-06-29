@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import Info from "@/components/Info";
 import { timeago, duration } from "@/shared/filters";
@@ -130,7 +130,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get("node");
+    let response = await API.get("node");
 
     return (this.nodes = response.data);
   },
