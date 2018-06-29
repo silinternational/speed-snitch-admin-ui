@@ -64,7 +64,7 @@
         <option 
           v-for="_server in servers" 
           :value="_server.ServerID"
-          :key="_server.ServerID">{{ _server.Name }}</option>
+          :key="_server.ServerID">{{ _server.Name }} ({{ _server.Host | subdomain }})</option>
       </select>
 
       <label v-if="newServer.ServerType == 'custom'">
@@ -100,6 +100,9 @@ export default {
   },
   directives: {
     autofocus
+  },
+  filters: {
+    subdomain: domain => domain.split(".")[0]
   },
   data() {
     return {
