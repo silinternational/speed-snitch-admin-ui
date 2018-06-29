@@ -12,16 +12,19 @@
       </dd>
       
       <dt>Tags</dt>
-      <dd v-if="! hasTags">
-        <router-link 
-          to="tags" 
-          tag="button">Add</router-link>
-      </dd>
-      <dd v-else>
-        {{ user.TagUIDs }}
-        <router-link 
-          to="tags" 
-          tag="button">Edit/Remove?</router-link>
+      <dd>
+        <DataTable>
+          <tr>
+            <td>
+              <span 
+                v-for="(_tag, _i) in user.Tags" 
+                :key="_tag.UID">{{ _i > 0 ? ', ': ''}}{{ _tag.Name }}</span>
+            </td>
+            <td>
+              <router-link :to="`${user.UID}/tags`" tag="button">manage</router-link>
+            </td>
+          </tr>
+        </DataTable>
       </dd>
 
       <dt>Role</dt>
@@ -48,12 +51,14 @@ import API from "@/shared/api";
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
 import DefinitionList from "@/components/DefinitionList";
+import DataTable from "@/components/DataTable";
 
 export default {
   components: {
     ButtonBar,
     Spacer,
-    DefinitionList
+    DefinitionList,
+    DataTable
   },
   data() {
     return {
@@ -68,7 +73,7 @@ export default {
   methods: {
     remove: async function() {
       try {
-        let response = await API.delete(`user/${this.user.UID}`);
+        await API.delete(`user/${this.user.UID}`);
 
         this.$router.push(`/users?removed=${this.user.UID}/`);
       } catch (error) {

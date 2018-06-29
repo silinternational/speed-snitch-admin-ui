@@ -97,14 +97,14 @@ export default {
       }
       this.node.Tags.push(tag);
 
-      let response = await API.put(`node/${this.node.MacAddr}`, this.node);
+      await API.put(`node/${this.node.MacAddr}`, this.node);
 
       this.$router.go();
     },
     remove: async function(i) {
       this.node.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
 
-      let response = await API.put(`node/${this.node.MacAddr}`, this.node);
+      await API.put(`node/${this.node.MacAddr}`, this.node);
 
       this.$router.go();
     }
@@ -127,6 +127,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-</style>
