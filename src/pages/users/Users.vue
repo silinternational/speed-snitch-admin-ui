@@ -12,17 +12,14 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="_user in users"
-          :key="_user.UID">
+        <tr v-for="_user in users" :key="_user.UID">
           <td>{{ _user.Name }}</td>
           <td>{{ _user.Email }}</td>
           <td><code>{{ _user.Role }}</code></td>
           <td>
-            <router-link 
-              :to="`users/${ _user.UID }`" 
-              tag="button" 
-              class="secondary">Manage</router-link>
+            <router-link :to="`users/${ _user.UID }`" tag="button" class="secondary">
+              Manage
+            </router-link>
           </td>
         </tr>
       </tbody> 
@@ -38,9 +35,7 @@
     <ButtonBar>
       <Spacer/>
         
-      <router-link 
-        to="users/new" 
-        tag="button">
+      <router-link to="users/new" tag="button"> 
         Add a new user
       </router-link>
     </ButtonBar>
@@ -70,11 +65,6 @@ export default {
     let response = await API.get("user");
 
     this.users = response.data;
-  },
-  methods: {
-    manage: function(id) {
-      this.$router.push(`users/${id}`);
-    }
   }
 };
 </script>
