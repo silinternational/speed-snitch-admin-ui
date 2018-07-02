@@ -14,6 +14,9 @@ import Users from "@/pages/users/Users";
 import User from "@/pages/users/User";
 import UserTags from "@/pages/users/Tags";
 import NewUser from "@/pages/users/New";
+import Versions from "@/pages/versions/Versions";
+import Version from "@/pages/versions/Version";
+import NewVersion from "@/pages/versions/New";
 
 Vue.use(Router);
 
@@ -78,6 +81,18 @@ export default new Router({
     {
       path: "/users/:id",
       component: User
+    },
+    {
+      path: "/versions",
+      component: Versions
+    },
+    {
+      path: "/versions/new",
+      component: NewVersion
+    },
+    {
+      path: "/versions/:id",
+      component: Version
     }
   ]
 });

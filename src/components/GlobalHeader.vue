@@ -6,6 +6,7 @@
       <li><a href="#/users">Users</a></li>
       <li><a href="#/tags">Tags</a></li>
       <li><a href="#/servers">Servers</a></li>
+      <li><a href="#/versions">Versions</a></li>
     </ol>
   </header>
 </template>
