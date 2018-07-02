@@ -1,32 +1,30 @@
 <template>
   <section>
-    <h1>Users</h1>
+    <h1>Versions</h1>
 
     <DataTable>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
+          <th>Number</th>
+          <th>Description</th>
           <th/>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="_user in users" :key="_user.UID">
-          <td>{{ _user.Name }}</td>
-          <td>{{ _user.Email }}</td>
-          <td><code>{{ _user.Role }}</code></td>
+        <tr v-for="_version in versions" :key="_version.Number">
+          <td><code>{{ _version.Number }}</code></td>
+          <td>{{ _version.Description }}</td>
           <td>
-            <router-link :to="`users/${ _user.UID }`" tag="button" class="secondary">
+            <router-link :to="`versions/${ _version.Number }`" tag="button" class="secondary">
               Manage
             </router-link>
           </td>
         </tr>
       </tbody> 
-      <tfoot v-if="users.length == 0">
+      <tfoot v-if="versions.length == 0">
         <tr>
           <td :colspan="numCols">
-            No users at this time.
+            No versions at this time.
           </td>
         </tr>
       </tfoot>
@@ -35,8 +33,8 @@
     <ButtonBar>
       <Spacer/>
         
-      <router-link to="users/new" tag="button"> 
-        Add a new user
+      <router-link to="versions/new" tag="button"> 
+        Add a new version 
       </router-link>
     </ButtonBar>
 
@@ -57,14 +55,14 @@ export default {
   },
   data() {
     return {
-      users: [],
-      numCols: 4
+      versions: [],
+      numCols: 3
     };
   },
   async mounted() {
-    let response = await API.get("user");
+    let response = await API.get("version");
 
-    this.users = response.data;
+    this.versions = response.data;
   }
 };
 </script>

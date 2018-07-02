@@ -80,20 +80,11 @@ export default {
         console.log(`error caught while DELETE user: ${error}`);
       }
     }
-  },
-  computed: {
-    hasTags() {
-      return this.user.TagUIDs;
-    }
   }
 };
 </script>
 
 <style scoped>
-textarea {
-  display: block;
-}
-
 section {
   display: flex;
   flex-direction: column;
