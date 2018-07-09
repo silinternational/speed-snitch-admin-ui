@@ -3,13 +3,40 @@
     <img src="@/assets/logo.svg">
     <ol>
       <li><a href="#/nodes">Nodes</a></li>
-      <li><a href="#/users">Users</a></li>
-      <li><a href="#/tags">Tags</a></li>
-      <li><a href="#/servers">Servers</a></li>
-      <li><a href="#/versions">Versions</a></li>
+      <li v-if="$user.Role == 'superAdmin'"><a href="#/users">Users</a></li>
+      <li v-if="$user.Role == 'superAdmin'"><a href="#/tags">Tags</a></li>
+      <li v-if="$user.Role == 'superAdmin'"><a href="#/servers">Servers</a></li>
+      <li v-if="$user.Role == 'superAdmin'"><a href="#/versions">Versions</a></li>
+    </ol>
+
+    <Spacer />
+
+    <ol>
+      <li>{{ $user.Name }}</li>
+      <li>
+        <a :href="logoutURL"><small>logout</small></a>
+      </li>
     </ol>
   </header>
 </template>
+
+<script>
+import Spacer from "@/components/Spacer";
+import API from "@/shared/api";
+
+export default {
+  components: {
+    Spacer
+  },
+  computed: {
+    logoutURL: function() {
+      return `${
+        API.defaults.baseURL
+      }/ssp/module.php/core/authenticate.php?as=default-sp&logout`;
+    }
+  }
+};
+</script>
 
 <style scoped>
 header {

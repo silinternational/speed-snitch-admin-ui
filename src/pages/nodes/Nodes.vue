@@ -36,9 +36,9 @@
           <td>{{ _node.OS }}/{{ _node.Arch }}</td>
           <td><code>{{ _node.MacAddr }}</code></td>
           <td>
-            <router-link 
+            <router-link
               :to="`nodes/${_node.MacAddr}`" 
-              tag="button">Manage</router-link>
+              tag="button">more...</router-link>
           </td>
         </tr>
       </tbody> 
@@ -87,7 +87,7 @@
           <td>
             <router-link
               :to="`nodes/${_node.MacAddr}`" 
-              tag="button">Manage</router-link>
+              tag="button">more...</router-link>
           </td>
         </tr>
       </tbody>
@@ -99,11 +99,6 @@
         </tr>
       </tfoot>
     </DataTable>
-    <!-- TODO: notes 
-      For super admins, default sort will be oldest "Last seen"
-      Shade rows yellow or red to indicate issues, e.g., 3 days since last phone home
-      For admins, default sort should be by contact (with theirs at top) and then by location.
-    -->
   </section>
 </template>
 
