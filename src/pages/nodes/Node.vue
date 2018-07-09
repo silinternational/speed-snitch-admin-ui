@@ -24,7 +24,7 @@
 
       <dt>Nickname</dt>
       <dd>
-        <DataTable>
+        <DataTable v-if="$user.Role != 'reporting'">
           <tr>
             <td v-if="node.Nickname && ! isNicknameEditable">
               {{ node.Nickname }}
@@ -44,6 +44,7 @@
             </td>
           </tr>
         </DataTable>
+        <span v-else>{{ node.Nickname || '–' }}</span>
       </dd>
 
       <dt>Notes</dt>
@@ -69,12 +70,12 @@
             <td>{{ _task.Schedule }}</td>
             <td>{{ _task.NamedServer.Name || "–" }}</td>
             <td>
-              <button 
+              <button v-if="$user.Role != 'reporting'"
                 @click="removeTask(_i)" 
                 class="caution">Remove</button>
             </td>
           </tr>
-          <tr>
+          <tr v-if="$user.Role != 'reporting'">
             <td>
               <select v-model="newTaskType">
                 <option value="ping">Ping</option>
@@ -106,7 +107,7 @@
               <button @click="addTask">Add</button>
             </td>
           </tr>
-          <tr v-if="newTaskScheduleName">
+          <tr v-if="$user.Role != 'reporting' && newTaskScheduleName">
             <td/>
             <td 
               v-if="newTaskScheduleName.includes('Daily')" 
