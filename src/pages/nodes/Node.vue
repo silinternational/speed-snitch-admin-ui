@@ -192,7 +192,7 @@
                 :key="_tag.UID">{{ _i > 0 ? ', ': ''}}{{ _tag.Name }}</span>
             </td>
             <td>
-              <router-link 
+              <router-link v-if="$user.Role == 'superAdmin'"
                 :to="`${ node.MacAddr }/tags`" 
                 tag="button">manage</router-link>
             </td>
@@ -219,7 +219,7 @@
       
       <dt>Configured version</dt>
       <dd>
-        <DataTable>
+        <DataTable v-if="$user.Role != 'reporting'">
           <tr>
             <td>
               <select v-model="node.ConfiguredVersion">
@@ -235,6 +235,7 @@
             </td>
           </tr>
         </DataTable>
+        <code v-else>{{ node.ConfiguredVersion }}</code>
       </dd>
       
       <dt>Configured by</dt>
