@@ -66,9 +66,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`user/${this.$route.params.id}`);
-
-    this.user = response.data;
+    this.user = await API.get(`user/${this.$route.params.id}`);
   },
   methods: {
     remove: async function() {

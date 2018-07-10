@@ -66,9 +66,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("namedserver");
-
-    this.servers = response.data;
+    this.servers = await API.get("namedserver");
   }
 };
 </script>

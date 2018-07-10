@@ -53,9 +53,9 @@ export default {
   methods: {
     add: async function() {
       try {
-        let response = await API.post(`tag`, this.newTag);
+        let tag = await API.post(`tag`, this.newTag);
 
-        this.$router.push(`/tags?new=${response.data.UID}/`);
+        this.$router.push(`/tags?new=${tag.UID}/`);
       } catch (error) {
         console.log(`error caught while POSTing tag: ${error}`);
       }

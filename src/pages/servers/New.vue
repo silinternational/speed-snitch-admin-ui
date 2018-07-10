@@ -123,8 +123,7 @@ export default {
     typeChosen: async function() {
       if (this.newServer.ServerType == "speedTestNet") {
         try {
-          let response = await API.get("speedtestnetserver/country");
-          this.countries = response.data;
+          this.countries = await API.get("speedtestnetserver/country");
         } catch (error) {
           console.log(`error caught while GETting countries: ${error}`);
         }
@@ -132,18 +131,18 @@ export default {
     },
     countryChosen: async function() {
       try {
-        let response = await API.get(
+        let country = await API.get(
           `speedtestnetserver/country/${this.newServer.Country.Code}`
         );
-        this.servers = response.data.Servers;
+        this.servers = country.Servers;
       } catch (error) {
         console.log(`error caught while GETting speedtestservers: ${error}`);
       }
     },
     add: async function() {
       try {
-        let response = await API.post(`namedserver`, this.newServer);
-        this.$router.push(`/servers?new=${response.data.UID}/`);
+        let server = await API.post(`namedserver`, this.newServer);
+        this.$router.push(`/servers?new=${server.UID}/`);
       } catch (error) {
         console.log(`error caught while POSTing namedserver: ${error}`);
       }

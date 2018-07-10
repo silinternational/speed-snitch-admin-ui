@@ -125,9 +125,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("node");
-
-    return (this.nodes = response.data);
+    this.nodes = await API.get("node");
   },
   methods: {
     manage: function(id) {

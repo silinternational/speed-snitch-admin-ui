@@ -52,9 +52,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`tag/${this.$route.params.id}`);
-
-    this.tag = response.data;
+    this.tag = await API.get(`tag/${this.$route.params.id}`);
   },
   methods: {
     editDescription: function() {
@@ -69,10 +67,10 @@ export default {
         // TODO: create a new Object for the PUT and don't update this.tag until the response is good.
         this.tag.Description = this.newDescription;
 
-        let response = await API.put(`tag/${this.tag.UID}`, this.tag);
+        let tag = await API.put(`tag/${this.tag.UID}`, this.tag);
 
         // need to retain intial reference to node since that's what vue is watching.
-        Object.assign(this.tag, response.data);
+        Object.assign(this.tag, tag);
         this.isDescriptionEditable = false;
       } catch (error) {
         console.log(`error caught while PUT tag: ${error}`);
@@ -80,7 +78,7 @@ export default {
     },
     remove: async function() {
       try {
-        let response = await API.delete(`tag/${this.tag.UID}`);
+        await API.delete(`tag/${this.tag.UID}`);
 
         this.$router.push(`/tags?removed=${this.tag.Name}/`);
       } catch (error) {

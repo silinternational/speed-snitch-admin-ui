@@ -48,9 +48,9 @@ export default {
   methods: {
     add: async function() {
       try {
-        let response = await API.post(`version`, this.newVersion);
+        let version = await API.post(`version`, this.newVersion);
 
-        this.$router.push(`/versions?new=${response.data.Number}/`);
+        this.$router.push(`/versions?new=${version.Number}/`);
       } catch (error) {
         console.log(`error caught while POSTing user: ${error}`);
       }

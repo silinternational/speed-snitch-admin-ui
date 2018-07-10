@@ -60,9 +60,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("version");
-
-    this.versions = response.data;
+    this.versions = await API.get("version");
   }
 };
 </script>

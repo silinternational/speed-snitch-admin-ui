@@ -55,23 +55,19 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`namedserver/${this.$route.params.id}`);
-
-    this.server = response.data;
+    this.server = await API.get(`namedserver/${this.$route.params.id}`);
   },
   methods: {
     remove: async function() {
       try {
         await API.delete(`namedserver/${this.server.UID}`);
-        this.$router.push(`servers?removed=${this.server.UID}/`);
+
+        this.$router.push(`/servers?removed=${this.server.UID}/`);
       } catch (error) {
         console.log(`error caught while DELETE server: ${error}`);
       }
     }
-  },
-  computed: {}
+  }
 };
 </script>
 
-<style scoped>
-</style>

@@ -50,9 +50,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`node/${this.$route.params.macaddr}`);
-
-    this.node = response.data;
+    this.node = await API.get(`node/${this.$route.params.macaddr}`);
   },
   methods: {
     getChartData: async function() {
@@ -60,13 +58,13 @@ export default {
         const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
         const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
 
-        let chartDataResponse = await API.get(
+        let rawData = await API.get(
           `report/node/${
             this.$route.params.macaddr
           }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
         );
 
-        let chartData = convertToChartData(chartDataResponse.data);
+        let chartData = convertToChartData(rawData);
 
         this.speed = createSpeedChartConfig(
           chartData.labels,

@@ -65,9 +65,9 @@ export default {
   methods: {
     add: async function() {
       try {
-        let response = await API.post(`user`, this.newUser);
+        let user = await API.post(`user`, this.newUser);
 
-        this.$router.push(`/users?new=${response.data.UID}/`);
+        this.$router.push(`/users?new=${user.UID}/`);
       } catch (error) {
         console.log(`error caught while POSTing user: ${error}`);
       }

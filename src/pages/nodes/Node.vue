@@ -294,13 +294,9 @@ export default {
     };
   },
   async mounted() {
-    let nodeResponse = await API.get(`node/${this.$route.params.macaddr}`);
-    let versionsResponse = await API.get("version");
-    let serversResponse = await API.get("namedserver");
-
-    this.node = nodeResponse.data;
-    this.versions = versionsResponse.data;
-    this.servers = serversResponse.data;
+    this.node = await API.get(`node/${this.$route.params.macaddr}`);
+    this.versions = await API.get("version");
+    this.servers = await API.get("namedserver");
   },
   methods: {
     addTask: async function() {
@@ -316,9 +312,7 @@ export default {
       });
 
       try {
-        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
-
-        this.node = response.data;
+        this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
       } catch (error) {
         console.log(`error caught while PUTting tasks: ${error}`);
       }
@@ -348,9 +342,7 @@ export default {
       this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
 
       try {
-        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
-
-        this.node = response.data;
+        this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
       } catch (error) {
         console.log(`error caught while DELETEing task: ${error}`);
       }
@@ -364,7 +356,7 @@ export default {
       this.node.Nickname = this.newNickname;
 
       try {
-        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
+        await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.$router.go();
       } catch (error) {

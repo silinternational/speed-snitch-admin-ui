@@ -62,9 +62,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("user");
-
-    this.users = response.data;
+    this.users = await API.get("user");
   }
 };
 </script>

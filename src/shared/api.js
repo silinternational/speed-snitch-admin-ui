@@ -6,9 +6,9 @@ const api = axios.create({
   withCredentials: true
 });
 
-// TODO: need to setup global error-handling.  Looks like nuxt has something in place for unhandled errors already
+// TODO: need to setup global error-handling.
 api.interceptors.response.use(
-  response => response,
+  response => response.data,
   error => {
     // if there's no response, for now, we'll assume it means the user is NOT logged in.
     if (!error.response) {

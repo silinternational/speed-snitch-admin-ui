@@ -40,9 +40,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`version/${this.$route.params.id}`);
-
-    this.version = response.data;
+    this.version = await API.get(`version/${this.$route.params.id}`);
   },
   methods: {
     remove: async function() {

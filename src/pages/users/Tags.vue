@@ -78,17 +78,10 @@ export default {
     };
   },
   async mounted() {
-    let userResponse = await API.get(`user/${this.$route.params.id}`);
-
-    let associatedTagsResponse = await API.get(
-      `user/${this.$route.params.id}/tag`
-    );
-
-    let allTagsResponse = await API.get("tag");
-
-    this.user = userResponse.data;
-    this.associatedTags = associatedTagsResponse.data || [];
-    this.allTags = allTagsResponse.data || [];
+    this.user = await API.get(`user/${this.$route.params.id}`);
+    this.associatedTags =
+      (await API.get(`user/${this.$route.params.id}/tag`)) || [];
+    this.allTags = (await API.get("tag")) || [];
   },
   methods: {
     add: async function(tag) {

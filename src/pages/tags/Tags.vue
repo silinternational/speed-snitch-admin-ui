@@ -69,9 +69,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("tag");
-
-    this.tags = response.data;
+    this.tags = await API.get("tag");
   },
   methods: {
     manage: function(id) {

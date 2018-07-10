@@ -77,17 +77,10 @@ export default {
     };
   },
   async mounted() {
-    let nodeResponse = await API.get(`node/${this.$route.params.macaddr}`);
-
-    let associatedTagsResponse = await API.get(
-      `node/${this.$route.params.macaddr}/tag`
-    );
-
-    let allTagsResponse = await API.get("tag");
-
-    this.node = nodeResponse.data;
-    this.associatedTags = associatedTagsResponse.data || [];
-    this.allTags = allTagsResponse.data || [];
+    this.node = await API.get(`node/${this.$route.params.macaddr}`);
+    this.associatedTags =
+      (await API.get(`node/${this.$route.params.macaddr}/tag`)) || [];
+    this.allTags = (await API.get("tag")) || [];
   },
   methods: {
     add: async function(tag) {
