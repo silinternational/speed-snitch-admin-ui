@@ -4,10 +4,10 @@ import configuredRouter from "@/pages/RouterConfig";
 import API from "@/shared/api";
 
 API.get("user/me")
-  .then(response => mount(response.data))
-  .catch(error => mount());
+  .then(response => startApp(response))
+  .catch(error => startApp());
 
-function mount(user = {}) {
+function startApp(user = {}) {
   Vue.prototype.$user = user;
 
   new Vue({
