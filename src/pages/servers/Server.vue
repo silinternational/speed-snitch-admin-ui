@@ -23,8 +23,10 @@
     </DefinitionList>
 
     <ButtonBar>
-      <GoBackButton/>
-      
+      <router-link 
+        to="/servers" 
+        tag="button">Back</router-link>
+
       <Spacer/>
       
       <button 
@@ -36,16 +38,14 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import ButtonBar from "@/components/ButtonBar";
-import GoBackButton from "@/components/GoBackButton";
 import Spacer from "@/components/Spacer";
 import DefinitionList from "@/components/DefinitionList";
 
 export default {
   components: {
     ButtonBar,
-    GoBackButton,
     Spacer,
     DefinitionList
   },
@@ -55,14 +55,14 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get(`namedserver/${this.$route.params.id}`);
+    let response = await API.get(`namedserver/${this.$route.params.id}`);
 
     this.server = response.data;
   },
   methods: {
     remove: async function() {
       try {
-        await ADMIN_API.delete(`namedserver/${this.server.UID}`);
+        await API.delete(`namedserver/${this.server.UID}`);
         this.$router.push(`servers?removed=${this.server.UID}/`);
       } catch (error) {
         console.log(`error caught while DELETE server: ${error}`);

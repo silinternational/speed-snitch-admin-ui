@@ -45,7 +45,7 @@
           :key="_tag.UID">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
-          <td><button @click="add(_tag.UID)">add</button></td>
+          <td><button @click="add(_tag)">add</button></td>
         </tr>
       </tbody> 
       <tfoot v-if="availableTags.length == 0">
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import Truncate from "@/components/Truncate";
 
@@ -78,32 +78,34 @@ export default {
     };
   },
   async mounted() {
-    let userResponse = await ADMIN_API.get(`user/${this.$route.params.id}`);
-    let associatedTagsResponse = await ADMIN_API.get(
+    let userResponse = await API.get(`user/${this.$route.params.id}`);
+
+    let associatedTagsResponse = await API.get(
       `user/${this.$route.params.id}/tag`
     );
-    let allTagsResponse = await ADMIN_API.get("tag");
+
+    let allTagsResponse = await API.get("tag");
 
     this.user = userResponse.data;
     this.associatedTags = associatedTagsResponse.data || [];
     this.allTags = allTagsResponse.data || [];
   },
   methods: {
-    add: async function(tagId) {
+    add: async function(tag) {
       // some nodes may not have any associated tags yet
-      if (!this.user.TagUIDs) {
-        this.user.TagUIDs = [];
+      if (!this.user.Tags) {
+        this.user.Tags = [];
       }
-      this.user.TagUIDs.push(tagId);
+      this.user.Tags.push(tag);
 
-      await ADMIN_API.put(`user/${this.user.UID}`, this.user);
+      await API.put(`user/${this.user.UID}`, this.user);
 
       this.$router.go();
     },
     remove: async function(i) {
-      this.user.TagUIDs.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
+      this.user.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
 
-      await ADMIN_API.put(`user/${this.user.UID}`, this.user);
+      await API.put(`user/${this.user.UID}`, this.user);
 
       this.$router.go();
     }
@@ -126,6 +128,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-</style>

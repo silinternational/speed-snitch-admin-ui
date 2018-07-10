@@ -64,7 +64,7 @@
         <option 
           v-for="_server in servers" 
           :value="_server.ServerID"
-          :key="_server.ServerID">{{ _server.Name }}</option>
+          :key="_server.ServerID">{{ _server.Name }} ({{ _server.Host | domain }})</option>
       </select>
 
       <label v-if="newServer.ServerType == 'custom'">
@@ -75,8 +75,10 @@
       </label>
 
       <ButtonBar>
-        <GoBackButton/>
-        
+        <router-link 
+          to="/servers" 
+          tag="button">Back</router-link>
+
         <Spacer/>
         
         <button>Add</button>
@@ -87,15 +89,20 @@
 
 <script>
 import ButtonBar from "@/components/ButtonBar";
-import GoBackButton from "@/components/GoBackButton";
 import Spacer from "@/components/Spacer";
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
+import { autofocus } from "@/shared/directives";
 
 export default {
   components: {
     ButtonBar,
-    GoBackButton,
     Spacer
+  },
+  directives: {
+    autofocus
+  },
+  filters: {
+    domain: domain => domain.split(":")[0]
   },
   data() {
     return {
@@ -116,7 +123,7 @@ export default {
     typeChosen: async function() {
       if (this.newServer.ServerType == "speedTestNet") {
         try {
-          let response = await ADMIN_API.get("speedtestnetserver/country");
+          let response = await API.get("speedtestnetserver/country");
           this.countries = response.data;
         } catch (error) {
           console.log(`error caught while GETting countries: ${error}`);
@@ -125,7 +132,7 @@ export default {
     },
     countryChosen: async function() {
       try {
-        let response = await ADMIN_API.get(
+        let response = await API.get(
           `speedtestnetserver/country/${this.newServer.Country.Code}`
         );
         this.servers = response.data.Servers;
@@ -135,7 +142,7 @@ export default {
     },
     add: async function() {
       try {
-        let response = await ADMIN_API.post(`namedserver`, this.newServer);
+        let response = await API.post(`namedserver`, this.newServer);
         this.$router.push(`/servers?new=${response.data.UID}/`);
       } catch (error) {
         console.log(`error caught while POSTing namedserver: ${error}`);

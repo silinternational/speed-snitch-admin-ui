@@ -36,9 +36,9 @@
           <td>{{ _node.OS }}/{{ _node.Arch }}</td>
           <td><code>{{ _node.MacAddr }}</code></td>
           <td>
-            <router-link 
+            <router-link
               :to="`nodes/${_node.MacAddr}`" 
-              tag="button">Manage</router-link>
+              tag="button">more...</router-link>
           </td>
         </tr>
       </tbody> 
@@ -87,7 +87,7 @@
           <td>
             <router-link
               :to="`nodes/${_node.MacAddr}`" 
-              tag="button">Manage</router-link>
+              tag="button">more...</router-link>
           </td>
         </tr>
       </tbody>
@@ -99,24 +99,24 @@
         </tr>
       </tfoot>
     </DataTable>
-    <!-- TODO: notes 
-      For super admins, default sort will be oldest "Last seen"
-      Shade rows yellow or red to indicate issues, e.g., 3 days since last phone home
-      For admins, default sort should be by contact (with theirs at top) and then by location.
-    -->
   </section>
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import Info from "@/components/Info";
+import { timeago, duration } from "@/shared/filters";
 
 export default {
   // TODO: add a timer on this page for node retrievals?
   components: {
     DataTable,
     Info
+  },
+  filters: {
+    timeago,
+    duration
   },
   data() {
     return {
@@ -125,7 +125,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await ADMIN_API.get("node");
+    let response = await API.get("node");
 
     return (this.nodes = response.data);
   },

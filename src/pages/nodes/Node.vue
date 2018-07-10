@@ -24,7 +24,7 @@
 
       <dt>Nickname</dt>
       <dd>
-        <DataTable>
+        <DataTable v-if="$user.Role != 'reporting'">
           <tr>
             <td v-if="node.Nickname && ! isNicknameEditable">
               {{ node.Nickname }}
@@ -44,6 +44,7 @@
             </td>
           </tr>
         </DataTable>
+        <span v-else>{{ node.Nickname || '–' }}</span>
       </dd>
 
       <dt>Notes</dt>
@@ -69,12 +70,12 @@
             <td>{{ _task.Schedule }}</td>
             <td>{{ _task.NamedServer.Name || "–" }}</td>
             <td>
-              <button 
+              <button v-if="$user.Role != 'reporting'"
                 @click="removeTask(_i)" 
                 class="caution">Remove</button>
             </td>
           </tr>
-          <tr>
+          <tr v-if="$user.Role != 'reporting'">
             <td>
               <select v-model="newTaskType">
                 <option value="ping">Ping</option>
@@ -106,7 +107,7 @@
               <button @click="addTask">Add</button>
             </td>
           </tr>
-          <tr v-if="newTaskScheduleName">
+          <tr v-if="$user.Role != 'reporting' && newTaskScheduleName">
             <td/>
             <td 
               v-if="newTaskScheduleName.includes('Daily')" 
@@ -192,7 +193,7 @@
                 :key="_tag.UID">{{ _i > 0 ? ', ': ''}}{{ _tag.Name }}</span>
             </td>
             <td>
-              <router-link 
+              <router-link v-if="$user.Role == 'superAdmin'"
                 :to="`${ node.MacAddr }/tags`" 
                 tag="button">manage</router-link>
             </td>
@@ -219,7 +220,7 @@
       
       <dt>Configured version</dt>
       <dd>
-        <DataTable>
+        <DataTable v-if="$user.Role != 'reporting'">
           <tr>
             <td>
               <select v-model="node.ConfiguredVersion">
@@ -235,6 +236,7 @@
             </td>
           </tr>
         </DataTable>
+        <code v-else>{{ node.ConfiguredVersion }}</code>
       </dd>
       
       <dt>Configured by</dt>
@@ -250,14 +252,23 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import DefinitionList from "@/components/DefinitionList";
+import { autofocus } from "@/shared/directives";
+import { format, duration } from "@/shared/filters";
 
 export default {
   components: {
     DataTable,
     DefinitionList
+  },
+  directives: {
+    autofocus
+  },
+  filters: {
+    format,
+    duration
   },
   data() {
     return {
@@ -283,11 +294,9 @@ export default {
     };
   },
   async mounted() {
-    let nodeResponse = await ADMIN_API.get(
-      `node/${this.$route.params.macaddr}`
-    );
-    let versionsResponse = await ADMIN_API.get("version");
-    let serversResponse = await ADMIN_API.get("namedserver");
+    let nodeResponse = await API.get(`node/${this.$route.params.macaddr}`);
+    let versionsResponse = await API.get("version");
+    let serversResponse = await API.get("namedserver");
 
     this.node = nodeResponse.data;
     this.versions = versionsResponse.data;
@@ -307,10 +316,7 @@ export default {
       });
 
       try {
-        let response = await ADMIN_API.put(
-          `node/${this.node.MacAddr}`,
-          this.node
-        );
+        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.node = response.data;
       } catch (error) {
@@ -342,10 +348,7 @@ export default {
       this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
 
       try {
-        let response = await ADMIN_API.put(
-          `node/${this.node.MacAddr}`,
-          this.node
-        );
+        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.node = response.data;
       } catch (error) {
@@ -361,10 +364,7 @@ export default {
       this.node.Nickname = this.newNickname;
 
       try {
-        let response = await ADMIN_API.put(
-          `node/${this.node.MacAddr}`,
-          this.node
-        );
+        let response = await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.$router.go();
       } catch (error) {
@@ -373,7 +373,7 @@ export default {
     },
     updateVersion: async function() {
       try {
-        await ADMIN_API.put(`node/${this.node.MacAddr}`, this.node);
+        await API.put(`node/${this.node.MacAddr}`, this.node);
 
         this.$router.go();
       } catch (error) {

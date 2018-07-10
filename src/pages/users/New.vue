@@ -26,7 +26,9 @@
       </label>
 
       <ButtonBar>
-        <GoBackButton/>
+        <router-link 
+          to="/users" 
+          tag="button">Back</router-link>
         
         <Spacer/>
         
@@ -38,15 +40,17 @@
 
 <script>
 import ButtonBar from "@/components/ButtonBar";
-import GoBackButton from "@/components/GoBackButton";
 import Spacer from "@/components/Spacer";
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
+import { autofocus } from "@/shared/directives";
 
 export default {
   components: {
     ButtonBar,
-    GoBackButton,
     Spacer
+  },
+  directives: {
+    autofocus
   },
   data() {
     return {
@@ -61,7 +65,7 @@ export default {
   methods: {
     add: async function() {
       try {
-        let response = await ADMIN_API.post(`user`, this.newUser);
+        let response = await API.post(`user`, this.newUser);
 
         this.$router.push(`/users?new=${response.data.UID}/`);
       } catch (error) {

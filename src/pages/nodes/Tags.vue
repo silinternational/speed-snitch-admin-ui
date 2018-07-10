@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { ADMIN_API } from "@/plugins/admin-api-service.js";
+import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import Truncate from "@/components/Truncate";
 
@@ -77,15 +77,13 @@ export default {
     };
   },
   async mounted() {
-    let nodeResponse = await ADMIN_API.get(
-      `node/${this.$route.params.macaddr}`
-    );
+    let nodeResponse = await API.get(`node/${this.$route.params.macaddr}`);
 
-    let associatedTagsResponse = await ADMIN_API.get(
+    let associatedTagsResponse = await API.get(
       `node/${this.$route.params.macaddr}/tag`
     );
 
-    let allTagsResponse = await ADMIN_API.get("tag");
+    let allTagsResponse = await API.get("tag");
 
     this.node = nodeResponse.data;
     this.associatedTags = associatedTagsResponse.data || [];
@@ -99,20 +97,14 @@ export default {
       }
       this.node.Tags.push(tag);
 
-      let response = await ADMIN_API.put(
-        `node/${this.node.MacAddr}`,
-        this.node
-      );
+      await API.put(`node/${this.node.MacAddr}`, this.node);
 
       this.$router.go();
     },
     remove: async function(i) {
       this.node.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
 
-      let response = await ADMIN_API.put(
-        `node/${this.node.MacAddr}`,
-        this.node
-      );
+      await API.put(`node/${this.node.MacAddr}`, this.node);
 
       this.$router.go();
     }
@@ -135,6 +127,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-</style>

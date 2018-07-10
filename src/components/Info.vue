@@ -25,5 +25,7 @@ div {
   color: var(--white);
   background-color: var(--secondary-color);
   border-radius: 1em;
+
+  cursor: help;
 }
 </style>

@@ -1,24 +1,19 @@
 <template>
   <section>
-    <h1>Add a new tag</h1>
+    <h1>Add a new version</h1>
 
     <form @submit.prevent="add">
       <label>
-        Name:
-        <input 
-          v-model="newTag.Name" 
-          v-autofocus>
+        Number:
+        <input v-model="newVersion.Number" v-autofocus>
       </label>
       <label>
         Description:
-        <textarea 
-          v-model="newTag.Description" />
+        <textarea v-model="newVersion.Description" />
       </label>
 
       <ButtonBar>
-        <router-link 
-          to="/tags" 
-          tag="button">Back</router-link>
+        <router-link to="/versions" tag="button">Back</router-link>
         
         <Spacer/>
         
@@ -44,8 +39,8 @@ export default {
   },
   data() {
     return {
-      newTag: {
-        Name: "",
+      newVersion: {
+        Number: "",
         Description: ""
       }
     };
@@ -53,11 +48,11 @@ export default {
   methods: {
     add: async function() {
       try {
-        let response = await API.post(`tag`, this.newTag);
+        let response = await API.post(`version`, this.newVersion);
 
-        this.$router.push(`/tags?new=${response.data.UID}/`);
+        this.$router.push(`/versions?new=${response.data.Number}/`);
       } catch (error) {
-        console.log(`error caught while POSTing tag: ${error}`);
+        console.log(`error caught while POSTing user: ${error}`);
       }
     }
   }
