@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div :id="id">
     <GlobalHeader/>
 
     <main>
@@ -14,6 +14,12 @@ import GlobalHeader from "@/components/GlobalHeader.vue";
 export default {
   components: {
     GlobalHeader
+  },
+  data() {
+    return {
+      // wanted to expose this id for external consumption, i.e., the mount in main.js
+      id: "app"
+    };
   }
 };
 </script>
