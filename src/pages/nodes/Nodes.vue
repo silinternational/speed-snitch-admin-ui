@@ -149,12 +149,8 @@ export default {
     }
   },
   computed: {
-    scheduledNodes: function() {
-      return this.nodes.filter(node => node.Tasks);
-    },
-    unscheduledNodes: function() {
-      return this.nodes.filter(node => !node.Tasks);
-    }
+    scheduledNodes: vm => vm.nodes.filter(node => node.Tasks),
+    unscheduledNodes: vm => vm.nodes.filter(node => !node.Tasks)
   }
 };
 </script>

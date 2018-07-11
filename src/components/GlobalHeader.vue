@@ -28,12 +28,12 @@ export default {
   components: {
     Spacer
   },
-  computed: {
-    logoutURL: function() {
-      return `${
+  data() {
+    return {
+      logoutURL: `${
         API.defaults.baseURL
-      }/ssp/module.php/core/authenticate.php?as=default-sp&logout`;
-    }
+      }/ssp/module.php/core/authenticate.php?as=default-sp&logout`
+    };
   }
 };
 </script>

@@ -104,10 +104,10 @@ export default {
     }
   },
   computed: {
-    availableTags: function() {
-      let availableTags = this.allTags.filter(candidateTag => {
-        for (let i = 0; i < this.associatedTags.length; i++) {
-          const associatedTag = this.associatedTags[i];
+    availableTags: vm => {
+      let availableTags = vm.allTags.filter(candidateTag => {
+        for (let i = 0; i < vm.associatedTags.length; i++) {
+          const associatedTag = vm.associatedTags[i];
           if (associatedTag.UID == candidateTag.UID) {
             return false;
           }

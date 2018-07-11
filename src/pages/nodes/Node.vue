@@ -374,13 +374,12 @@ export default {
     }
   },
   computed: {
-    mapUrl() {
-      return `https://maps.googleapis.com/maps/api/staticmap?center=${
-        this.node.Coordinates
-      }&zoom=10&size=640x200&sensor=false&markers=${
-        this.node.Coordinates
-      }&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`;
-    }
+    mapUrl: vm =>
+      `https://maps.googleapis.com/maps/api/staticmap?center=${
+        vm.node.Coordinates
+      }&zoom=10&size=640x200&sensor=false&markers=${vm.node.Coordinates}&key=${
+        process.env.VUE_APP_GOOGLE_MAPS_API_KEY
+      }`
   }
 };
 </script>
