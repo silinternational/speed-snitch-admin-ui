@@ -79,7 +79,7 @@ export default {
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.macaddr}`);
     this.associatedTags =
-      (await API.get(`node/${this.$route.params.macaddr}/tag`)) || [];
+      (await API.get(`node/${this.$route.params.macaddr}/tag`)) || []; // TODO: this call is not needed since node.Tags already has these.
     this.allTags = (await API.get("tag")) || [];
   },
   methods: {

@@ -80,7 +80,7 @@ export default {
   async mounted() {
     this.user = await API.get(`user/${this.$route.params.id}`);
     this.associatedTags =
-      (await API.get(`user/${this.$route.params.id}/tag`)) || [];
+      (await API.get(`user/${this.$route.params.id}/tag`)) || []; // TODO: this call is not needed since user.Tags already has these.
     this.allTags = (await API.get("tag")) || [];
   },
   methods: {
