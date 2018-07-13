@@ -4,31 +4,22 @@
 
     <form @submit.prevent="add">
       <label>
-        Name:
-        <input 
-          v-model="newUser.Name" 
-          v-autofocus>
+        Name: <input v-model="newUser.Name" v-autofocus>
       </label>
+      
       <label>
-        Email:
-        <input 
-          type="email" 
-          v-model="newUser.Email">
+        Email: <input type="email" v-model="newUser.Email">
       </label>
+      
       <label>
         Role:
         <select v-model="newUser.Role">
-          <option 
-            v-for="_role in roles" 
-            :key="_role" 
-            :value="_role">{{ _role }}</option>
+          <option v-for="_role in roles" :key="_role" :value="_role">{{ _role }}</option>
         </select>
       </label>
 
       <ButtonBar>
-        <router-link 
-          to="/users" 
-          tag="button">Back</router-link>
+        <router-link to="/users" tag="button">Back</router-link>
         
         <Spacer/>
         
@@ -57,20 +48,16 @@ export default {
       newUser: {
         Name: "",
         Email: "",
-        Role: "reporting"
+        Role: "admin"
       },
-      roles: ["superAdmin", "admin", "reporting"]
+      roles: ["superAdmin", "admin"]
     };
   },
   methods: {
     add: async function() {
-      try {
-        let user = await API.post(`user`, this.newUser);
+      const user = await API.post(`user`, this.newUser);
 
-        this.$router.push(`/users?new=${user.UID}/`);
-      } catch (error) {
-        console.log(`error caught while POSTing user: ${error}`);
-      }
+      this.$router.push(`/users?new=${user.ID}`);
     }
   }
 };

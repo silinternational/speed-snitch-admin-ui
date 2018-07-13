@@ -4,21 +4,15 @@
 
     <form @submit.prevent="add">
       <label>
-        Name:
-        <input 
-          v-model="newTag.Name" 
-          v-autofocus>
+        Name: <input v-model="newTag.Name" v-autofocus>
       </label>
+      
       <label>
-        Description:
-        <textarea 
-          v-model="newTag.Description" />
+        Description: <textarea v-model="newTag.Description" />
       </label>
 
       <ButtonBar>
-        <router-link 
-          to="/tags" 
-          tag="button">Back</router-link>
+        <router-link to="/tags" tag="button">Back</router-link>
         
         <Spacer/>
         
@@ -52,13 +46,9 @@ export default {
   },
   methods: {
     add: async function() {
-      try {
-        let tag = await API.post(`tag`, this.newTag);
+      let tag = await API.post(`tag`, this.newTag);
 
-        this.$router.push(`/tags?new=${tag.UID}/`);
-      } catch (error) {
-        console.log(`error caught while POSTing tag: ${error}`);
-      }
+      this.$router.push(`/tags?new=${tag.ID}/`);
     }
   }
 };

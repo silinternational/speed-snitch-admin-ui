@@ -16,6 +16,7 @@
     <LineChart v-if="speed.data.datasets" :chart-data="speed.data" :options="speed.options"/>
     
     <hr v-if="latency.data.datasets">
+
     <LineChart v-if="latency.data.datasets" :chart-data="latency.data" :options="latency.options"/>
   </section>
 </template>
@@ -54,31 +55,27 @@ export default {
   },
   methods: {
     getChartData: async function() {
-      try {
-        const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
-        const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
+      const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
+      const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
 
-        let rawData = await API.get(
-          `report/node/${
-            this.$route.params.macaddr
-          }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
-        );
+      const rawData = await API.get(
+        `report/node/${
+          this.$route.params.id
+        }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
+      );
 
-        let chartData = convertToChartData(rawData);
+      const chartData = convertToChartData(rawData);
 
-        this.speed = createSpeedChartConfig(
-          chartData.labels,
-          chartData.speed.downloads,
-          chartData.speed.uploads
-        );
+      this.speed = createSpeedChartConfig(
+        chartData.labels,
+        chartData.speed.downloads,
+        chartData.speed.uploads
+      );
 
-        this.latency = createLatencyChartConfig(
-          chartData.labels,
-          chartData.latencies
-        );
-      } catch (error) {
-        console.error(`error caught while GETting speed data: ${error}`);
-      }
+      this.latency = createLatencyChartConfig(
+        chartData.labels,
+        chartData.latencies
+      );
     }
   }
 };

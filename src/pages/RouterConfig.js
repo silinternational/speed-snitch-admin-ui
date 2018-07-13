@@ -31,15 +31,15 @@ export default new Router({
       component: Nodes
     },
     {
-      path: "/nodes/:macaddr",
+      path: "/nodes/:id",
       component: Node
     },
     {
-      path: "/nodes/:macaddr/tags",
+      path: "/nodes/:id/tags",
       component: NodeTags
     },
     {
-      path: "/nodes/:macaddr/charts",
+      path: "/nodes/:id/charts",
       component: Charts
     },
     {

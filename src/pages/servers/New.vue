@@ -4,80 +4,53 @@
 
     <form @submit.prevent="add">
       <label>
-        Name:
-        <input 
-          v-model="newServer.Name" 
-          v-autofocus>
+        Name: <input v-model="newServer.Name" v-autofocus>
       </label>
 
       <label>
-        Description:
-        <textarea 
-          v-model="newServer.Description" />
+        Description: <textarea v-model="newServer.Description" />
       </label>
 
       <label>
-        Notes:
-        <textarea 
-          v-model="newServer.Notes" />
+        Notes: <textarea v-model="newServer.Notes" />
       </label>
 
-      <select 
-        v-model="newServer.ServerType" 
-        @change="typeChosen">
-        <option 
-          value="" 
-          disabled>Select type of test</option>
+      <select v-model="newServer.ServerType" @change="typeChosen">
+        <option value="" disabled>Select type of test</option>
         <option value="speedTestNet">Speed test</option>
         <option value="custom">Latency test</option>
       </select>
 
-      <select 
-        v-if="newServer.ServerType == 'speedTestNet'"
-        v-model="newServer.Country" 
-        @change="countryChosen">
-        <option 
-          :value="{}" 
-          disabled>
+      <select v-if="newServer.ServerType == 'speedTestNet'" v-model="newServer.Country" @change="countryChosen">
+        <option :value="{}" disabled>
           <span v-if="countries.length == 0">
             Retrieving countries...
           </span>
           <span v-else>Select country</span>
         </option>
-        <option 
-          v-for="_country in countries" 
-          :value="_country"
-          :key="_country.Code">{{ _country.Name }}</option>
+        <option v-for="_country in countries" :value="_country" :key="_country.Code">
+          {{ _country.Name }}
+        </option>
       </select>
 
-      <select 
-        v-if="newServer.ServerType == 'speedTestNet' && newServer.Country.Code"
-        v-model="newServer.SpeedTestNetServerID" >
-        <option 
-          value=""
-          disabled>
+      <select v-if="newServer.ServerType == 'speedTestNet' && newServer.Country.Code" v-model="newServer.SpeedTestNetServerID">
+        <option value="" disabled>
           <span v-if="servers.length == 0">
             Retrieving servers...
           </span>
           <span v-else>Select server</span>
         </option>
-        <option 
-          v-for="_server in servers" 
-          :value="_server.ServerID"
-          :key="_server.ServerID">{{ _server.Name }} ({{ _server.Host | domain }})</option>
+        <option v-for="_server in servers" :value="_server.ServerID" :key="_server.ServerID">
+          {{ _server.Name }} ({{ _server.Host | domain }})
+        </option>
       </select>
 
       <label v-if="newServer.ServerType == 'custom'">
-        Host:
-        <input 
-          v-model="newServer.ServerHost"
-          v-autofocus>
+        Host: <input v-model="newServer.ServerHost" v-autofocus>
       </label>
 
       <ButtonBar>
-        <router-link 
-          to="/servers" 
-          tag="button">Back</router-link>
+        <router-link to="/servers" tag="button">Back</router-link>
 
         <Spacer/>
         
@@ -122,30 +95,19 @@ export default {
   methods: {
     typeChosen: async function() {
       if (this.newServer.ServerType == "speedTestNet") {
-        try {
-          this.countries = await API.get("speedtestnetserver/country");
-        } catch (error) {
-          console.log(`error caught while GETting countries: ${error}`);
-        }
+        this.countries = await API.get("speedtestnetserver/country");
       }
     },
     countryChosen: async function() {
-      try {
-        let country = await API.get(
-          `speedtestnetserver/country/${this.newServer.Country.Code}`
-        );
-        this.servers = country.Servers;
-      } catch (error) {
-        console.log(`error caught while GETting speedtestservers: ${error}`);
-      }
+      const country = await API.get(
+        `speedtestnetserver/country/${this.newServer.Country.Code}`
+      );
+      this.servers = country.Servers;
     },
     add: async function() {
-      try {
-        let server = await API.post(`namedserver`, this.newServer);
-        this.$router.push(`/servers?new=${server.UID}/`);
-      } catch (error) {
-        console.log(`error caught while POSTing namedserver: ${error}`);
-      }
+      const server = await API.post(`namedserver`, this.newServer);
+
+      this.$router.push(`/servers?new=${server.ID}/`);
     }
   }
 };

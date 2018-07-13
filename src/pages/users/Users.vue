@@ -12,18 +12,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="_user in users" :key="_user.UID">
+        <tr v-for="_user in users" :key="_user.ID">
           <td>{{ _user.Name }}</td>
           <td>{{ _user.Email }}</td>
           <td><code>{{ _user.Role }}</code></td>
           <td>
-            <router-link :to="`users/${ _user.UID }`" tag="button" class="secondary">
+            <router-link :to="`users/${ _user.ID }`" tag="button" class="secondary">
               Manage
             </router-link>
           </td>
         </tr>
       </tbody> 
-      <tfoot v-if="users.length == 0">
+      <tfoot v-if="! users.length">
         <tr>
           <td :colspan="numCols">
             No users at this time.

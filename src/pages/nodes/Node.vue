@@ -2,12 +2,11 @@
   <section>
     <h1>
       Node 
-      <span v-if="node.Nickname">
-        ({{ node.Nickname }})
-        <router-link :to="`${ node.MacAddr }/charts`">
-          <small>charts</small>
-        </router-link>
-      </span>
+      <small>
+        <span v-if="node.Nickname">({{ node.Nickname }})</span>
+
+        <router-link :to="`${ node.ID }/charts`" title="charts">📈</router-link>
+      </small>
     </h1>
 
     <img :src="mapUrl">
@@ -44,6 +43,7 @@
             </td>
           </tr>
         </DataTable>
+
         <span v-else>{{ node.Nickname || '–' }}</span>
       </dd>
 
@@ -61,18 +61,14 @@
               <th/>
             </tr>
           </thead>
-          <tr 
-            v-for="(_task, _i) in node.Tasks" 
-            :key="_i">
-            <td >
-              {{ _task.Type }}
-            </td>
+          <tr v-for="(_task, _i) in node.Tasks" :key="_i">
+            <td>{{ _task.Type }}</td>
             <td>{{ _task.Schedule }}</td>
             <td>{{ _task.NamedServer.Name || "–" }}</td>
             <td>
-              <button v-if="$user.Role != 'reporting'"
-                @click="removeTask(_i)" 
-                class="caution">Remove</button>
+              <button v-if="$user.Role != 'reporting'" @click="removeTask(_i)" class="caution">
+                Remove
+              </button>
             </td>
           </tr>
           <tr v-if="$user.Role != 'reporting'">
@@ -83,24 +79,18 @@
               </select>
             </td>
             <td>
-              <select 
-                v-model="newTaskScheduleName" 
-                @change="clearPreviousSchedules()">
-                <option 
-                  v-for="_freq in frequencies" 
-                  :key="_freq" 
-                  :value="_freq">{{ _freq }}</option>
+              <select v-model="newTaskScheduleName" @change="clearPreviousSchedules()">
+                <option v-for="_freq in frequencies" :key="_freq" :value="_freq">
+                  {{ _freq }}
+                </option>
               </select>
             </td>
             <td>
               <select v-model="newTaskNamedServer">
-                <option 
-                  :value="{}" 
-                  disabled>Select server</option>
-                <option 
-                  v-for="_server in servers" 
-                  :key="_server.UID" 
-                  :value="_server">{{ _server.Name }}</option>
+                <option :value="{}" disabled>Select server</option>
+                <option v-for="_server in servers" :key="_server.ID" :value="_server">
+                  {{ _server.Name }}
+                </option>
               </select>
             </td>
             <td>
@@ -109,27 +99,16 @@
           </tr>
           <tr v-if="$user.Role != 'reporting' && newTaskScheduleName">
             <td/>
-            <td 
-              v-if="newTaskScheduleName.includes('Daily')" 
-              class="no-wrap">
+            <td v-if="newTaskScheduleName.includes('Daily')" class="no-wrap">
               Starting at 
-              <select
-                v-model="customStartTimeHour" 
-                @change="convertStartTimeToCron()">
-                <option 
-                  value="null" 
-                  disabled>Select hour</option>
-                <option 
-                  v-for="_hr in Array.from(Array(24).keys())" 
-                  :key="_hr" 
-                  :value="_hr">{{ String(_hr).padStart(2, '0') }}</option>
+              <select v-model="customStartTimeHour" @change="convertStartTimeToCron()">
+                <option value="null" disabled>Select hour</option>
+                <option v-for="_hr in Array.from(Array(24).keys())" :key="_hr" :value="_hr">
+                  {{ String(_hr).padStart(2, '0') }}
+                </option>
               </select> 
-              <select 
-                v-model="customStartTimeMin" 
-                @change="convertStartTimeToCron()">
-                <option 
-                  value="null" 
-                  disabled>Select min</option>
+              <select v-model="customStartTimeMin" @change="convertStartTimeToCron()">
+                <option value="null" disabled>Select min</option>
                 <option value="0">00</option>
                 <option value="15">15</option>
                 <option value="30">30</option>
@@ -137,47 +116,29 @@
               </select> 
               hours.
             </td>
-            <td 
-              v-else-if="newTaskScheduleName.includes('hour')" 
-              class="no-wrap">
+            <td v-else-if="newTaskScheduleName.includes('hour')" class="no-wrap">
               Every
-              <select
-                v-model="customNumHours" 
-                @change="convertHoursToCron()">
-                <option 
-                  value="null" 
-                  disabled>Select one</option>
-                <option 
-                  v-for="_hr in Array.from(Array(12).keys())" 
-                  :key="_hr" 
-                  :value="_hr + 1">{{ _hr + 1 }}</option>
+              <select v-model="customNumHours" @change="convertHoursToCron()">
+                <option value="null" disabled>Select one</option>
+                <option v-for="_hr in Array.from(Array(12).keys())" :key="_hr" :value="_hr + 1">
+                  {{ _hr + 1 }}
+                </option>
               </select> 
               hour(s).
             </td>
-            <td 
-              v-else-if="newTaskScheduleName.includes('minute')" 
-              class="no-wrap">
+            <td v-else-if="newTaskScheduleName.includes('minute')" class="no-wrap">
               Every
-              <select
-                v-model="customNumMins" 
-                @change="convertMinutesToCron()">
-                <option 
-                  value="null" 
-                  disabled>Select one</option>
-                <option 
-                  v-for="_min in Array.from(Array(30).keys())" 
-                  :key="_min" 
-                  :value="_min + 1">{{ _min + 1 }}</option>
+              <select v-model="customNumMins" @change="convertMinutesToCron()">
+                <option value="null" disabled>Select one</option>
+                <option v-for="_min in Array.from(Array(30).keys())" :key="_min" :value="_min + 1">
+                  {{ _min + 1 }}
+                </option>
               </select> 
               minute(s).
             </td>
-            <td 
-              v-else 
-              class="no-wrap">
+            <td v-else class="no-wrap">
               Cron schedule: 
-              <input 
-                v-model="customCron" 
-                v-autofocus>
+              <input v-model="customCron" v-autofocus>
             </td>
           </tr>
         </DataTable>
@@ -188,14 +149,14 @@
         <DataTable>
           <tr>
             <td>
-              <span 
-                v-for="(_tag, _i) in node.Tags" 
-                :key="_tag.UID">{{ _i > 0 ? ', ': ''}}{{ _tag.Name }}</span>
+              <span v-for="(_tag, _i) in node.Tags" :key="_tag.ID">
+                {{ _i > 0 ? ', ': ''}}{{ _tag.Name }}
+              </span>
             </td>
             <td>
-              <router-link v-if="$user.Role == 'superAdmin'"
-                :to="`${ node.MacAddr }/tags`" 
-                tag="button">manage</router-link>
+              <router-link v-if="$user.Role == 'superAdmin'" :to="`${ node.MacAddr }/tags`" tag="button">
+                manage
+              </router-link>
             </td>
           </tr>
         </DataTable>
@@ -216,7 +177,7 @@
       <dd v-else>–</dd>
       
       <dt>Running version</dt>
-      <dd><code>{{ node.RunningVersion }}</code></dd>
+      <dd><code>{{ node.RunningVersion.Number }}</code></dd>
       
       <dt>Configured version</dt>
       <dd>
@@ -225,10 +186,9 @@
             <td>
               <select v-model="node.ConfiguredVersion">
                 <option value="">latest</option>
-                <option 
-                  v-for="_version in versions" 
-                  :key="_version.ID" 
-                  :value="_version.Number">{{ _version.Number }}</option>
+                <option v-for="_version in versions" :key="_version.ID" :value="_version.Number">
+                  {{ _version.Number }}
+                </option>
               </select>
             </td>
             <td>
@@ -300,10 +260,7 @@ export default {
   },
   methods: {
     addTask: async function() {
-      // "unscheduled" nodes will not have any Tasks on them.
-      if (!this.node.Tasks) {
-        this.node.Tasks = [];
-      }
+      this.node.Tasks = this.node.Tasks || [];
 
       this.node.Tasks.push({
         Type: this.newTaskType,
@@ -311,11 +268,7 @@ export default {
         NamedServer: this.newTaskNamedServer
       });
 
-      try {
-        this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
-      } catch (error) {
-        console.log(`error caught while PUTting tasks: ${error}`);
-      }
+      this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
     },
     clearPreviousSchedules: function() {
       this.customCron = "";
@@ -341,11 +294,7 @@ export default {
     removeTask: async function(i) {
       this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
 
-      try {
-        this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
-      } catch (error) {
-        console.log(`error caught while DELETEing task: ${error}`);
-      }
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
     },
     editNickname: function() {
       this.newNickname = this.node.Nickname;
@@ -355,42 +304,24 @@ export default {
     updateNickname: async function() {
       this.node.Nickname = this.newNickname;
 
-      try {
-        await API.put(`node/${this.node.MacAddr}`, this.node);
-
-        this.$router.go();
-      } catch (error) {
-        console.log(`error caught while updating nickname: ${error}`);
-      }
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
     },
     updateVersion: async function() {
-      try {
-        await API.put(`node/${this.node.MacAddr}`, this.node);
-
-        this.$router.go();
-      } catch (error) {
-        console.log(`error caught while updating version: ${error}`);
-      }
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
     }
   },
   computed: {
-    mapUrl() {
-      return `https://maps.googleapis.com/maps/api/staticmap?center=${
-        this.node.Coordinates
-      }&zoom=10&size=640x200&sensor=false&markers=${
-        this.node.Coordinates
-      }&key=${process.env.VUE_APP_GOOGLE_MAPS_API_KEY}`;
-    }
+    mapUrl: vm =>
+      `https://maps.googleapis.com/maps/api/staticmap?center=${
+        vm.node.Coordinates
+      }&zoom=10&size=640x200&sensor=false&markers=${vm.node.Coordinates}&key=${
+        process.env.VUE_APP_GOOGLE_MAPS_API_KEY
+      }`
   }
 };
 </script>
 
 <style scoped>
-dt > small {
-  font-weight: lighter;
-  font-size: 50%;
-}
-
 td.no-wrap {
   white-space: nowrap;
 }
