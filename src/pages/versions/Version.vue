@@ -7,9 +7,7 @@
       <dd>{{ version.Number }}</dd>
       
       <dt>Description</dt>
-      <dd>
-        {{ version.Description }}
-      </dd>
+      <dd>{{ version.Description }}</dd>
     </DefinitionList>
 
     <ButtonBar>
@@ -44,13 +42,9 @@ export default {
   },
   methods: {
     remove: async function() {
-      try {
-        await API.delete(`version/${this.version.Number}`);
+      await API.delete(`version/${this.version.ID}`);
 
-        this.$router.push(`/versions?removed=${this.version.Number}/`);
-      } catch (error) {
-        console.log(`error caught while DELETE version: ${error}`);
-      }
+      this.$router.push(`/versions?removed=${this.version.ID}`);
     }
   }
 };

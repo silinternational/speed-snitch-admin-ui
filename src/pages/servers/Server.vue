@@ -23,15 +23,11 @@
     </DefinitionList>
 
     <ButtonBar>
-      <router-link 
-        to="/servers" 
-        tag="button">Back</router-link>
+      <router-link to="/servers" tag="button">Back</router-link>
 
       <Spacer/>
       
-      <button 
-        @click="remove" 
-        class="caution">Remove</button>
+      <button @click="remove" class="caution">Remove</button>
     </ButtonBar>
 
   </section>
@@ -59,13 +55,9 @@ export default {
   },
   methods: {
     remove: async function() {
-      try {
-        await API.delete(`namedserver/${this.server.UID}`);
+      await API.delete(`namedserver/${this.server.ID}`);
 
-        this.$router.push(`/servers?removed=${this.server.UID}/`);
-      } catch (error) {
-        console.log(`error caught while DELETE server: ${error}`);
-      }
+      this.$router.push(`/servers?removed=${this.server.ID}/`);
     }
   }
 };

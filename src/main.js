@@ -5,7 +5,7 @@ import API from "@/shared/api";
 
 API.get("user/me")
   .then(response => startApp(response))
-  .catch(error => startApp());
+  .catch(() => startApp());
 
 function startApp(user = {}) {
   Object.defineProperty(Vue.prototype, "$user", { value: user }); // similar to Vue.prototype.$user = user but creates it "read-only"

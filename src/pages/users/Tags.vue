@@ -5,7 +5,7 @@
 
     <DataTable>
       <caption>Associated tags</caption>
-      <thead v-if="associatedTags.length > 0">
+      <thead v-if="userHasTags">
         <tr>
           <th>Name</th>
           <th>Description</th>
@@ -13,15 +13,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(_tag, _i) in associatedTags"
-          :key="_i">
+        <tr v-for="(_tag, _i) in user.Tags" :key="_i">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
           <td><button @click="remove(_i)">remove</button></td>
         </tr>
       </tbody> 
-      <tfoot v-if="associatedTags.length == 0">
+      <tfoot v-if="! userHasTags">
         <tr>
           <td :colspan="numCols">
             No tags currently associated with this user.
@@ -32,7 +30,7 @@
 
     <DataTable>
       <caption>Available tags</caption>
-      <thead v-if="availableTags.length > 0">
+      <thead v-if="availableTags.length">
         <tr>
           <th>Name</th>
           <th>Description</th>
@@ -40,15 +38,13 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="_tag in availableTags"
-          :key="_tag.UID">
+        <tr v-for="_tag in availableTags" :key="_tag.ID">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
           <td><button @click="add(_tag)">add</button></td>
         </tr>
       </tbody> 
-      <tfoot v-if="availableTags.length == 0">
+      <tfoot v-if="! availableTags.length">
         <tr>
           <td :colspan="numCols">
             No tags currently available for this user.
@@ -79,36 +75,29 @@ export default {
   },
   async mounted() {
     this.user = await API.get(`user/${this.$route.params.id}`);
-    this.associatedTags =
-      (await API.get(`user/${this.$route.params.id}/tag`)) || []; // TODO: this call is not needed since user.Tags already has these.
-    this.allTags = (await API.get("tag")) || [];
+    this.allTags = await API.get("tag");
   },
   methods: {
     add: async function(tag) {
-      // some nodes may not have any associated tags yet
-      if (!this.user.Tags) {
-        this.user.Tags = [];
-      }
+      this.user.Tags = this.user.Tags || [];
+
       this.user.Tags.push(tag);
 
-      await API.put(`user/${this.user.UID}`, this.user);
-
-      this.$router.go();
+      this.user = await API.put(`user/${this.user.ID}`, this.user);
     },
     remove: async function(i) {
       this.user.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
 
-      await API.put(`user/${this.user.UID}`, this.user);
-
-      this.$router.go();
+      this.user = await API.put(`user/${this.user.ID}`, this.user);
     }
   },
   computed: {
     availableTags: vm => {
-      let availableTags = vm.allTags.filter(candidateTag => {
-        for (let i = 0; i < vm.associatedTags.length; i++) {
-          const associatedTag = vm.associatedTags[i];
-          if (associatedTag.UID == candidateTag.UID) {
+      vm.user.Tags = vm.user.Tags || [];
+      const availableTags = vm.allTags.filter(candidateTag => {
+        for (let i = 0; i < vm.user.Tags.length; i++) {
+          const associatedTag = vm.user.Tags[i];
+          if (associatedTag.ID == candidateTag.ID) {
             return false;
           }
         }
@@ -117,6 +106,9 @@ export default {
       });
 
       return availableTags;
+    },
+    userHasTags: vm => {
+      return vm.user.Tags && vm.user.Tags.length;
     }
   }
 };

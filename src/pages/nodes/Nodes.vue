@@ -4,7 +4,7 @@
 
     <DataTable>
       <caption>Scheduled</caption>
-      <thead v-if="scheduledNodes.length > 0">
+      <thead v-if="scheduledNodes.length">
         <tr>
           <th>Location</th>
           <th>Nickname</th>
@@ -18,31 +18,29 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="_node in scheduledNodes"
-          :key="_node.MacAddr">
+        <tr v-for="_node in scheduledNodes" :key="_node.ID">
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
           <td>{{ _node.Nickname }}</td>
           <td>
-            <router-link :to="`nodes/${ _node.MacAddr }/charts`" title="charts">
+            <router-link :to="`nodes/${ _node.ID }/charts`" title="charts">
               📈
             </router-link>   
           </td>
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
-          <td>{{ _node.RunningVersion }}</td>
+          <td>{{ _node.RunningVersion.Number }}</td>
           <td>{{ _node.OS }}/{{ _node.Arch }}</td>
           <td><code>{{ _node.MacAddr }}</code></td>
           <td>
-            <router-link
-              :to="`nodes/${_node.MacAddr}`" 
-              tag="button">more...</router-link>
+            <router-link :to="`nodes/${_node.ID}`" tag="button">
+              more...
+            </router-link>
           </td>
         </tr>
       </tbody> 
-      <tfoot v-if="scheduledNodes.length == 0">
+      <tfoot v-if="! scheduledNodes.length">
         <tr>
           <td :colspan="numCols">
             No scheduled nodes at this time.
@@ -53,7 +51,7 @@
 
     <DataTable>
       <caption>Unscheduled</caption>
-      <thead v-if="unscheduledNodes.length > 0">
+      <thead v-if="unscheduledNodes.length">
         <tr>
           <th>Location</th>
           <th>Nickname</th>
@@ -67,31 +65,29 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="_node in unscheduledNodes"
-          :key="_node.MacAddr">
+        <tr v-for="_node in unscheduledNodes" :key="_node.ID">
           <td>
             <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
           </td>
           <td>{{ _node.Nickname }}</td>
           <td>
-            <router-link :to="`nodes/${ _node.MacAddr }/charts`" title="charts">
+            <router-link :to="`nodes/${ _node.ID }/charts`" title="charts">
               📈
             </router-link>   
           </td>
           <td>{{ _node.LastSeen | timeago }}</td>
           <td>{{ _node.Uptime | duration }}</td>
-          <td>{{ _node.RunningVersion }}</td>
+          <td>{{ _node.RunningVersion.Number }}</td>
           <td>{{ _node.OS }}/{{ _node.Arch }}</td>
           <td><code>{{ _node.MacAddr }}</code></td>
           <td>
-            <router-link
-              :to="`nodes/${_node.MacAddr}`" 
-              tag="button">more...</router-link>
+            <router-link :to="`nodes/${_node.ID}`" tag="button">
+              more...
+            </router-link>
           </td>
         </tr>
       </tbody>
-      <tfoot v-if="unscheduledNodes.length == 0">
+      <tfoot v-if="! unscheduledNodes.length">
         <tr>
           <td :colspan="numCols">
             No unscheduled nodes at this time.
@@ -149,8 +145,8 @@ export default {
     }
   },
   computed: {
-    scheduledNodes: vm => vm.nodes.filter(node => node.Tasks),
-    unscheduledNodes: vm => vm.nodes.filter(node => !node.Tasks)
+    scheduledNodes: vm => vm.nodes.filter(node => node.Tasks.length),
+    unscheduledNodes: vm => vm.nodes.filter(node => !node.Tasks.length)
   }
 };
 </script>

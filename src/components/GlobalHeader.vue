@@ -1,6 +1,7 @@
 <template>
   <header>
     <img src="@/assets/logo.svg">
+    
     <ol>
       <li><a href="#/nodes">Nodes</a></li>
       <li v-if="$user.Role == 'superAdmin'"><a href="#/users">Users</a></li>

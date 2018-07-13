@@ -4,12 +4,11 @@
 
     <form @submit.prevent="add">
       <label>
-        Number:
-        <input v-model="newVersion.Number" v-autofocus>
+        Number: <input v-model="newVersion.Number" v-autofocus>
       </label>
+
       <label>
-        Description:
-        <textarea v-model="newVersion.Description" />
+        Description: <textarea v-model="newVersion.Description" />
       </label>
 
       <ButtonBar>
@@ -47,13 +46,9 @@ export default {
   },
   methods: {
     add: async function() {
-      try {
-        let version = await API.post(`version`, this.newVersion);
+      const version = await API.post(`version`, this.newVersion);
 
-        this.$router.push(`/versions?new=${version.Number}/`);
-      } catch (error) {
-        console.log(`error caught while POSTing user: ${error}`);
-      }
+      this.$router.push(`/versions?new=${version.Number}`);
     }
   }
 };

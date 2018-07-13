@@ -5,9 +5,9 @@
     <DefinitionList>
       <dt>Name</dt>
       <dd>{{ tag.Name }}</dd>
+
       <dt>Description</dt>
-      <dd 
-        v-if="! this.isDescriptionEditable">
+      <dd v-if="! this.isDescriptionEditable">
         {{ tag.Description }} <button @click="editDescription">Edit</button>
       </dd>
       <dd v-if="this.isDescriptionEditable">
@@ -18,17 +18,12 @@
     </DefinitionList>
 
     <ButtonBar>
-      <router-link 
-        to="/tags" 
-        tag="button">Back</router-link>
+      <router-link to="/tags" tag="button">Back</router-link>
       
       <Spacer/>
       
-      <button 
-        @click="remove" 
-        class="caution">Remove</button>
+      <button @click="remove" class="caution">Remove</button>
     </ButtonBar>
-
   </section>
 </template>
 
@@ -63,27 +58,17 @@ export default {
       this.isDescriptionEditable = false;
     },
     saveDescription: async function() {
-      try {
-        // TODO: create a new Object for the PUT and don't update this.tag until the response is good.
-        this.tag.Description = this.newDescription;
+      // TODO: create a new Object for the PUT and don't update this.tag until the response is good.
+      this.tag.Description = this.newDescription;
 
-        let tag = await API.put(`tag/${this.tag.UID}`, this.tag);
+      this.tag = await API.put(`tag/${this.tag.ID}`, this.tag);
 
-        // need to retain intial reference to node since that's what vue is watching.
-        Object.assign(this.tag, tag);
-        this.isDescriptionEditable = false;
-      } catch (error) {
-        console.log(`error caught while PUT tag: ${error}`);
-      }
+      this.isDescriptionEditable = false;
     },
     remove: async function() {
-      try {
-        await API.delete(`tag/${this.tag.UID}`);
+      await API.delete(`tag/${this.tag.ID}`);
 
-        this.$router.push(`/tags?removed=${this.tag.Name}/`);
-      } catch (error) {
-        console.log(`error caught while DELETE tag: ${error}`);
-      }
+      this.$router.push(`/tags?removed=${this.tag.ID}/`);
     }
   }
 };
