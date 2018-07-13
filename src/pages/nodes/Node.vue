@@ -23,7 +23,7 @@
 
       <dt>Nickname</dt>
       <dd>
-        <DataTable v-if="$user.Role != 'reporting'">
+        <DataTable>
           <tr>
             <td v-if="node.Nickname && ! isNicknameEditable">
               {{ node.Nickname }}
@@ -43,8 +43,6 @@
             </td>
           </tr>
         </DataTable>
-
-        <span v-else>{{ node.Nickname || '–' }}</span>
       </dd>
 
       <dt>Notes</dt>
@@ -66,12 +64,12 @@
             <td>{{ _task.Schedule }}</td>
             <td>{{ _task.NamedServer.Name || "–" }}</td>
             <td>
-              <button v-if="$user.Role != 'reporting'" @click="removeTask(_i)" class="caution">
+              <button @click="removeTask(_i)" class="caution">
                 Remove
               </button>
             </td>
           </tr>
-          <tr v-if="$user.Role != 'reporting'">
+          <tr>
             <td>
               <select v-model="newTaskType">
                 <option value="ping">Ping</option>
@@ -97,7 +95,7 @@
               <button @click="addTask">Add</button>
             </td>
           </tr>
-          <tr v-if="$user.Role != 'reporting' && newTaskScheduleName">
+          <tr v-if="newTaskScheduleName">
             <td/>
             <td v-if="newTaskScheduleName.includes('Daily')" class="no-wrap">
               Starting at 
@@ -181,12 +179,11 @@
       
       <dt>Configured version</dt>
       <dd>
-        <DataTable v-if="$user.Role != 'reporting'">
+        <DataTable>
           <tr>
             <td>
-              <select v-model="node.ConfiguredVersion">
-                <option value="">latest</option>
-                <option v-for="_version in versions" :key="_version.ID" :value="_version.Number">
+              <select v-model="node.ConfiguredVersionID">
+                <option v-for="_version in versions" :key="_version.ID" :value="_version.ID">
                   {{ _version.Number }}
                 </option>
               </select>
@@ -196,7 +193,6 @@
             </td>
           </tr>
         </DataTable>
-        <code v-else>{{ node.ConfiguredVersion }}</code>
       </dd>
       
       <dt>Configured by</dt>
@@ -254,7 +250,7 @@ export default {
     };
   },
   async mounted() {
-    this.node = await API.get(`node/${this.$route.params.macaddr}`);
+    this.node = await API.get(`node/${this.$route.params.id}`);
     this.versions = await API.get("version");
     this.servers = await API.get("namedserver");
   },
@@ -268,7 +264,7 @@ export default {
         NamedServer: this.newTaskNamedServer
       });
 
-      this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
     },
     clearPreviousSchedules: function() {
       this.customCron = "";

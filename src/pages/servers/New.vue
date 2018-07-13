@@ -23,24 +23,24 @@
 
       <select v-if="newServer.ServerType == 'speedTestNet'" v-model="newServer.Country" @change="countryChosen">
         <option :value="{}" disabled>
-          <span v-if="countries.length == 0">
+          <span v-if="! countries.length">
             Retrieving countries...
           </span>
           <span v-else>Select country</span>
         </option>
-        <option v-for="_country in countries" :value="_country" :key="_country.Code">
+        <option v-for="_country in countries" :value="_country" :key="_country.ID">
           {{ _country.Name }}
         </option>
       </select>
 
       <select v-if="newServer.ServerType == 'speedTestNet' && newServer.Country.Code" v-model="newServer.SpeedTestNetServerID">
         <option value="" disabled>
-          <span v-if="servers.length == 0">
+          <span v-if="! servers.length">
             Retrieving servers...
           </span>
           <span v-else>Select server</span>
         </option>
-        <option v-for="_server in servers" :value="_server.ServerID" :key="_server.ServerID">
+        <option v-for="_server in servers" :value="_server.ID" :key="_server.ID">
           {{ _server.Name }} ({{ _server.Host | domain }})
         </option>
       </select>
