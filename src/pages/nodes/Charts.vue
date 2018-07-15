@@ -51,7 +51,7 @@ export default {
     };
   },
   async mounted() {
-    this.node = await API.get(`node/${this.$route.params.macaddr}`);
+    this.node = await API.get(`node/${this.$route.params.id}`);
   },
   methods: {
     getChartData: async function() {
