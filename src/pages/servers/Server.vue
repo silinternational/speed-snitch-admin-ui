@@ -1,6 +1,6 @@
 <template>
   <section>
-    <h1>Servers</h1>
+    <h1>Server</h1>
 
     <DefinitionList>
       <dt>Name</dt>

@@ -21,7 +21,23 @@
         <option value="custom">Latency test</option>
       </select>
 
-      <select v-if="newServer.ServerType == 'speedTestNet'" v-model="newServer.Country" @change="countryChosen">
+<!-- TODO: need to refactor all this....
+ultimately we need to POST this object:
+type NamedServer struct {
+    ServerType           string `gorm:"not null"`
+    SpeedTestNetServerID uint   `gorm:"default:null"` // Only needed if ServerType is SpeedTestNetServer
+    SpeedTestNetServer   SpeedTestNetServer
+    ServerHost           string // Needed for non-SpeedTestNetServers
+    ServerCountry        string
+    Name                 string `gorm:"not null"`
+    Description          string
+    Notes                string `gorm:"type:varchar(2048)"`
+}
+
+ServerCountry is either the country name for the speedtest server OR in the case of the a "custom" server, it will be an editable field for the user.
+Country and/or code are NOT needed for the POST any more.
+ -->
+      <select v-if="newServer.ServerType == 'speedTestNet'" v-model="selectedCountry" @change="countryChosen">
         <option :value="{}" disabled>
           <span v-if="! countries.length">
             Retrieving countries...
@@ -33,7 +49,7 @@
         </option>
       </select>
 
-      <select v-if="newServer.ServerType == 'speedTestNet' && newServer.Country.Code" v-model="newServer.SpeedTestNetServerID">
+      <select v-if="newServer.ServerType == 'speedTestNet' && selectedCountry.Code" v-model="newServer.SpeedTestNetServerID">
         <option value="" disabled>
           <span v-if="! servers.length">
             Retrieving servers...
@@ -84,11 +100,12 @@ export default {
         ServerType: "",
         SpeedTestNetServerID: "",
         ServerHost: "",
-        Country: {},
+        ServerCountry: "",
         Description: "",
         Notes: ""
       },
       countries: [],
+      selectedCountry: {},
       servers: []
     };
   },
@@ -99,12 +116,13 @@ export default {
       }
     },
     countryChosen: async function() {
-      const country = await API.get(
-        `speedtestnetserver/country/${this.newServer.Country.Code}`
+      this.servers = await API.get(
+        `speedtestnetserver/country/${this.selectedCountry.Code}`
       );
-      this.servers = country.Servers;
     },
     add: async function() {
+      this.newServer.ServerCountry = this.selectedCountry.Name;
+
       const server = await API.post(`namedserver`, this.newServer);
 
       this.$router.push(`/servers?new=${server.ID}/`);

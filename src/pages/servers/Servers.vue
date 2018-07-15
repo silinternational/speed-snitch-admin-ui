@@ -6,7 +6,7 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Region</th>
+          <th>Country</th>
           <th>Type</th>
           <th/>
         </tr>
@@ -14,7 +14,7 @@
       <tbody>
         <tr v-for="_server in servers" :key="_server.ID">
           <td>{{ _server.Name }}</td>
-          <td>{{ _server.Country.Name || "N/A" }}</td>
+          <td>{{ _server.ServerCountry || "–" }}</td>
           <td>{{ _server.ServerType }}</td>
           <td>
             <router-link :to="`servers/${ _server.ID }`" tag="button" class="secondary">
