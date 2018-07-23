@@ -74,6 +74,7 @@
               <select v-model="newTaskType">
                 <option value="ping">Ping</option>
                 <option value="speedTest">Speed test</option>
+                <option value="reboot">Reboot</option>
               </select>
             </td>
             <td>
@@ -84,12 +85,13 @@
               </select>
             </td>
             <td>
-              <select v-model="newTaskNamedServer">
+              <select v-model="newTaskNamedServer" v-if="newTaskType != 'reboot'">
                 <option :value="{}" disabled>Select server</option>
                 <option v-for="_server in servers" :key="_server.ID" :value="_server">
                   {{ _server.Name }}
                 </option>
               </select>
+              <span v-else>N/A</span>
             </td>
             <td>
               <button @click="addTask">Add</button>
@@ -261,7 +263,7 @@ export default {
       this.node.Tasks.push({
         Type: this.newTaskType,
         Schedule: this.customCron,
-        NamedServerID: this.newTaskNamedServer.ID
+        NamedServerID: this.newTaskNamedServer.ID || 0
       });
 
       this.node = await API.put(`node/${this.node.ID}`, this.node);
