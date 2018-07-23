@@ -182,7 +182,7 @@
         <DataTable>
           <tr>
             <td>
-              <select v-model="node.ConfiguredVersionID">
+              <select v-model="node.ConfiguredVersionID">        
                 <option v-for="_version in versions" :key="_version.ID" :value="_version.ID">
                   {{ _version.Number }}
                 </option>
