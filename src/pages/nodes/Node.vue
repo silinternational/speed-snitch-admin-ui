@@ -85,9 +85,9 @@
               </select>
             </td>
             <td>
-              <select v-model="newTaskNamedServer" v-if="newTaskType != 'reboot'">
-                <option :value="{}" disabled>Select server</option>
-                <option v-for="_server in servers" :key="_server.ID" :value="_server">
+              <select v-model="newTaskNamedServerID" v-if="newTaskType != 'reboot'">
+                <option :value="0" disabled>Select server</option>
+                <option v-for="_server in servers" :key="_server.ID" :value="_server.ID">
                   {{ _server.Name }}
                 </option>
               </select>
@@ -239,7 +239,7 @@ export default {
       ],
       newTaskType: "ping",
       newTaskScheduleName: "Daily",
-      newTaskNamedServer: {},
+      newTaskNamedServerID: 0,
       isNicknameEditable: false,
       newNickname: "",
       versions: [],
@@ -263,7 +263,7 @@ export default {
       this.node.Tasks.push({
         Type: this.newTaskType,
         Schedule: this.customCron,
-        NamedServerID: this.newTaskNamedServer.ID || 0
+        NamedServerID: this.newTaskNamedServerID
       });
 
       this.node = await API.put(`node/${this.node.ID}`, this.node);
