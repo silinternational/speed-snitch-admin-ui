@@ -261,7 +261,7 @@ export default {
       this.node.Tasks.push({
         Type: this.newTaskType,
         Schedule: this.customCron,
-        NamedServer: this.newTaskNamedServer
+        NamedServerID: this.newTaskNamedServer.ID
       });
 
       this.node = await API.put(`node/${this.node.ID}`, this.node);
