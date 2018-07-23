@@ -18,6 +18,10 @@
     <hr v-if="latency.data.datasets">
 
     <LineChart v-if="latency.data.datasets" :chart-data="latency.data" :options="latency.options"/>
+
+    <hr v-if="packetLoss.data.datasets">
+
+    <LineChart v-if="packetLoss.data.datasets" :chart-data="packetLoss.data" :options="packetLoss.options"/>
   </section>
 </template>
 
@@ -45,6 +49,10 @@ export default {
         data: {}
       },
       latency: {
+        options: {},
+        data: {}
+      },
+      packetLoss: {
         options: {},
         data: {}
       }
@@ -76,6 +84,11 @@ export default {
         chartData.labels,
         chartData.latencies
       );
+
+      this.packetLoss = createPacketLossChartConfig(
+        chartData.labels,
+        chartData.packetLoss
+      );
     }
   }
 };
@@ -93,6 +106,11 @@ function convertToChartData(rawData) {
       mins: []
     },
     latencies = {
+      maxes: [],
+      avgs: [],
+      mins: []
+    },
+    packetLoss = {
       maxes: [],
       avgs: [],
       mins: []
@@ -117,6 +135,10 @@ function convertToChartData(rawData) {
     latencies.maxes.push(point.LatencyMax.toFixed(1));
     latencies.avgs.push(point.LatencyAvg.toFixed(1));
     latencies.mins.push(point.LatencyMin.toFixed(1));
+
+    packetLoss.maxes.push(point.PacketLossMax.toFixed(1));
+    packetLoss.avgs.push(point.PacketLossAvg.toFixed(1));
+    packetLoss.mins.push(point.PacketLossMin.toFixed(1));
   });
 
   return {
@@ -125,7 +147,8 @@ function convertToChartData(rawData) {
       downloads: downloads,
       uploads: uploads
     },
-    latencies: latencies
+    latencies: latencies,
+    packetLoss: packetLoss
   };
 }
 
@@ -222,6 +245,48 @@ function createLatencyChartConfig(labels, latencies) {
           label: `Min latency (${min(latencies.mins)} ms)`,
           borderColor: "rgba(255, 130, 0, 0.2)",
           data: latencies.mins
+        }
+      ]
+    }
+  };
+}
+
+function createPacketLossChartConfig(labels, packetLossData) {
+  return {
+    options: {
+      title: {
+        display: true,
+        text: "Packet loss"
+      },
+      scales: {
+        yAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: "Percentage of packets lost (%)"
+            }
+          }
+        ]
+      }
+    },
+    data: {
+      labels: labels,
+      // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
+      datasets: [
+        {
+          label: `Max loss (${max(packetLossData.maxes)} %)`,
+          borderColor: "rgba(255, 130, 0, 0.6)",
+          data: packetLossData.maxes
+        },
+        {
+          label: `Average loss (${avg(packetLossData.avgs)} %)`,
+          borderColor: "rgba(255, 130, 0, 1)",
+          data: packetLossData.avgs
+        },
+        {
+          label: `Min loss (${min(packetLossData.mins)} %)`,
+          borderColor: "rgba(255, 130, 0, 0.2)",
+          data: packetLossData.mins
         }
       ]
     }
