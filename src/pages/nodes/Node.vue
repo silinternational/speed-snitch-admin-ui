@@ -152,7 +152,7 @@
               </span>
             </td>
             <td>
-              <router-link v-if="$user.Role == 'superAdmin'" :to="`${ node.MacAddr }/tags`" tag="button">
+              <router-link v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" tag="button">
                 manage
               </router-link>
             </td>
@@ -175,7 +175,7 @@
       <dd v-else>–</dd>
       
       <dt>Running version</dt>
-      <dd><code>{{ node.RunningVersion.Number }}</code></dd>
+      <dd><code>{{ node.RunningVersion && node.RunningVersion.Number || '–' }}</code></dd>
       
       <dt>Configured version</dt>
       <dd>

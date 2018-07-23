@@ -12,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(_tag, _i) in associatedTags" :key="_i">
+        <tr v-for="(_tag, _i) in node.Tags" :key="_i">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
           <td><button @click="remove(_i)">remove</button></td>
@@ -83,7 +83,7 @@ export default {
 
       this.node.Tags.push(tag);
 
-      this.node = await API.put(`node/${this.node.MacAddr}`, this.node);
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
     },
     remove: async function(i) {
       this.node.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
@@ -96,8 +96,8 @@ export default {
       vm.node.Tags = vm.node.Tags || [];
 
       const availableTags = vm.allTags.filter(candidateTag => {
-        for (let i = 0; i < vm.user.Tags.length; i++) {
-          const associatedTag = vm.user.Tags[i];
+        for (let i = 0; i < vm.node.Tags.length; i++) {
+          const associatedTag = vm.node.Tags[i];
           if (associatedTag.ID == candidateTag.ID) {
             return false;
           }
