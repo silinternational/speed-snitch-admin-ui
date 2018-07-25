@@ -3,7 +3,7 @@
     <h1>
       Node 
       <small>
-        <span v-if="node.Nickname">({{ node.Nickname }})</span>
+        <span v-if="node.Nickname">({{ node.Nickname }}) </span>
 
         <router-link :to="`${ node.ID }/charts`" title="charts">📈</router-link>
       </small>
