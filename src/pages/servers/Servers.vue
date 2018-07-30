@@ -14,8 +14,8 @@
       <tbody>
         <tr v-for="_server in servers" :key="_server.ID">
           <td>{{ _server.Name }}</td>
-          <td>{{ _server.ServerCountry || "–" }}</td>
-          <td>{{ _server.ServerType }}</td>
+          <td>{{ _server.Country || "–" }}</td>
+          <td>{{ _server.Type }}</td>
           <td>
             <router-link :to="`servers/${ _server.ID }`" tag="button" class="secondary">
               Manage

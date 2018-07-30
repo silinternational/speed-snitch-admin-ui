@@ -35,18 +35,36 @@
             <td v-if="node.Nickname && ! isNicknameEditable">
               <button @click="editNickname">Update</button>
             </td>
-            <td v-else-if="isNicknameEditable">
-              <button @click="updateNickname">Change</button>
-            </td>
             <td v-else>
-              <button @click="updateNickname">Add</button>
+              <button @click="updateNickname">{{ isNicknameEditable ? 'Change' : 'Add' }}</button>
             </td>
           </tr>
         </DataTable>
       </dd>
 
       <dt>Notes</dt>
-      <dd>{{ node.Notes || "–" }}</dd>
+      <dd>
+        <DataTable>
+          <tr>
+            <td v-if="node.Notes && ! isNotesEditable">
+              {{ node.Notes }}
+            </td>
+            <td v-else>
+              <input v-model="newNotes">
+            </td>
+
+            <td v-if="node.Notes && ! isNotesEditable">
+              <button @click="editNotes">Update</button>
+            </td>
+            <td v-else-if="isNotesEditable">
+              <button @click="updateNotes">Change</button>
+            </td>
+            <td v-else>
+              <button @click="updateNotes">Add</button>
+            </td>
+          </tr>
+        </DataTable>
+      </dd>
 
       <dt>Tasks</dt>
       <dd>
@@ -155,7 +173,7 @@
             </td>
             <td>
               <router-link v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" tag="button">
-                manage
+                <span v-if="node.Tags">{{ node.Tags.length ? 'manage' : 'add' }}</span>
               </router-link>
             </td>
           </tr>
@@ -242,6 +260,8 @@ export default {
       newTaskNamedServerID: 0,
       isNicknameEditable: false,
       newNickname: "",
+      isNotesEditable: false,
+      newNotes: "",
       versions: [],
       servers: [],
       customNumHours: null,
@@ -303,6 +323,20 @@ export default {
       this.node.Nickname = this.newNickname;
 
       this.node = await API.put(`node/${this.node.ID}`, this.node);
+
+      this.isNicknameEditable = false;
+    },
+    editNotes: function() {
+      this.newNotes = this.node.Notes;
+
+      this.isNotesEditable = true;
+    },
+    updateNotes: async function() {
+      this.node.Notes = this.newNotes;
+
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
+
+      this.isNotesEditable = false;
     },
     updateVersion: async function() {
       this.node = await API.put(`node/${this.node.ID}`, this.node);

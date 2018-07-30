@@ -15,7 +15,7 @@
           <tr>
             <td>
               <span v-for="(_tag, _i) in user.Tags" :key="_i">
-                {{ _i > 0 ? ', ': ''}}{{ _tag.Name }}
+                {{ _i > 0 ? ', ' : ''}}{{ _tag.Name }}
               </span>
             </td>
             <td>
@@ -35,8 +35,12 @@
       <router-link to="/users" tag="button">Back</router-link>
       
       <Spacer/>
-      
+
       <button @click="remove" class="caution">Remove</button>
+
+      <Spacer/>
+
+      <router-link :to="`${user.ID}/edit`" tag="button">Edit</router-link>
     </ButtonBar>
 
   </section>

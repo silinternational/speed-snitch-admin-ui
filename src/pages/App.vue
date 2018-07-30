@@ -51,10 +51,6 @@ body {
   font-family: sans-serif;
 }
 
-p {
-  max-width: 70ch; /* "ideal" paragraph width for reading ease TODO: although I don't think this applies since there won't be much reading... */
-}
-
 /* TODO: remove these if a style library is brought in for form validation 
     https://vuejs.org/v2/cookbook/form-validation.html
 */

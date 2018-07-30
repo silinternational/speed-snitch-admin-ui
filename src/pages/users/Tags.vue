@@ -52,6 +52,12 @@
         </tr>
       </tfoot>
     </DataTable>
+
+    <ButtonBar>
+      <router-link :to="`/users/${ $route.params.id }`" tag="button">Back</router-link>
+      
+      <Spacer/>
+    </ButtonBar>
   </section>
 </template>
 
@@ -59,11 +65,15 @@
 import API from "@/shared/api";
 import DataTable from "@/components/DataTable";
 import Truncate from "@/components/Truncate";
+import ButtonBar from "@/components/ButtonBar";
+import Spacer from "@/components/Spacer";
 
 export default {
   components: {
     DataTable,
-    Truncate
+    Truncate,
+    ButtonBar,
+    Spacer
   },
   data() {
     return {

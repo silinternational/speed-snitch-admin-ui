@@ -19,7 +19,8 @@ div button:last-child {
   padding: 0.5em;
   text-transform: uppercase;
 }
-div button:last-child.caution {
+div button.caution {
   background-color: red;
+  color: var(--white);
 }
 </style>

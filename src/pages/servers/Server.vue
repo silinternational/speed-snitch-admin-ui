@@ -7,13 +7,13 @@
       <dd>{{ server.Name }}</dd>
 
       <dt>Country</dt>
-      <dd>{{ (server.Country && server.Country.Name) || "–" }}</dd>
+      <dd>{{ server.Country || "–" }}</dd>
 
       <dt>Type</dt>
-      <dd>{{ server.ServerType }}</dd>
+      <dd>{{ server.Type }}</dd>
 
       <dt>Host</dt>
-      <dd><code>{{ server.ServerHost }}</code></dd>
+      <dd><code>{{ server.Host }}</code></dd>
 
       <dt>Description</dt>
       <dd>{{ server.Description || "–" }}</dd> <!-- TODO: review all places in app for this emdash handling, make it consistent -->
@@ -28,6 +28,10 @@
       <Spacer/>
       
       <button @click="remove" class="caution">Remove</button>
+
+      <Spacer/>
+
+      <router-link :to="`${server.ID}/edit`" tag="button">Edit</router-link>
     </ButtonBar>
 
   </section>
@@ -62,4 +66,15 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  min-width: 15em;
+}
+</style>
+
 
