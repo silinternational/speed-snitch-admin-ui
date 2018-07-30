@@ -35,11 +35,8 @@
             <td v-if="node.Nickname && ! isNicknameEditable">
               <button @click="editNickname">Update</button>
             </td>
-            <td v-else-if="isNicknameEditable">
-              <button @click="updateNickname">Change</button>
-            </td>
             <td v-else>
-              <button @click="updateNickname">Add</button>
+              <button @click="updateNickname">{{ isNicknameEditable ? 'Change' : 'Add' }}</button>
             </td>
           </tr>
         </DataTable>
@@ -176,7 +173,7 @@
             </td>
             <td>
               <router-link v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" tag="button">
-                manage
+                <span v-if="node.Tags">{{ node.Tags.length ? 'manage' : 'add' }}</span>
               </router-link>
             </td>
           </tr>

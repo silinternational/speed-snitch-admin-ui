@@ -16,6 +16,10 @@
       <Spacer/>
       
       <button @click="remove" class="caution">Remove</button>
+
+      <Spacer/>
+
+      <router-link :to="`${version.ID}/edit`" tag="button">Edit</router-link>
     </ButtonBar>
   </section>
 </template>

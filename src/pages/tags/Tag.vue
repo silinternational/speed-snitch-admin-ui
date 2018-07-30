@@ -7,13 +7,8 @@
       <dd>{{ tag.Name }}</dd>
 
       <dt>Description</dt>
-      <dd v-if="! this.isDescriptionEditable">
-        {{ tag.Description }} <button @click="editDescription">Edit</button>
-      </dd>
-      <dd v-if="this.isDescriptionEditable">
-        <textarea v-model="newDescription"/>
-        <button @click="cancelEditDescription">Cancel</button>
-        <button @click="saveDescription">Save</button>
+      <dd>
+        {{ tag.Description }}
       </dd>
     </DefinitionList>
 
@@ -23,6 +18,10 @@
       <Spacer/>
       
       <button @click="remove" class="caution">Remove</button>
+
+      <Spacer/>
+
+      <router-link :to="`${tag.ID}/edit`" tag="button">Edit</router-link>
     </ButtonBar>
   </section>
 </template>
@@ -41,30 +40,13 @@ export default {
   },
   data() {
     return {
-      tag: {},
-      newDescription: "",
-      isDescriptionEditable: false
+      tag: {}
     };
   },
   async mounted() {
     this.tag = await API.get(`tag/${this.$route.params.id}`);
   },
   methods: {
-    editDescription: function() {
-      this.isDescriptionEditable = true;
-      this.newDescription = this.tag.Description;
-    },
-    cancelEditDescription: function() {
-      this.isDescriptionEditable = false;
-    },
-    saveDescription: async function() {
-      // TODO: create a new Object for the PUT and don't update this.tag until the response is good.
-      this.tag.Description = this.newDescription;
-
-      this.tag = await API.put(`tag/${this.tag.ID}`, this.tag);
-
-      this.isDescriptionEditable = false;
-    },
     remove: async function() {
       await API.delete(`tag/${this.tag.ID}`);
 
@@ -75,10 +57,6 @@ export default {
 </script>
 
 <style scoped>
-textarea {
-  display: block;
-}
-
 section {
   display: flex;
   flex-direction: column;
