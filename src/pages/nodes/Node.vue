@@ -29,11 +29,11 @@
               {{ node.Nickname }}
             </td>
             <td v-else>
-              <input v-model="newNickname">
+              <input v-model="node.Nickname">
             </td>
 
             <td v-if="node.Nickname && ! isNicknameEditable">
-              <button @click="editNickname">Update</button>
+              <button @click="isNicknameEditable = true">Update</button>
             </td>
             <td v-else>
               <button @click="updateNickname">{{ isNicknameEditable ? 'Change' : 'Add' }}</button>
@@ -50,17 +50,14 @@
               {{ node.Notes }}
             </td>
             <td v-else>
-              <input v-model="newNotes">
+              <input v-model="node.Notes">
             </td>
 
             <td v-if="node.Notes && ! isNotesEditable">
-              <button @click="editNotes">Update</button>
-            </td>
-            <td v-else-if="isNotesEditable">
-              <button @click="updateNotes">Change</button>
+              <button @click="isNotesEditable = true">Update</button>
             </td>
             <td v-else>
-              <button @click="updateNotes">Add</button>
+              <button @click="updateNotes">{{ isNotesEditable ? 'Change' : 'Add' }}</button>
             </td>
           </tr>
         </DataTable>
@@ -89,22 +86,23 @@
           </tr>
           <tr>
             <td>
-              <select v-model="newTaskType">
+              <select v-model="newTask.Type">
                 <option value="ping">Ping</option>
                 <option value="speedTest">Speed test</option>
                 <option value="reboot">Reboot</option>
               </select>
             </td>
             <td>
-              <select v-model="newTaskScheduleName" @change="clearPreviousSchedules()">
-                <option v-for="_freq in frequencies" :key="_freq" :value="_freq">
-                  {{ _freq }}
-                </option>
+              <select v-model="newTask.ScheduleName" @change="updateCron()">
+                <option value="daily">Daily</option>
+                <option value="everyHours">Every X hour(s)</option>
+                <option value="everyMinutes">Every X minute(s)</option>
+                <option value="advanced">Advanced</option>
               </select>
             </td>
             <td>
-              <select v-model="newTaskNamedServerID" v-if="newTaskType != 'reboot'">
-                <option :value="0" disabled>Select server</option>
+              <select v-model="newTask.NamedServerID" v-if="newTask.Type != 'reboot'">
+                <option v-if="! servers.length" value="0" disabled>retrieving servers...</option>
                 <option v-for="_server in servers" :key="_server.ID" :value="_server.ID">
                   {{ _server.Name }}
                 </option>
@@ -115,39 +113,25 @@
               <button @click="addTask">Add</button>
             </td>
           </tr>
-          <tr v-if="newTaskScheduleName">
+          <tr v-if="newTask.ScheduleName">
             <td/>
-            <td v-if="newTaskScheduleName.includes('Daily')" class="no-wrap">
+            <td v-if="newTask.ScheduleName == 'daily'" class="no-wrap">
               Starting at 
-              <select v-model="customStartTimeHour" @change="convertStartTimeToCron()">
-                <option value="null" disabled>Select hour</option>
-                <option v-for="_hr in Array.from(Array(24).keys())" :key="_hr" :value="_hr">
-                  {{ String(_hr).padStart(2, '0') }}
-                </option>
-              </select> 
-              <select v-model="customStartTimeMin" @change="convertStartTimeToCron()">
-                <option value="null" disabled>Select min</option>
-                <option value="0">00</option>
-                <option value="15">15</option>
-                <option value="30">30</option>
-                <option value="45">45</option>
-              </select> 
+              <vue-timepicker v-model="custom.startTime" @change="convertStartTimeToCron()"></vue-timepicker>
               hours.
             </td>
-            <td v-else-if="newTaskScheduleName.includes('hour')" class="no-wrap">
+            <td v-else-if="newTask.ScheduleName == 'everyHours'" class="no-wrap">
               Every
-              <select v-model="customNumHours" @change="convertHoursToCron()">
-                <option value="null" disabled>Select one</option>
+              <select v-model="custom.everyHours" @change="convertHoursToCron()">
                 <option v-for="_hr in Array.from(Array(12).keys())" :key="_hr" :value="_hr + 1">
                   {{ _hr + 1 }}
                 </option>
               </select> 
               hour(s).
             </td>
-            <td v-else-if="newTaskScheduleName.includes('minute')" class="no-wrap">
+            <td v-else-if="newTask.ScheduleName == 'everyMinutes'" class="no-wrap">
               Every
-              <select v-model="customNumMins" @change="convertMinutesToCron()">
-                <option value="null" disabled>Select one</option>
+              <select v-model="custom.everyMinutes" @change="convertMinutesToCron()">
                 <option v-for="_min in Array.from(Array(30).keys())" :key="_min" :value="_min + 1">
                   {{ _min + 1 }}
                 </option>
@@ -156,7 +140,7 @@
             </td>
             <td v-else class="no-wrap">
               Cron schedule: 
-              <input v-model="customCron" v-autofocus>
+              <input v-model="custom.cron" v-autofocus>
             </td>
           </tr>
         </DataTable>
@@ -233,11 +217,13 @@ import DataTable from "@/components/DataTable";
 import DefinitionList from "@/components/DefinitionList";
 import { autofocus } from "@/shared/directives";
 import { format, duration } from "@/shared/filters";
+import VueTimepicker from "vue2-timepicker";
 
 export default {
   components: {
     DataTable,
-    DefinitionList
+    DefinitionList,
+    VueTimepicker
   },
   directives: {
     autofocus
@@ -249,91 +235,84 @@ export default {
   data() {
     return {
       node: {},
-      frequencies: [
-        "Daily",
-        "Every X hour(s)",
-        "Every X minute(s)",
-        "Advanced"
-      ],
-      newTaskType: "ping",
-      newTaskScheduleName: "Daily",
-      newTaskNamedServerID: 0,
+      newTask: {
+        Type: "ping",
+        ScheduleName: "daily",
+        NamedServerID: 0
+      },
       isNicknameEditable: false,
       newNickname: "",
       isNotesEditable: false,
       newNotes: "",
       versions: [],
       servers: [],
-      customNumHours: null,
-      customNumMins: null,
-      customStartTimeHour: null,
-      customStartTimeMin: null,
-      customCron: ""
+      custom: {
+        everyHours: 12,
+        everyMinutes: 15,
+        startTime: {
+          HH: 23,
+          mm: 45
+        },
+        cron: ""
+      }
     };
   },
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.id}`);
     this.versions = await API.get("version");
     this.servers = await API.get("namedserver");
+
+    this.newTask.NamedServerID = this.servers[0].ID;
   },
   methods: {
+    updateCron: function() {
+      switch (this.newTask.ScheduleName) {
+        case "everyHours":
+          this.convertHoursToCron();
+          break;
+        case "everyMinutes":
+          this.convertMinutesToCron();
+          break;
+        default:
+          this.convertStartTimeToCron();
+      }
+    },
     addTask: async function() {
       this.node.Tasks = this.node.Tasks || [];
 
       this.node.Tasks.push({
-        Type: this.newTaskType,
-        Schedule: this.customCron,
-        NamedServerID: this.newTaskNamedServerID
+        Type: this.newTask.Type,
+        Schedule: this.custom.cron,
+        NamedServerID: this.newTask.NamedServerID
       });
 
       this.node = await API.put(`node/${this.node.ID}`, this.node);
     },
-    clearPreviousSchedules: function() {
-      this.customCron = "";
-      this.customNumHours = null;
-      this.customNumMins = null;
-      this.customStartTimeHour = null;
-      this.customStartTimeMin = null;
-    },
     convertStartTimeToCron: function() {
       // daily at 2345 => 45 23 * * *
-      this.customCron = `${this.customStartTimeMin} ${
-        this.customStartTimeHour
+      this.custom.cron = `${this.custom.startTime.mm} ${
+        this.custom.startTime.HH
       } * * *`;
     },
     convertHoursToCron: function() {
       // every 7 hours => 0 */7 * * *
-      this.customCron = `0 */${this.customNumHours} * * *`;
+      this.custom.cron = `0 */${this.custom.everyHours} * * *`;
     },
     convertMinutesToCron: function() {
       // every 2 minutes => */2 * * * *
-      this.customCron = `*/${this.customNumMins} * * * *`;
+      this.custom.cron = `*/${this.custom.everyMinutes} * * * *`;
     },
     removeTask: async function(i) {
       this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
 
       this.node = await API.put(`node/${this.node.ID}`, this.node);
     },
-    editNickname: function() {
-      this.newNickname = this.node.Nickname;
-
-      this.isNicknameEditable = true;
-    },
     updateNickname: async function() {
-      this.node.Nickname = this.newNickname;
-
       this.node = await API.put(`node/${this.node.ID}`, this.node);
 
       this.isNicknameEditable = false;
     },
-    editNotes: function() {
-      this.newNotes = this.node.Notes;
-
-      this.isNotesEditable = true;
-    },
     updateNotes: async function() {
-      this.node.Notes = this.newNotes;
-
       this.node = await API.put(`node/${this.node.ID}`, this.node);
 
       this.isNotesEditable = false;
