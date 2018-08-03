@@ -19,14 +19,14 @@
         <span>Type:</span>
         <select v-model="server.Type" @change="typeChosen">
           <option value="" disabled>Select type of test</option>
-          <option value="speedTestNet">Speed test</option>
-          <option value="custom">Latency test</option>
+          <option value="speedTest">Speed test</option>
+          <option value="ping">Ping</option>
         </select>
       </label>
 
       <label v-if="server.Type">
         <span>Country:</span>
-        <select v-if="server.Type == 'speedTestNet'" v-model="selectedCountry" @change="countryChosen">
+        <select v-if="server.Type == 'speedTest'" v-model="selectedCountry" @change="countryChosen">
           <option :value="{}" disabled>
             <span v-if="! countries.length">
               Retrieving countries...
@@ -40,9 +40,9 @@
         <input v-else v-model="server.Country">
       </label>
 
-      <label v-if="server.Type == 'custom' || (server.Type == 'speedTestNet' && selectedCountry.Code)">
+      <label v-if="server.Type == 'ping' || (server.Type == 'speedTest' && selectedCountry.Code)">
         <span>Host:</span> 
-        <select v-if="server.Type == 'speedTestNet'" v-model="server.SpeedTestNetServerID">
+        <select v-if="server.Type == 'speedTest'" v-model="server.SpeedTestNetServerID">
           <option value="0" disabled>
             <span v-if="! servers.length">
               Retrieving servers...
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     typeChosen: async function() {
-      if (this.server.Type == "speedTestNet") {
+      if (this.server.Type == "speedTest") {
         this.countries = await API.get("speedtestnetserver/country");
       }
     },

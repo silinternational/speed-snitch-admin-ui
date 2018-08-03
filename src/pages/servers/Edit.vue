@@ -19,7 +19,7 @@
 
       <label>
         <span>Country:</span> 
-        <select v-if="server.Type == 'speedTestNet'" v-model="selectedCountry" @change="countryChosen">
+        <select v-if="server.Type == 'speedTest'" v-model="selectedCountry" @change="countryChosen">
           <option v-if="! countries.length" :value="{}" disabled>
             Retrieving countries...
           </option>
@@ -32,7 +32,7 @@
 
       <label>
         <span>Host:</span> 
-        <select v-if="server.Type == 'speedTestNet'" v-model="server.SpeedTestNetServerID">
+        <select v-if="server.Type == 'speedTest'" v-model="server.SpeedTestNetServerID">
           <option value="0" disabled>Select server</option>
           <option v-if="! servers.length" :value="server.SpeedTestNetServerID" disabled>Retrieving servers...</option>
           <option v-else v-for="_server in servers" :value="_server.ID" :key="_server.ID">
@@ -84,7 +84,7 @@ export default {
   async mounted() {
     this.server = await API.get(`namedserver/${this.$route.params.id}`);
 
-    if (this.server.Type == "speedTestNet") {
+    if (this.server.Type == "speedTest") {
       this.countries = await API.get("speedtestnetserver/country");
 
       this.selectedCountry = this.countries.find(

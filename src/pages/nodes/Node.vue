@@ -77,7 +77,7 @@
           <tr v-for="(_task, _i) in node.Tasks" :key="_i">
             <td>{{ _task.Type }}</td>
             <td>{{ _task.Schedule }}</td>
-            <td>{{ _task.NamedServer.Name || "–" }}</td>
+            <td>{{ (_task.NamedServer && _task.NamedServer.Name) || "–" }}</td>
             <td>
               <button @click="removeTask(_i)" class="caution">
                 Remove
@@ -86,7 +86,7 @@
           </tr>
           <tr>
             <td>
-              <select v-model="newTask.Type">
+              <select v-model="newTask.Type" @change="taskTypeChanged()">
                 <option value="ping">Ping</option>
                 <option value="speedTest">Speed test</option>
                 <option value="reboot">Reboot</option>
@@ -102,7 +102,8 @@
             </td>
             <td>
               <select v-model="newTask.NamedServerID" v-if="newTask.Type != 'reboot'">
-                <option v-if="! servers.length" value="0" disabled>retrieving servers...</option>
+                <option v-if="newTask.NamedServerID == 0" value="0" disabled>retrieving servers...</option>
+                <option v-if="newTask.NamedServerID == -1" value="-1" disabled>No servers available</option>
                 <option v-for="_server in servers" :key="_server.ID" :value="_server.ID">
                   {{ _server.Name }}
                 </option>
@@ -246,6 +247,7 @@ export default {
       newNotes: "",
       versions: [],
       servers: [],
+      typedServers: [],
       custom: {
         everyHours: 12,
         everyMinutes: 15,
@@ -260,11 +262,18 @@ export default {
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.id}`);
     this.versions = await API.get("version");
-    this.servers = await API.get("namedserver");
+    this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
 
-    this.newTask.NamedServerID = this.servers[0].ID;
+    this.newTask.NamedServerID = (this.servers[0] && this.servers[0].ID) || -1;
   },
   methods: {
+    taskTypeChanged: async function() {
+      this.newTask.NamedServerID = 0;
+      this.servers = [];
+      this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
+      this.newTask.NamedServerID =
+        (this.servers[0] && this.servers[0].ID) || -1;
+    },
     updateCron: function() {
       switch (this.newTask.ScheduleName) {
         case "everyHours":
