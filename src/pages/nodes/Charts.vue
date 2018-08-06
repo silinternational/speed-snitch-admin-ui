@@ -13,237 +13,76 @@
       </form>
     </header>
 
-    <LineChart v-if="speed.data.datasets" :chart-data="speed.data" :options="speed.options"/>
+    <SpeedChart v-if="rawData.length" :data="rawData" />
     
-    <hr v-if="latency.data.datasets">
-    <LineChart v-if="latency.data.datasets" :chart-data="latency.data" :options="latency.options"/>
+    <hr v-if="rawData.length">
+    <LatencyChart v-if="rawData.length" :data="rawData" />
+
+    <hr v-if="rawData.length">
+    <PacketLossChart v-if="rawData.length" :data="rawData" />
+
+    <hr v-if="rawData.length">
+    <RestartsChart v-if="rawData.length" :data="rawData" />
+
+    <hr v-if="rawData.length">
+    <NetworkOutagesChart v-if="rawData.length" :data="rawData" />
+
+    <hr v-if="rawData.length">
+    <NetworkDowntimeChart v-if="rawData.length" :data="rawData" />
   </section>
 </template>
 
 <script>
 import API from "@/shared/api";
-import LineChart from "@/components/LineChart";
+import SpeedChart from "@/components/SpeedChart";
+import LatencyChart from "@/components/LatencyChart";
+import PacketLossChart from "@/components/PacketLossChart";
+import RestartsChart from "@/components/RestartsChart";
+import NetworkOutagesChart from "@/components/NetworkOutagesChart";
+import NetworkDowntimeChart from "@/components/NetworkDowntimeChart";
 import moment from "moment";
 import Datepicker from "vuejs-datepicker";
 
 export default {
   components: {
-    LineChart,
+    SpeedChart,
+    LatencyChart,
+    PacketLossChart,
+    RestartsChart,
+    NetworkOutagesChart,
+    NetworkDowntimeChart,
     Datepicker
   },
   data() {
     return {
       node: {},
-      startDate: null,
-      endDate: null,
+      startDate: moment()
+        .subtract(7, "days")
+        .toDate(),
+      endDate: new Date(),
       tomorrow: {
         from: new Date()
       },
-      speed: {
-        options: {},
-        data: {}
-      },
-      latency: {
-        options: {},
-        data: {}
-      }
+      rawData: []
     };
   },
   async mounted() {
-    let response = await API.get(`node/${this.$route.params.macaddr}`);
+    this.node = await API.get(`node/${this.$route.params.id}`);
 
-    this.node = response.data;
+    this.getChartData();
   },
   methods: {
     getChartData: async function() {
-      try {
-        const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
-        const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
+      const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
+      const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
 
-        let chartDataResponse = await API.get(
-          `report/node/${
-            this.$route.params.macaddr
-          }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
-        );
-
-        let chartData = convertToChartData(chartDataResponse.data);
-
-        this.speed = createSpeedChartConfig(
-          chartData.labels,
-          chartData.speed.downloads,
-          chartData.speed.uploads
-        );
-
-        this.latency = createLatencyChartConfig(
-          chartData.labels,
-          chartData.latencies
-        );
-      } catch (error) {
-        console.error(`error caught while GETting speed data: ${error}`);
-      }
+      this.rawData = await API.get(
+        `report/node/${
+          this.$route.params.id
+        }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
+      );
     }
   }
-};
-
-function convertToChartData(rawData) {
-  let labels = [],
-    downloads = {
-      maxes: [],
-      avgs: [],
-      mins: []
-    },
-    uploads = {
-      maxes: [],
-      avgs: [],
-      mins: []
-    },
-    latencies = {
-      maxes: [],
-      avgs: [],
-      mins: []
-    };
-
-  rawData.forEach(point => {
-    labels.push(
-      moment
-        .unix(point.Timestamp)
-        .utc() // see UTC note:  https://momentjs.com/docs/#/parsing/unix-timestamp
-        .format("MMM DD")
-    );
-
-    downloads.maxes.push(point.DownloadMax.toFixed());
-    downloads.avgs.push(point.DownloadAvg.toFixed());
-    downloads.mins.push(point.DownloadMin.toFixed());
-
-    uploads.maxes.push(point.UploadMax.toFixed());
-    uploads.avgs.push(point.UploadAvg.toFixed());
-    uploads.mins.push(point.UploadMin.toFixed());
-
-    latencies.maxes.push(point.LatencyMax.toFixed());
-    latencies.avgs.push(point.LatencyAvg.toFixed());
-    latencies.mins.push(point.LatencyMin.toFixed());
-  });
-
-  return {
-    labels: labels,
-    speed: {
-      downloads: downloads,
-      uploads: uploads
-    },
-    latencies: latencies
-  };
-}
-
-function createSpeedChartConfig(labels, downloads, uploads) {
-  return {
-    options: {
-      title: {
-        display: true,
-        text: "Speed"
-      },
-      scales: {
-        yAxes: [
-          {
-            scaleLabel: {
-              display: true,
-              labelString: "Megabits per second"
-            }
-          }
-        ]
-      }
-    },
-    data: {
-      labels: labels,
-      // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
-      datasets: [
-        {
-          label: `Max download (${max(downloads.maxes)} Mbps)`,
-          borderColor: "rgba(255, 130, 0, 0.6)",
-          data: downloads.maxes
-        },
-        {
-          label: `Average download (${avg(downloads.avgs)} Mbps)`,
-          borderColor: "rgba(255, 130, 0, 1)",
-          data: downloads.avgs
-        },
-        {
-          label: `Min download (${min(downloads.mins)} Mbps)`,
-          borderColor: "rgba(255, 130, 0, 0.2)",
-          data: downloads.mins
-        },
-        {
-          label: `Max upload (${max(uploads.maxes)} Mbps)`,
-          borderColor: "rgba(3, 74, 97, 0.6)",
-          data: uploads.maxes
-        },
-        {
-          label: `Average upload (${avg(uploads.avgs)} Mbps)`,
-          borderColor: "rgba(3, 74, 97, 1)",
-          data: uploads.avgs
-        },
-        {
-          label: `Min upload (${max(uploads.mins)} Mbps)`,
-          borderColor: "rgba(3, 74, 97, 0.2)",
-          data: uploads.mins
-        }
-      ]
-    }
-  };
-}
-
-function createLatencyChartConfig(labels, latencies) {
-  return {
-    options: {
-      title: {
-        display: true,
-        text: "Latency"
-      },
-      scales: {
-        yAxes: [
-          {
-            scaleLabel: {
-              display: true,
-              labelString: "Milliseconds"
-            }
-          }
-        ]
-      }
-    },
-    data: {
-      labels: labels,
-      // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
-      datasets: [
-        {
-          label: `Max latency (${max(latencies.maxes)} ms)`,
-          borderColor: "rgba(255, 130, 0, 0.6)",
-          data: latencies.maxes
-        },
-        {
-          label: `Average latency (${avg(latencies.avgs)} ms)`,
-          borderColor: "rgba(255, 130, 0, 1)",
-          data: latencies.avgs
-        },
-        {
-          label: `Min latency (${min(latencies.mins)} ms)`,
-          borderColor: "rgba(255, 130, 0, 0.2)",
-          data: latencies.mins
-        }
-      ]
-    }
-  };
-}
-
-const max = numbers => Math.max(...numbers);
-const min = numbers => Math.min(...numbers);
-const avg = numbers => {
-  const sum = numbers.reduce(
-    (sum, number) => sum + Number.parseFloat(number),
-    0
-  );
-
-  const avg = sum / numbers.length;
-
-  return avg.toFixed();
 };
 </script>
 

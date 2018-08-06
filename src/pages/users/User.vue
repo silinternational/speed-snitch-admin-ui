@@ -7,21 +7,21 @@
       <dd>{{ user.Name }}</dd>
       
       <dt>Email</dt>
-      <dd>
-        {{ user.Email }}
-      </dd>
+      <dd>{{ user.Email }}</dd>
       
       <dt>Tags</dt>
       <dd>
         <DataTable>
           <tr>
             <td>
-              <span 
-                v-for="(_tag, _i) in user.Tags" 
-                :key="_tag.UID">{{ _i > 0 ? ', ': ''}}{{ _tag.Name }}</span>
+              <span v-for="(_tag, _i) in user.Tags" :key="_i">
+                {{ _i > 0 ? ', ' : ''}}{{ _tag.Name }}
+              </span>
             </td>
             <td>
-              <router-link :to="`${user.UID}/tags`" tag="button">manage</router-link>
+              <router-link :to="`${user.ID}/tags`" tag="button">
+                {{ user.Tags ? 'manage' : 'add' }}
+              </router-link>
             </td>
           </tr>
         </DataTable>
@@ -32,15 +32,15 @@
     </DefinitionList>
 
     <ButtonBar>
-      <router-link 
-        to="/users" 
-        tag="button">Back</router-link>
+      <router-link to="/users" tag="button">Back</router-link>
       
       <Spacer/>
-      
-      <button 
-        @click="remove" 
-        class="caution">Remove</button>
+
+      <button @click="remove" class="caution">Remove</button>
+
+      <Spacer/>
+
+      <router-link :to="`${user.ID}/edit`" tag="button">Edit</router-link>
     </ButtonBar>
 
   </section>
@@ -66,19 +66,13 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`user/${this.$route.params.id}`);
-
-    this.user = response.data;
+    this.user = await API.get(`user/${this.$route.params.id}`);
   },
   methods: {
     remove: async function() {
-      try {
-        await API.delete(`user/${this.user.UID}`);
+      await API.delete(`user/${this.user.ID}`);
 
-        this.$router.push(`/users?removed=${this.user.UID}/`);
-      } catch (error) {
-        console.log(`error caught while DELETE user: ${error}`);
-      }
+      this.$router.push(`/users?removed=${this.user.ID}`);
     }
   }
 };

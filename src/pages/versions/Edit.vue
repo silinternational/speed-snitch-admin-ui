@@ -1,22 +1,22 @@
 <template>
   <section>
-    <h1>Add a new version</h1>
+    <h1>Change a version</h1>
 
-    <form @submit.prevent="add">
+    <form @submit.prevent="save">
       <label>
-        Number: <input v-model="newVersion.Number" v-autofocus>
+        Number: <input v-model="version.Number" v-autofocus>
       </label>
-
+      
       <label>
-        Description: <textarea v-model="newVersion.Description" />
+        Description: <textarea v-model="version.Description" />
       </label>
 
       <ButtonBar>
-        <router-link to="/versions" tag="button">Back</router-link>
+        <router-link :to="`/versions/${ $route.params.id }`" tag="button">Back</router-link>
         
         <Spacer/>
         
-        <button>Add</button>
+        <button>Save</button>
       </ButtonBar>
     </form>
   </section>
@@ -38,17 +38,17 @@ export default {
   },
   data() {
     return {
-      newVersion: {
-        Number: "",
-        Description: ""
-      }
+      version: {}
     };
   },
+  async mounted() {
+    this.version = await API.get(`version/${this.$route.params.id}`);
+  },
   methods: {
-    add: async function() {
-      const version = await API.post(`version`, this.newVersion);
+    save: async function() {
+      this.version = await API.put(`version/${this.version.ID}`, this.version);
 
-      this.$router.push(`/versions?new=${version.Number}`);
+      this.$router.push(`/versions?updated=${this.version.ID}`);
     }
   }
 };

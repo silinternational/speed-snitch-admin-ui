@@ -11,20 +11,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="_tag in tags"
-          :key="_tag.UID">
+        <tr v-for="_tag in tags" :key="_tag.ID">
           <td>{{ _tag.Name }}</td>
           <td><Truncate>{{ _tag.Description }}</Truncate></td>
           <td>
-            <router-link 
-              :to="`tags/${ _tag.UID }`" 
-              tag="button" 
-              class="secondary">Manage</router-link>
+            <router-link :to="`tags/${ _tag.ID }`" tag="button" class="secondary">
+              Manage
+            </router-link>
           </td>
         </tr>
       </tbody> 
-      <tfoot v-if="tags.length == 0">
+      <tfoot v-if="! tags.length">
         <tr>
           <td :colspan="numCols">
             No tags at this time.
@@ -36,9 +33,7 @@
     <ButtonBar>
       <Spacer/>
         
-      <router-link 
-        to="tags/new" 
-        tag="button">
+      <router-link to="tags/new" tag="button">
         Add a new tag
       </router-link>
     </ButtonBar>
@@ -69,9 +64,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("tag");
-
-    this.tags = response.data;
+    this.tags = await API.get("tag");
   },
   methods: {
     manage: function(id) {

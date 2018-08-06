@@ -1,12 +1,12 @@
 <template>
   <section>
-    <h1>Add a new server</h1>
+    <h1>Change a server</h1>
 
-    <form @submit.prevent="add">
+    <form @submit.prevent="save">
       <label>
         <span>Name:</span> <input v-model="server.Name" v-autofocus>
       </label>
-
+      
       <label>
         <span>Description:</span> <textarea v-model="server.Description" />
       </label>
@@ -15,23 +15,13 @@
         <span>Notes:</span> <textarea v-model="server.Notes" />
       </label>
 
-      <label>
-        <span>Type:</span>
-        <select v-model="server.Type" @change="typeChosen">
-          <option value="" disabled>Select type of test</option>
-          <option value="speedTest">Speed test</option>
-          <option value="ping">Ping</option>
-        </select>
-      </label>
+      <Info title="Due to system constraints, if you need to change the type, this server will need to be removed and a new one created.">Type: {{ server.Type }}</Info>
 
-      <label v-if="server.Type">
-        <span>Country:</span>
+      <label>
+        <span>Country:</span> 
         <select v-if="server.Type == 'speedTest'" v-model="selectedCountry" @change="countryChosen">
-          <option :value="{}" disabled>
-            <span v-if="! countries.length">
-              Retrieving countries...
-            </span>
-            <span v-else>Select country</span>
+          <option v-if="! countries.length" :value="{}" disabled>
+            Retrieving countries...
           </option>
           <option v-for="_country in countries" :value="_country" :key="_country.ID">
             {{ _country.Name }}
@@ -40,16 +30,12 @@
         <input v-else v-model="server.Country">
       </label>
 
-      <label v-if="server.Type == 'ping' || (server.Type == 'speedTest' && selectedCountry.Code)">
+      <label>
         <span>Host:</span> 
         <select v-if="server.Type == 'speedTest'" v-model="server.SpeedTestNetServerID">
-          <option value="0" disabled>
-            <span v-if="! servers.length">
-              Retrieving servers...
-            </span>
-            <span v-else>Select server</span>
-          </option>
-          <option v-for="_server in servers" :value="_server.ID" :key="_server.ID">
+          <option value="0" disabled>Select server</option>
+          <option v-if="! servers.length" :value="server.SpeedTestNetServerID" disabled>Retrieving servers...</option>
+          <option v-else v-for="_server in servers" :value="_server.ID" :key="_server.ID">
             {{ _server.Name }} ({{ _server.Host | domain }})
           </option>
         </select>
@@ -57,11 +43,11 @@
       </label>
 
       <ButtonBar>
-        <router-link to="/servers" tag="button">Back</router-link>
-
+        <router-link :to="`/servers/${ $route.params.id }`" tag="button">Back</router-link>
+        
         <Spacer/>
         
-        <button>Add</button>
+        <button>Save</button>
       </ButtonBar>
     </form>
   </section>
@@ -70,13 +56,15 @@
 <script>
 import ButtonBar from "@/components/ButtonBar";
 import Spacer from "@/components/Spacer";
+import Info from "@/components/Info";
 import API from "@/shared/api";
 import { autofocus } from "@/shared/directives";
 
 export default {
   components: {
     ButtonBar,
-    Spacer
+    Spacer,
+    Info
   },
   directives: {
     autofocus
@@ -86,44 +74,55 @@ export default {
   },
   data() {
     return {
-      server: {
-        Type: "",
-        SpeedTestNetServerID: 0
-      },
+      server: {},
       countries: [],
+      servers: [],
       selectedCountry: {},
-      servers: []
+      selectedServer: {}
     };
   },
+  async mounted() {
+    this.server = await API.get(`namedserver/${this.$route.params.id}`);
+
+    if (this.server.Type == "speedTest") {
+      this.countries = await API.get("speedtestnetserver/country");
+
+      this.selectedCountry = this.countries.find(
+        country => this.server.CountryCode == country.Code
+      );
+
+      this.servers = await API.get(
+        `speedtestnetserver/country/${this.selectedCountry.Code}`
+      );
+    }
+  },
   methods: {
-    typeChosen: async function() {
-      if (this.server.Type == "speedTest") {
-        this.countries = await API.get("speedtestnetserver/country");
-      }
+    save: async function() {
+      this.server = await API.put(`namedserver/${this.server.ID}`, this.server);
+
+      this.$router.push(`/servers?updated=${this.server.ID}`);
     },
     countryChosen: async function() {
       this.servers = await API.get(
         `speedtestnetserver/country/${this.selectedCountry.Code}`
       );
-    },
-    add: async function() {
-      this.server = await API.post(`namedserver`, this.server);
 
-      this.$router.push(`/servers?new=${this.server.ID}/`);
+      this.server.SpeedTestNetServerID = 0;
     }
   }
 };
 </script>
 
 <style scoped>
-/* TODO: move these form styles to a more global level since they are getting repetitive */
 form {
   display: flex;
   flex-direction: column;
 }
+
 form > * {
   padding-bottom: 1em;
 }
+
 /* had to add this one to achieve the same thing as the padding-bottom :-( selects dont take the padding the same as other elements */
 form > select {
   margin-bottom: 1em;

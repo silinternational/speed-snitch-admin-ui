@@ -4,14 +4,14 @@ import configuredRouter from "@/pages/RouterConfig";
 import API from "@/shared/api";
 
 API.get("user/me")
-  .then(response => mount(response.data))
-  .catch(error => mount());
+  .then(response => startApp(response))
+  .catch(() => startApp());
 
-function mount(user = {}) {
-  Vue.prototype.$user = user;
+function startApp(user = {}) {
+  Object.defineProperty(Vue.prototype, "$user", { value: user }); // similar to Vue.prototype.$user = user but creates it "read-only"
 
   new Vue({
     render: h => h(App),
     router: configuredRouter
-  }).$mount("#app"); //TODO: consider making this id available via App since they have to be the same.
+  }).$mount(`#${App.data().id}`);
 }

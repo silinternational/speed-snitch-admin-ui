@@ -6,27 +6,24 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th>Region</th>
+          <th>Country</th>
           <th>Type</th>
           <th/>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="_server in servers"
-          :key="_server.UID">
+        <tr v-for="_server in servers" :key="_server.ID">
           <td>{{ _server.Name }}</td>
-          <td>{{ _server.Country.Name || "N/A" }}</td>
-          <td>{{ _server.ServerType }}</td>
+          <td>{{ _server.Country || "–" }}</td>
+          <td>{{ _server.Type }}</td>
           <td>
-            <router-link 
-              :to="`servers/${ _server.UID }`" 
-              tag="button" 
-              class="secondary">Manage</router-link>
+            <router-link :to="`servers/${ _server.ID }`" tag="button" class="secondary">
+              Manage
+            </router-link>
           </td>
         </tr>
       </tbody> 
-      <tfoot v-if="servers.length == 0">
+      <tfoot v-if="! servers.length">
         <tr>
           <td :colspan="numCols">
             No servers at this time.
@@ -38,9 +35,7 @@
     <ButtonBar>
       <Spacer/>
         
-      <router-link 
-        to="servers/new" 
-        tag="button">
+      <router-link to="servers/new" tag="button">
         Add a new server
       </router-link>
     </ButtonBar>
@@ -66,9 +61,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("namedserver");
-
-    this.servers = response.data;
+    this.servers = await API.get("namedserver");
   }
 };
 </script>

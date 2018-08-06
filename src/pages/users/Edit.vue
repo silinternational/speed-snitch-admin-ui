@@ -1,29 +1,29 @@
 <template>
   <section>
-    <h1>Add a new user</h1>
+    <h1>Change user info</h1>
 
-    <form @submit.prevent="add">
+    <form @submit.prevent="save">
       <label>
-        Name: <input v-model="newUser.Name" v-autofocus>
+        Name: <input v-model="user.Name" v-autofocus>
       </label>
       
       <label>
-        Email: <input type="email" v-model="newUser.Email">
+        Email: <input type="email" v-model="user.Email">
       </label>
       
       <label>
         Role:
-        <select v-model="newUser.Role">
+        <select v-model="user.Role">
           <option v-for="_role in roles" :key="_role" :value="_role">{{ _role }}</option>
         </select>
       </label>
 
       <ButtonBar>
-        <router-link to="/users" tag="button">Back</router-link>
+        <router-link :to="`/users/${ $route.params.id }`" tag="button">Back</router-link>
         
         <Spacer/>
         
-        <button>Add</button>
+        <button>Save</button>
       </ButtonBar>
     </form>
   </section>
@@ -45,19 +45,18 @@ export default {
   },
   data() {
     return {
-      newUser: {
-        Name: "",
-        Email: "",
-        Role: "admin"
-      },
+      user: {},
       roles: ["superAdmin", "admin"]
     };
   },
+  async mounted() {
+    this.user = await API.get(`user/${this.$route.params.id}`);
+  },
   methods: {
-    add: async function() {
-      const user = await API.post(`user`, this.newUser);
+    save: async function() {
+      this.user = await API.put(`user/${this.user.ID}`, this.user);
 
-      this.$router.push(`/users?new=${user.ID}`);
+      this.$router.push(`/users?updated=${this.user.ID}`);
     }
   }
 };

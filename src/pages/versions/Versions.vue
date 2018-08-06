@@ -11,17 +11,17 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="_version in versions" :key="_version.Number">
+        <tr v-for="_version in versions" :key="_version.ID">
           <td><code>{{ _version.Number }}</code></td>
           <td>{{ _version.Description }}</td>
           <td>
-            <router-link :to="`versions/${ _version.Number }`" tag="button" class="secondary">
+            <router-link :to="`versions/${ _version.ID }`" tag="button" class="secondary">
               Manage
             </router-link>
           </td>
         </tr>
       </tbody> 
-      <tfoot v-if="versions.length == 0">
+      <tfoot v-if="! versions.length">
         <tr>
           <td :colspan="numCols">
             No versions at this time.
@@ -60,9 +60,7 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get("version");
-
-    this.versions = response.data;
+    this.versions = await API.get("version");
   }
 };
 </script>

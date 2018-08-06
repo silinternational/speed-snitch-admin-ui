@@ -7,9 +7,7 @@
       <dd>{{ version.Number }}</dd>
       
       <dt>Description</dt>
-      <dd>
-        {{ version.Description }}
-      </dd>
+      <dd>{{ version.Description }}</dd>
     </DefinitionList>
 
     <ButtonBar>
@@ -18,6 +16,10 @@
       <Spacer/>
       
       <button @click="remove" class="caution">Remove</button>
+
+      <Spacer/>
+
+      <router-link :to="`${version.ID}/edit`" tag="button">Edit</router-link>
     </ButtonBar>
   </section>
 </template>
@@ -40,19 +42,13 @@ export default {
     };
   },
   async mounted() {
-    let response = await API.get(`version/${this.$route.params.id}`);
-
-    this.version = response.data;
+    this.version = await API.get(`version/${this.$route.params.id}`);
   },
   methods: {
     remove: async function() {
-      try {
-        await API.delete(`version/${this.version.Number}`);
+      await API.delete(`version/${this.version.ID}`);
 
-        this.$router.push(`/versions?removed=${this.version.Number}/`);
-      } catch (error) {
-        console.log(`error caught while DELETE version: ${error}`);
-      }
+      this.$router.push(`/versions?removed=${this.version.ID}`);
     }
   }
 };
