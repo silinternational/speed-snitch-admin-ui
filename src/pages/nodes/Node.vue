@@ -269,10 +269,13 @@ export default {
   methods: {
     taskTypeChanged: async function() {
       this.newTask.NamedServerID = 0;
-      this.servers = [];
-      this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
-      this.newTask.NamedServerID =
-        (this.servers[0] && this.servers[0].ID) || -1;
+
+      if (this.newTask.Type != "reboot") {
+        this.servers = [];
+        this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
+        this.newTask.NamedServerID =
+          (this.servers[0] && this.servers[0].ID) || -1;
+      }
     },
     updateCron: function() {
       switch (this.newTask.ScheduleName) {
