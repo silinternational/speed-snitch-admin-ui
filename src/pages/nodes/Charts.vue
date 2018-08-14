@@ -11,46 +11,69 @@
         
         <button @click.prevent="getChartData()">See chart</button>
       </form>
+
+      <select v-model="viewBizData">
+        <option :value="false">All available data</option>
+        <option :value="true">Business hours only</option>
+      </select>
     </header>
 
-    <SpeedChart v-if="rawData.length" :data="rawData" />
+    <SpeedChart v-if="!viewBizData && rawData.length" :data="rawData" />
+    <SpeedChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
     
     <hr v-if="rawData.length">
-    <LatencyChart v-if="rawData.length" :data="rawData" />
+    <LatencyChart v-if="!viewBizData && rawData.length" :data="rawData" />
+    <LatencyChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
 
     <hr v-if="rawData.length">
-    <PacketLossChart v-if="rawData.length" :data="rawData" />
+    <PacketLossChart v-if="!viewBizData && rawData.length" :data="rawData" />
+    <PacketLossChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
 
     <hr v-if="rawData.length">
-    <RestartsChart v-if="rawData.length" :data="rawData" />
+    <RestartsChart v-if="!viewBizData && rawData.length" :data="rawData" />
+    <RestartsChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
 
     <hr v-if="rawData.length">
-    <NetworkOutagesChart v-if="rawData.length" :data="rawData" />
+    <NetworkOutagesChart v-if="!viewBizData && rawData.length" :data="rawData" />
+    <NetworkOutagesChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
 
     <hr v-if="rawData.length">
-    <NetworkDowntimeChart v-if="rawData.length" :data="rawData" />
+    <NetworkDowntimeChart v-if="!viewBizData && rawData.length" :data="rawData" />
+    <NetworkDowntimeChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
   </section>
 </template>
 
 <script>
 import API from "@/shared/api";
 import SpeedChart from "@/components/SpeedChart";
+import SpeedChartBiz from "@/components/SpeedChartBiz";
 import LatencyChart from "@/components/LatencyChart";
+import LatencyChartBiz from "@/components/LatencyChartBiz";
 import PacketLossChart from "@/components/PacketLossChart";
+import PacketLossChartBiz from "@/components/PacketLossChartBiz";
 import RestartsChart from "@/components/RestartsChart";
+import RestartsChartBiz from "@/components/RestartsChartBiz";
 import NetworkOutagesChart from "@/components/NetworkOutagesChart";
+import NetworkOutagesChartBiz from "@/components/NetworkOutagesChartBiz";
 import NetworkDowntimeChart from "@/components/NetworkDowntimeChart";
+import NetworkDowntimeChartBiz from "@/components/NetworkDowntimeChartBiz";
 import moment from "moment";
 import Datepicker from "vuejs-datepicker";
 
 export default {
   components: {
     SpeedChart,
+    SpeedChartBiz,
     LatencyChart,
+    LatencyChartBiz,
     PacketLossChart,
+    PacketLossChartBiz,
     RestartsChart,
+    RestartsChartBiz,
     NetworkOutagesChart,
+    NetworkOutagesChartBiz,
     NetworkDowntimeChart,
+    NetworkDowntimeChartBiz,
     Datepicker
   },
   data() {
@@ -63,7 +86,8 @@ export default {
       tomorrow: {
         from: new Date()
       },
-      rawData: []
+      rawData: [],
+      viewBizData: false
     };
   },
   async mounted() {
@@ -102,6 +126,7 @@ form {
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding-bottom: 1em;
 }
 
 /* this is the selector for Datepicker */
