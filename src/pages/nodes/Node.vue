@@ -118,7 +118,7 @@
             <td/>
             <td v-if="newTask.ScheduleName == 'daily'" class="no-wrap">
               Starting at 
-              <vue-timepicker v-model="custom.startTime" @change="convertStartTimeToCron()"></vue-timepicker>
+              <vue-timepicker v-model="custom.startTime" @change="convertStartTimeToCron()" hide-clear-button></vue-timepicker>
               hours.
             </td>
             <td v-else-if="newTask.ScheduleName == 'everyHours'" class="no-wrap">
@@ -165,6 +165,29 @@
         </DataTable>
       </dd>
       
+      <dt>Business hours</dt>
+      <dd>
+        <DataTable>
+          <tr>
+            <td v-if="! isBizHoursEditable">
+              <span v-if="node.BusinessStartTime && node.BusinessCloseTime">
+                {{ node.BusinessStartTime }} – {{ node.BusinessCloseTime }} GMT
+              </span>
+            </td>
+            <td v-else>
+              <vue-timepicker v-model="bizHours.start" :minute-interval="15" hide-clear-button></vue-timepicker> – <vue-timepicker v-model="bizHours.end" :minute-interval="15" hide-clear-button></vue-timepicker> GMT
+            </td>
+
+            <td v-if="! isBizHoursEditable">
+              <button @click="updateBizHours">{{ node.BusinessStartTime && node.BusinessCloseTime ? 'update' : 'add' }}</button>
+            </td>
+            <td v-else>
+              <button @click="saveBizHours">save</button>
+            </td>
+          </tr>
+        </DataTable>
+      </dd>
+
       <dt>First seen</dt>
       <dd v-if="node.FirstSeen">{{ node.FirstSeen | format }}</dd>
       <dd v-else>–</dd>
@@ -252,10 +275,15 @@ export default {
         everyHours: 12,
         everyMinutes: 15,
         startTime: {
-          HH: 23,
-          mm: 45
+          HH: "23",
+          mm: "45"
         },
         cron: ""
+      },
+      isBizHoursEditable: false,
+      bizHours: {
+        start: {},
+        end: {}
       }
     };
   },
@@ -331,6 +359,28 @@ export default {
     },
     updateVersion: async function() {
       this.node = await API.put(`node/${this.node.ID}`, this.node);
+    },
+    updateBizHours: function() {
+      this.bizHours.start.HH = this.node.BusinessStartTime.split(":")[0];
+      this.bizHours.start.mm = this.node.BusinessStartTime.split(":")[1] || "";
+
+      this.bizHours.end.HH = this.node.BusinessCloseTime.split(":")[0];
+      this.bizHours.end.mm = this.node.BusinessCloseTime.split(":")[1] || "";
+
+      this.isBizHoursEditable = true;
+    },
+    saveBizHours: async function() {
+      this.node.BusinessStartTime = `${this.bizHours.start.HH}:${
+        this.bizHours.start.mm
+      }`;
+
+      this.node.BusinessCloseTime = `${this.bizHours.end.HH}:${
+        this.bizHours.end.mm
+      }`;
+
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
+
+      this.isBizHoursEditable = false;
     }
   },
   computed: {
