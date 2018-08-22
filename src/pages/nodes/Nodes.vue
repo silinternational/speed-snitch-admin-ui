@@ -13,7 +13,6 @@
           <th>Uptime</th>
           <th>Reported version</th>
           <th>OS/Arch</th>
-          <th>MAC</th>
           <th/>
         </tr>
       </thead>
@@ -32,7 +31,6 @@
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion.Number }}</td>
           <td>{{ _node.OS }}/{{ _node.Arch }}</td>
-          <td><code>{{ _node.MacAddr }}</code></td>
           <td>
             <router-link :to="`nodes/${_node.ID}`" tag="button">
               more...
@@ -60,7 +58,6 @@
           <th>Uptime</th>
           <th>Reported version</th>
           <th>OS/Arch</th>
-          <th>MAC</th>
           <th/>
         </tr>
       </thead>
@@ -79,7 +76,6 @@
           <td>{{ _node.Uptime | duration }}</td>
           <td>{{ _node.RunningVersion.Number }}</td>
           <td>{{ _node.OS }}/{{ _node.Arch }}</td>
-          <td><code>{{ _node.MacAddr }}</code></td>
           <td>
             <router-link :to="`nodes/${_node.ID}`" tag="button">
               more...
@@ -117,7 +113,7 @@ export default {
   data() {
     return {
       nodes: [],
-      numCols: 8
+      numCols: 7
     };
   },
   async mounted() {
