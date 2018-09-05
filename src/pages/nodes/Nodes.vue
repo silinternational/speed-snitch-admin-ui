@@ -86,7 +86,7 @@ export default {
           value: "Uptime"
         },
         {
-          text: "Reported version",
+          text: "Version",
           value: "RunningVersion.Number"
         },
         {
