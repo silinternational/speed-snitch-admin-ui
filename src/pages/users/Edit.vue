@@ -1,48 +1,48 @@
 <template>
-  <section>
-    <h1>Change user info</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-3">Change user info</h1>
 
-    <form @submit.prevent="save">
-      <label>
-        Name: <input v-model="user.Name" v-autofocus>
-      </label>
+    <v-form @submit.prevent="save" ref="form">
+      <v-text-field 
+        label="Name" 
+        v-model="user.Name" 
+        :rules="[v => !!v || 'Name is required']"
+        required 
+        :autofocus="true" />
       
-      <label>
-        Email: <input type="email" v-model="user.Email">
-      </label>
+      <v-text-field 
+        label="Email" 
+        v-model="user.Email" 
+        :rules="[
+          v => !!v || 'Email is required',
+          // W3C's HTML5 type=email regex
+          v => /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v) || 'Invalid email'
+        ]"
+        required
+        class="pt-3" />
       
-      <label>
-        Role:
-        <select v-model="user.Role">
-          <option v-for="_role in roles" :key="_role" :value="_role">{{ _role }}</option>
-        </select>
-      </label>
+      <v-select 
+        label="Role"
+        v-model="user.Role" 
+        :items="roles"
+        class="pt-3"></v-select>
 
-      <ButtonBar>
-        <router-link :to="`/users/${ $route.params.id }`" tag="button">Back</router-link>
+      <v-layout align-center class="pt-3">
+        <v-btn to="/users" color="secondary">Cancel</v-btn>
+
+        <v-spacer />
         
-        <Spacer/>
-        
-        <button>Save</button>
-      </ButtonBar>
-    </form>
-  </section>
+        <v-btn :to="`/users/${this.$route.params.id}/tags`" color="secondary">Manage tags</v-btn>
+        <v-btn type="submit" color="primary">Save</v-btn>
+      </v-layout>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
-import ButtonBar from "@/components/ButtonBar";
-import Spacer from "@/components/Spacer";
 import API from "@/shared/api";
-import { autofocus } from "@/shared/directives";
 
 export default {
-  components: {
-    ButtonBar,
-    Spacer
-  },
-  directives: {
-    autofocus
-  },
   data() {
     return {
       user: {},
@@ -54,21 +54,19 @@ export default {
   },
   methods: {
     save: async function() {
-      this.user = await API.put(`user/${this.user.ID}`, this.user);
+      if (this.$refs.form.validate()) {
+        await API.put(`user/${this.user.ID}`, this.user);
 
-      this.$router.push(`/users?updated=${this.user.ID}`);
+        this.$router.push("/users");
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form > * {
-  padding-bottom: 1em;
+/* v-container */
+.container {
+  max-width: 50ch;
 }
 </style>

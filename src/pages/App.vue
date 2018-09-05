@@ -1,63 +1,47 @@
 <template>
-  <div :id="id">
-    <GlobalHeader/>
+  <v-app>
+    <v-toolbar app color="primary">
+      <img src="@/assets/logo.svg">
 
-    <main>
-      <router-view></router-view>
-    </main>
-  </div>
+      <v-toolbar-items>
+        <v-btn href="#/nodes" flat dark>Nodes</v-btn>
+        <v-btn v-if="$user.Role == 'superAdmin'" href="#/users" flat dark>Users</v-btn>
+        <v-btn v-if="$user.Role == 'superAdmin'" href="#/tags" flat dark>Tags</v-btn>
+        <v-btn v-if="$user.Role == 'superAdmin'" href="#/servers" flat dark>Servers</v-btn>
+        <v-btn v-if="$user.Role == 'superAdmin'" href="#/versions" flat dark>Versions</v-btn>
+      </v-toolbar-items>
+    
+      <v-spacer></v-spacer>
+    
+      <v-toolbar-title class="white--text">{{ $user.Name }}</v-toolbar-title>
+
+      <v-btn :href="logoutURL" dark flat left>logout</v-btn>
+    </v-toolbar>
+    
+    <v-content>
+      <v-container>
+        <router-view></router-view>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import GlobalHeader from "@/components/GlobalHeader.vue";
+import API from "@/shared/api";
 
 export default {
-  components: {
-    GlobalHeader
-  },
   data() {
     return {
-      // wanted to expose this id for external consumption, i.e., the mount in main.js
-      id: "app"
+      logoutURL: `${
+        API.defaults.baseURL
+      }/ssp/module.php/core/authenticate.php?as=default-sp&logout`
     };
   }
 };
 </script>
 
 <style scoped>
-div#app {
-  --primary-color: rgb(121, 31, 94);
-  --primary-color-light: rgb(121, 31, 94, 0.05);
-  --secondary-color: rgb(14, 105, 164);
-  --white: whitesmoke;
-  height: 100vh;
-  width: 100vw;
-}
-
-main {
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0 5em;
-}
-</style>
-
-<style>
-@import "~normalize.css";
-
-body {
-  font-family: sans-serif;
-}
-
-/* TODO: remove these if a style library is brought in for form validation 
-    https://vuejs.org/v2/cookbook/form-validation.html
-*/
-input:invalid {
-  border: dashed red 1px;
-}
-input:focus:invalid {
-  border: initial;
+img {
+  height: 100%; /* contain img to the toolbar's height */
 }
 </style>

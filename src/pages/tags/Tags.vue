@@ -1,74 +1,69 @@
 <template>
-  <section>
-    <h1>Tags</h1>
+  <v-container>
+    <v-layout align-center justify-space-between row fill-height class="pb-3">
+      <h1 class="display-1 secondary--text">Tags</h1>
 
-    <DataTable>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Description</th>
-          <th/>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="_tag in tags" :key="_tag.ID">
-          <td>{{ _tag.Name }}</td>
-          <td><Truncate>{{ _tag.Description }}</Truncate></td>
-          <td>
-            <router-link :to="`tags/${ _tag.ID }`" tag="button" class="secondary">
-              Manage
-            </router-link>
-          </td>
-        </tr>
-      </tbody> 
-      <tfoot v-if="! tags.length">
-        <tr>
-          <td :colspan="numCols">
-            No tags at this time.
-          </td>
-        </tr>
-      </tfoot>
-    </DataTable>
+      <v-btn to="tags/new" color="secondary" icon title="Add a new tag">
+        <v-icon>library_add</v-icon>
+      </v-btn>
+    </v-layout>
 
-    <ButtonBar>
-      <Spacer/>
-        
-      <router-link to="tags/new" tag="button">
-        Add a new tag
-      </router-link>
-    </ButtonBar>
-
-  </section>
+    <v-data-table :headers="headers" :items="tags" :loading="loading" hide-actions class="elevation-1">
+      <template slot="items" slot-scope="props">
+        <td>{{ props.item.Name }}</td>
+        <td><Truncate>{{ props.item.Description }}</Truncate></td>
+        <td class="justify-center layout px-0">
+          <v-btn :href="`#/tags/${ props.item.ID }/edit`" flat icon title="Update this tag" color="secondary">
+            <v-icon small>edit</v-icon>
+          </v-btn>
+          <v-btn @click="remove(props.item.ID)" flat icon title="Delete this tag" color="error">
+            <v-icon small>delete</v-icon>
+          </v-btn>
+        </td>
+      </template>
+      <template slot="no-data">
+        No tags at this time.
+      </template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script>
 import API from "@/shared/api";
-import DataTable from "@/components/DataTable";
-import Info from "@/components/Info";
-import ButtonBar from "@/components/ButtonBar";
-import Spacer from "@/components/Spacer";
 import Truncate from "@/components/Truncate";
 
 export default {
   components: {
-    DataTable,
-    Info,
-    ButtonBar,
-    Spacer,
     Truncate
   },
   data() {
     return {
       tags: [],
-      numCols: 3
+      headers: [
+        {
+          text: "Name",
+          value: "Name"
+        },
+        {
+          text: "Description",
+          value: "Description"
+        },
+        {
+          sortable: false
+        }
+      ],
+      loading: true
     };
   },
   async mounted() {
     this.tags = await API.get("tag");
+    this.loading = false;
   },
   methods: {
-    manage: function(id) {
-      this.$router.push(`tags/${id}`);
+    remove: async function(id) {
+      confirm("Are you sure?") && (await API.delete(`tag/${id}`));
+
+      this.$router.go();
     }
   }
 };

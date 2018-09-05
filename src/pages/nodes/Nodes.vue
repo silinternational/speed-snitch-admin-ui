@@ -1,109 +1,60 @@
 <template>
-  <section>
-    <h1>Nodes</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-3">Nodes</h1>
+    
+    <h2 class="subheading">Scheduled</h2>
+    <v-data-table :headers="headers" :items="scheduledNodes" :loading="loading" hide-actions class="elevation-1 mb-4">
+      <template slot="items" slot-scope="props">
+        <tr @click="view(props.item.ID)" style="cursor: pointer">
+          <td>
+            <Info :info="props.item.Location">{{ locale(props.item.Location) }}</Info>
+          </td>
+          <td>{{ props.item.Nickname || '–'}}</td>
+          <td>
+            <v-btn :href="`#/nodes/${ props.item.ID }/charts`" icon>📈</v-btn>
+          </td>
+          <td>{{ props.item.LastSeen | timeago }}</td>
+          <td>{{ props.item.Uptime | duration }}</td>
+          <td>{{ props.item.RunningVersion.Number || '–' }}</td>
+          <td>{{ props.item.OS }}/{{ props.item.Arch }}</td>
+        </tr>
+      </template>
+      <template slot="no-data">
+        No scheduled nodes at this time.
+      </template>
+    </v-data-table>
 
-    <DataTable>
-      <caption>Scheduled</caption>
-      <thead v-if="scheduledNodes.length">
-        <tr>
-          <th>Location</th>
-          <th>Nickname</th>
-          <th></th>
-          <th>Last seen</th>
-          <th>Uptime</th>
-          <th>Reported version</th>
-          <th>OS/Arch</th>
-          <th/>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="_node in scheduledNodes" :key="_node.ID">
+    <h2 class="subheading">Unscheduled</h2>
+    <v-data-table :headers="headers" :items="unscheduledNodes" :loading="loading" hide-actions class="elevation-1">
+      <template slot="items" slot-scope="props">
+        <tr @click="view(props.item.ID)" style="cursor: pointer">
           <td>
-            <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
+            <Info :info="props.item.Location">{{ locale(props.item.Location) }}</Info>
           </td>
-          <td>{{ _node.Nickname }}</td>
+          <td>{{ props.item.Nickname || '–' }}</td>
           <td>
-            <router-link :to="`nodes/${ _node.ID }/charts`" title="charts">
-              📈
-            </router-link>   
+            <v-btn :href="`#/nodes/${ props.item.ID }/charts`" icon>📈</v-btn>
           </td>
-          <td>{{ _node.LastSeen | timeago }}</td>
-          <td>{{ _node.Uptime | duration }}</td>
-          <td>{{ _node.RunningVersion.Number }}</td>
-          <td>{{ _node.OS }}/{{ _node.Arch }}</td>
-          <td>
-            <router-link :to="`nodes/${_node.ID}`" tag="button">
-              more...
-            </router-link>
-          </td>
+          <td>{{ props.item.LastSeen | timeago }}</td>
+          <td>{{ props.item.Uptime | duration }}</td>
+          <td>{{ props.item.RunningVersion.Number || '–' }}</td>
+          <td>{{ props.item.OS }}/{{ props.item.Arch }}</td>
         </tr>
-      </tbody> 
-      <tfoot v-if="! scheduledNodes.length">
-        <tr>
-          <td :colspan="numCols">
-            No scheduled nodes at this time.
-          </td>
-        </tr>
-      </tfoot>
-    </DataTable>
-
-    <DataTable>
-      <caption>Unscheduled</caption>
-      <thead v-if="unscheduledNodes.length">
-        <tr>
-          <th>Location</th>
-          <th>Nickname</th>
-          <th></th>
-          <th>Last seen</th>
-          <th>Uptime</th>
-          <th>Reported version</th>
-          <th>OS/Arch</th>
-          <th/>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="_node in unscheduledNodes" :key="_node.ID">
-          <td>
-            <Info :title="_node.Location">{{ locale(_node.Location) }}</Info>
-          </td>
-          <td>{{ _node.Nickname }}</td>
-          <td>
-            <router-link :to="`nodes/${ _node.ID }/charts`" title="charts">
-              📈
-            </router-link>   
-          </td>
-          <td>{{ _node.LastSeen | timeago }}</td>
-          <td>{{ _node.Uptime | duration }}</td>
-          <td>{{ _node.RunningVersion.Number }}</td>
-          <td>{{ _node.OS }}/{{ _node.Arch }}</td>
-          <td>
-            <router-link :to="`nodes/${_node.ID}`" tag="button">
-              more...
-            </router-link>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot v-if="! unscheduledNodes.length">
-        <tr>
-          <td :colspan="numCols">
-            No unscheduled nodes at this time.
-          </td>
-        </tr>
-      </tfoot>
-    </DataTable>
-  </section>
+      </template>
+      <template slot="no-data">
+        No unscheduled nodes at this time.
+      </template>
+    </v-data-table>
+  </v-container>
 </template>
 
 <script>
 import API from "@/shared/api";
-import DataTable from "@/components/DataTable";
 import Info from "@/components/Info";
 import { timeago, duration } from "@/shared/filters";
 
 export default {
-  // TODO: add a timer on this page for node retrievals?
   components: {
-    DataTable,
     Info
   },
   filters: {
@@ -113,14 +64,45 @@ export default {
   data() {
     return {
       nodes: [],
-      numCols: 7
+      headers: [
+        {
+          text: "Location",
+          value: "Location"
+        },
+        {
+          text: "Nickname",
+          value: "Nickname"
+        },
+        {
+          text: "Charts",
+          value: "ID"
+        },
+        {
+          text: "Last seen",
+          value: "LastSeen"
+        },
+        {
+          text: "Uptime",
+          value: "Uptime"
+        },
+        {
+          text: "Reported version",
+          value: "RunningVersion.Number"
+        },
+        {
+          text: "OS/Arch",
+          value: "OS"
+        }
+      ],
+      loading: true
     };
   },
   async mounted() {
     this.nodes = await API.get("node");
+    this.loading = false;
   },
   methods: {
-    manage: function(id) {
+    view: function(id) {
       this.$router.push(`nodes/${id}`);
     },
     locale: function(location) {

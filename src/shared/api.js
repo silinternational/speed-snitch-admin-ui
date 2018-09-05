@@ -21,4 +21,5 @@ api.interceptors.response.use(
   }
 );
 
+//TODO: does axios provide some kind of "loading" or "waiting" api or property that could be used for progress indicators?
 export default api;

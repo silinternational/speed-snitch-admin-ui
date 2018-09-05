@@ -1,41 +1,35 @@
 <template>
-  <section>
-    <h1>Add a new tag</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-3">Add a new tag</h1>
 
-    <form @submit.prevent="add">
-      <label>
-        Name: <input v-model="newTag.Name" v-autofocus>
-      </label>
-      
-      <label>
-        Description: <textarea v-model="newTag.Description" />
-      </label>
+    <v-form @submit.prevent="add" ref="form">
+      <v-text-field 
+        label="Name" 
+        v-model="newTag.Name" 
+        :rules="[v => !!v || 'Name is required']"
+        required 
+        :autofocus="true" />
 
-      <ButtonBar>
-        <router-link to="/tags" tag="button">Back</router-link>
-        
-        <Spacer/>
-        
-        <button>Add</button>
-      </ButtonBar>
-    </form>
-  </section>
+      <v-textarea 
+        label="Description" 
+        v-model="newTag.Description" 
+        :rules="[v => !!v || 'Description is required']"
+        required
+        class="pt-3" />
+
+      <v-layout align-center justify-space-between class="pt-3">
+        <v-btn to="/tags" color="secondary">Cancel</v-btn>
+
+        <v-btn type="submit" color="primary">Add</v-btn>
+      </v-layout>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
-import ButtonBar from "@/components/ButtonBar";
-import Spacer from "@/components/Spacer";
 import API from "@/shared/api";
-import { autofocus } from "@/shared/directives";
 
 export default {
-  components: {
-    ButtonBar,
-    Spacer
-  },
-  directives: {
-    autofocus
-  },
   data() {
     return {
       newTag: {
@@ -46,21 +40,19 @@ export default {
   },
   methods: {
     add: async function() {
-      let tag = await API.post(`tag`, this.newTag);
+      if (this.$refs.form.validate()) {
+        await API.post("tag", this.newTag);
 
-      this.$router.push(`/tags?new=${tag.ID}/`);
+        this.$router.push("/tags");
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form > * {
-  padding-bottom: 1em;
+/* v-container */
+.container {
+  max-width: 50ch;
 }
 </style>
