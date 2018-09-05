@@ -1,41 +1,35 @@
 <template>
-  <section>
-    <h1>Add a new version</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-3">Add a new version</h1>
 
-    <form @submit.prevent="add">
-      <label>
-        Number: <input v-model="newVersion.Number" v-autofocus>
-      </label>
+    <v-form @submit.prevent="add" ref="form">
+      <v-text-field 
+        label="Number" 
+        v-model="newVersion.Number" 
+        :rules="[v => !!v || 'Number is required']"
+        required 
+        :autofocus="true" />
+      
+      <v-textarea 
+        label="Description" 
+        v-model="newVersion.Description" 
+        :rules="[v => !!v || 'Description is required']"
+        required
+        class="pt-3" />
+  
+      <v-layout align-center justify-space-between class="pt-3">
+        <v-btn to="/versions" color="secondary">Cancel</v-btn>
 
-      <label>
-        Description: <textarea v-model="newVersion.Description" />
-      </label>
-
-      <ButtonBar>
-        <router-link to="/versions" tag="button">Back</router-link>
-        
-        <Spacer/>
-        
-        <button>Add</button>
-      </ButtonBar>
-    </form>
-  </section>
+        <v-btn type="submit" color="primary">Add</v-btn>
+      </v-layout>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
-import ButtonBar from "@/components/ButtonBar";
-import Spacer from "@/components/Spacer";
 import API from "@/shared/api";
-import { autofocus } from "@/shared/directives";
 
 export default {
-  components: {
-    ButtonBar,
-    Spacer
-  },
-  directives: {
-    autofocus
-  },
   data() {
     return {
       newVersion: {
@@ -46,21 +40,19 @@ export default {
   },
   methods: {
     add: async function() {
-      const version = await API.post(`version`, this.newVersion);
+      if (this.$refs.form.validate()) {
+        await API.post("version", this.newVersion);
 
-      this.$router.push(`/versions?new=${version.Number}`);
+        this.$router.push("/versions");
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form > * {
-  padding-bottom: 1em;
+/* v-container */
+.container {
+  max-width: 50ch;
 }
 </style>

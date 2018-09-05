@@ -1,77 +1,85 @@
 <template>
-  <section>
-    <h1>Change a server</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-3">Change a server</h1>
 
-    <form @submit.prevent="save">
-      <label>
-        <span>Name:</span> <input v-model="server.Name" v-autofocus>
-      </label>
+    <v-form @submit.prevent="save" ref="form">
+      <v-text-field 
+        label="Name" 
+        v-model="server.Name" 
+        :rules="[v => !!v || 'Name is required']"
+        required 
+        :autofocus="true" />
       
-      <label>
-        <span>Description:</span> <textarea v-model="server.Description" />
-      </label>
+      <v-textarea 
+        label="Description" 
+        v-model="server.Description" 
+        class="pt-3" />
 
-      <label>
-        <span>Notes:</span> <textarea v-model="server.Notes" />
-      </label>
+      <v-textarea 
+        label="Notes" 
+        v-model="server.Notes"
+        class="pt-3" />
 
-      <Info title="Due to system constraints, if you need to change the type, this server will need to be removed and a new one created.">Type: {{ server.Type }}</Info>
+      <v-tooltip right>
+        <v-text-field 
+          label="Type" 
+          :value="server.Type"
+          append-icon="help"
+          readonly 
+          slot="activator" />
+        <span>Due to system constraints, if you need to change the type, this server will need to be removed and a new one created.</span>
+      </v-tooltip>
 
-      <label>
-        <span>Country:</span> 
-        <select v-if="server.Type == 'speedTest'" v-model="selectedCountry" @change="countryChosen">
-          <option v-if="! countries.length" :value="{}" disabled>
-            Retrieving countries...
-          </option>
-          <option v-for="_country in countries" :value="_country" :key="_country.ID">
-            {{ _country.Name }}
-          </option>
-        </select>
-        <input v-else v-model="server.Country">
-      </label>
+      <v-select v-if="server.Type == 'speedTest'"
+        label="Country"
+        placeholder="Select country"
+        :items="countries"
+        :loading="! countries.length" 
+        item-text="Name"
+        return-object
+        v-model="selectedCountry"
+        required
+        :rules="[v => !!v || 'Country is required']"
+        @change="countryChosen"
+        class="pt-3" />
+      <v-text-field v-else
+        label="Country"
+        v-model="server.Country"
+        :autofocus="true"
+        class="pt-3" />
 
-      <label>
-        <span>Host:</span> 
-        <select v-if="server.Type == 'speedTest'" v-model="server.SpeedTestNetServerID">
-          <option value="0" disabled>Select server</option>
-          <option v-if="! servers.length" :value="server.SpeedTestNetServerID" disabled>Retrieving servers...</option>
-          <option v-else v-for="_server in servers" :value="_server.ID" :key="_server.ID">
-            {{ _server.Name }} ({{ _server.Host | domain }})
-          </option>
-        </select>
-        <input v-else v-model="server.Host">
-      </label>
+      <v-select v-if="server.Type == 'speedTest'"
+        label="Host"
+        placeholder="Select server"
+        :items="servers"
+        :loading="! servers.length" 
+        :item-text="serverNameAndHost"
+        item-value="ID"
+        v-model="server.SpeedTestNetServerID"
+        required
+        :rules="[v => !!v || 'Server is required']"
+        class="pt-3" />
+      <v-text-field v-else
+        label="Host" 
+        v-model="server.Host" 
+        required 
+        :rules="[v => !!v || 'Host is required']"
+        :autofocus="true"
+        class="pt-3" />
 
-      <ButtonBar>
-        <router-link :to="`/servers/${ $route.params.id }`" tag="button">Back</router-link>
-        
-        <Spacer/>
-        
-        <button>Save</button>
-      </ButtonBar>
-    </form>
-  </section>
+      <v-layout align-center justify-space-between class="pt-3">
+        <v-btn to="/servers" color="secondary">Cancel</v-btn>
+
+        <v-btn type="submit" color="primary">Save</v-btn>
+      </v-layout>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
-import ButtonBar from "@/components/ButtonBar";
-import Spacer from "@/components/Spacer";
-import Info from "@/components/Info";
 import API from "@/shared/api";
-import { autofocus } from "@/shared/directives";
 
 export default {
-  components: {
-    ButtonBar,
-    Spacer,
-    Info
-  },
-  directives: {
-    autofocus
-  },
-  filters: {
-    domain: domain => domain.split(":")[0]
-  },
   data() {
     return {
       server: {},
@@ -97,48 +105,27 @@ export default {
     }
   },
   methods: {
-    save: async function() {
-      this.server = await API.put(`namedserver/${this.server.ID}`, this.server);
-
-      this.$router.push(`/servers?updated=${this.server.ID}`);
-    },
+    serverNameAndHost: server =>
+      `${server.Name} (${server.Host.split(":")[0]})`, // remove port if present for display only.
     countryChosen: async function() {
       this.servers = await API.get(
         `speedtestnetserver/country/${this.selectedCountry.Code}`
       );
+    },
+    save: async function() {
+      if (this.$refs.form.validate()) {
+        await API.put(`namedserver/${this.server.ID}`, this.server);
 
-      this.server.SpeedTestNetServerID = 0;
+        this.$router.push("/servers");
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form > * {
-  padding-bottom: 1em;
-}
-
-/* had to add this one to achieve the same thing as the padding-bottom :-( selects dont take the padding the same as other elements */
-form > select {
-  margin-bottom: 1em;
-}
-
-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-label > span {
-  padding-right: 0.5em;
-}
-
-textarea {
-  width: 20em;
-  height: 4em;
+/* v-container */
+.container {
+  max-width: 60ch;
 }
 </style>

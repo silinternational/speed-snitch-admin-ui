@@ -1,22 +1,40 @@
 <template>
-  <section>
-    <header>
-      <h1>Charts {{ node.Nickname ? `for ${node.Nickname}` : '' }}</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-4">
+      Charts {{ node.Nickname ? `for ${node.Nickname}` : '' }}
+    </h1>
 
-      <form>
-        From
-        <Datepicker placeholder="Start date" v-model="startDate" :disabledDates="tomorrow" format="MMM d yyyy" />
-        to
-        <Datepicker placeholder="End date" v-model="endDate" :disabledDates="tomorrow" format="MMM d yyyy" />
-        
-        <button @click.prevent="getChartData()">See chart</button>
-      </form>
+    <v-layout row align-center justify-center>
+      <v-menu>
+        <v-text-field
+          slot="activator"
+          v-model="range.start"
+          label="Start date"
+          prepend-icon="event"
+          readonly />
+        <v-date-picker v-model="range.start" :max="today"></v-date-picker>
+      </v-menu>
 
-      <select v-model="viewBizData">
-        <option :value="false">All available data</option>
-        <option :value="true">Business hours only</option>
-      </select>
-    </header>
+      <v-menu>
+        <v-text-field
+          slot="activator"
+          v-model="range.end"
+          label="End date"
+          prepend-icon="event"
+          readonly />
+        <v-date-picker v-model="range.end" :max="today"></v-date-picker>
+      </v-menu>
+
+      <v-btn @click="getChartData" color="secondary">See chart</v-btn>
+    </v-layout>
+
+    <v-layout row align-center justify-center>
+      <v-select 
+        :items="[{text: 'All available data', value: false}, {text: 'Business hours only', value: true}]"
+        v-model="viewBizData" />
+    </v-layout>
+
+    <hr>
 
     <SpeedChart v-if="!viewBizData && rawData.length" :data="rawData" />
     <SpeedChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
@@ -40,7 +58,7 @@
     <hr v-if="rawData.length">
     <NetworkDowntimeChart v-if="!viewBizData && rawData.length" :data="rawData" />
     <NetworkDowntimeChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
-  </section>
+  </v-container>
 </template>
 
 <script>
@@ -58,7 +76,6 @@ import NetworkOutagesChartBiz from "@/components/NetworkOutagesChartBiz";
 import NetworkDowntimeChart from "@/components/NetworkDowntimeChart";
 import NetworkDowntimeChartBiz from "@/components/NetworkDowntimeChartBiz";
 import moment from "moment";
-import Datepicker from "vuejs-datepicker";
 
 export default {
   components: {
@@ -73,19 +90,18 @@ export default {
     NetworkOutagesChart,
     NetworkOutagesChartBiz,
     NetworkDowntimeChart,
-    NetworkDowntimeChartBiz,
-    Datepicker
+    NetworkDowntimeChartBiz
   },
   data() {
     return {
       node: {},
-      startDate: moment()
-        .subtract(7, "days")
-        .toDate(),
-      endDate: new Date(),
-      tomorrow: {
-        from: new Date()
+      range: {
+        start: moment()
+          .subtract(7, "days")
+          .format("YYYY-MM-DD"),
+        end: moment().format("YYYY-MM-DD")
       },
+      today: moment().format("YYYY-MM-DD"),
       rawData: [],
       viewBizData: false
     };
@@ -97,13 +113,10 @@ export default {
   },
   methods: {
     getChartData: async function() {
-      const formattedStart = moment(this.startDate).format("YYYY-MM-DD");
-      const formattedEnd = moment(this.endDate).format("YYYY-MM-DD");
-
       this.rawData = await API.get(
-        `report/node/${
-          this.$route.params.id
-        }?interval=daily&start=${formattedStart}&end=${formattedEnd}`
+        `report/node/${this.$route.params.id}?interval=daily&start=${
+          this.range.start
+        }&end=${this.range.end}`
       );
     }
   }
@@ -111,32 +124,8 @@ export default {
 </script>
 
 <style scoped>
-section {
-  width: 90%; /* so the chart is wider */
-}
-
-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-bottom: 1em;
-}
-
-form {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding-bottom: 1em;
-}
-
-/* this is the selector for Datepicker */
-form > div {
-  padding: 0 0.5em;
-}
-
-form > button {
-  background-color: var(--primary-color);
-  color: var(--white);
+.layout > .v-select {
+  max-width: 21ch; /* "Business hours only" length plus space */
 }
 
 hr {

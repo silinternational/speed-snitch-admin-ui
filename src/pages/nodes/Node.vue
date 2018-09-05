@@ -1,257 +1,262 @@
 <template>
-  <section>
-    <h1>
-      Node 
-      <small>
-        <span v-if="node.Nickname">({{ node.Nickname }}) </span>
+  <v-container>
+    <v-layout align-center justify-space-between row fill-height class="pb-4">
+      <h1 class="display-1 secondary--text">Node</h1>
 
-        <router-link :to="`${ node.ID }/charts`" title="charts">📈</router-link>
-      </small>
-    </h1>
+      <v-btn :to="`${ node.ID }/charts`" color="secondary" round>
+        charts <v-icon right>show_chart</v-icon>
+      </v-btn>
+    </v-layout>
 
-    <img :src="mapUrl">
-
-    <DefinitionList>
-      <dt>MAC address</dt>
-      <dd><code>{{ node.MacAddr }}</code></dd>
-      
-      <dt>IP address</dt>
-      <dd><code>{{ node.IPAddress }}</code></dd>
-      
-      <dt>Location</dt>
-      <dd>{{ node.Location }}</dd>
-
-      <dt>Nickname</dt>
-      <dd>
-        <DataTable>
-          <tr>
-            <td v-if="node.Nickname && ! isNicknameEditable">
-              {{ node.Nickname }}
-            </td>
-            <td v-else>
-              <input v-model="node.Nickname">
-            </td>
-
-            <td v-if="node.Nickname && ! isNicknameEditable">
-              <button @click="isNicknameEditable = true">Update</button>
-            </td>
-            <td v-else>
-              <button @click="updateNickname">{{ isNicknameEditable ? 'Change' : 'Add' }}</button>
-            </td>
-          </tr>
-        </DataTable>
+    <dl class="body-1">
+      <dt class="title">Nickname</dt>
+      <dd v-if="! isNicknameEditable" class="pl-5 pt-2">
+        {{ node.Nickname || '–' }}
+        <v-btn @click="isNicknameEditable = true" color="secondary" icon small>
+          <v-icon small>edit</v-icon>
+        </v-btn>
+      </dd>
+      <dd v-else class="pl-5 pt-2">
+        <v-layout align-center>
+          <v-text-field v-model="node.Nickname" :autofocus="true" />
+          <v-btn @click="isNicknameEditable = false; updateNode()" color="secondary" icon small>
+            <v-icon small>save</v-icon>
+          </v-btn>
+        </v-layout>
       </dd>
 
-      <dt>Notes</dt>
-      <dd>
-        <DataTable>
-          <tr>
-            <td v-if="node.Notes && ! isNotesEditable">
-              {{ node.Notes }}
-            </td>
-            <td v-else>
-              <input v-model="node.Notes">
-            </td>
+      <dt class="title pt-2">Location</dt>
+      <dd  class="pl-5 pt-2">{{ node.Location }}</dd>
+      <dd class="pl-5 pt-2"><img :src="mapUrl"></dd>
 
-            <td v-if="node.Notes && ! isNotesEditable">
-              <button @click="isNotesEditable = true">Update</button>
-            </td>
-            <td v-else>
-              <button @click="updateNotes">{{ isNotesEditable ? 'Change' : 'Add' }}</button>
-            </td>
-          </tr>
-        </DataTable>
+      <dt class="title pt-4">MAC address</dt>
+      <dd class="pl-5 pt-2">{{ node.MacAddr }}</dd>
+
+      <dt class="title pt-4">IP address</dt>
+      <dd class="pl-5 pt-2">{{ node.IPAddress }}</dd>
+
+      <dt class="title pt-4">Notes</dt>
+      <dd v-if="! isNotesEditable" class="pl-5 pt-2">
+        {{ node.Notes || '–' }}
+        <v-btn @click="isNotesEditable = true" color="secondary" icon small>
+          <v-icon small>edit</v-icon>
+        </v-btn>
+      </dd>
+      <dd v-else class="pl-5 pt-2">
+        <v-layout align-center>
+          <v-text-field v-model="node.Notes" :autofocus="true" />
+          <v-btn @click="isNotesEditable = false; updateNode()" color="secondary" icon small>
+            <v-icon small>save</v-icon>
+          </v-btn>
+        </v-layout>
       </dd>
 
-      <dt>Tasks</dt>
-      <dd>
-        <DataTable>
-          <thead>
+      <dt class="title pt-4">Tasks</dt>
+      <dd class="pl-5 pt-2">
+        <v-data-table :headers="task.headers" :items="node.Tasks" hide-actions class="elevation-1">
+          <template slot="items" slot-scope="props">
+            <td>{{ props.item.Type }}</td>
+            <td>{{ props.item.Schedule }}</td>
+            <td>{{ (props.item.NamedServer && props.item.NamedServer.Name) || "–" }}</td>
+            <td class="justify-center layout px-0">
+              <v-btn @click="removeTask(props.item.ID)" icon>
+                <v-icon color="error" small>delete</v-icon>
+              </v-btn>
+            </td>
+          </template>
+          <template slot="footer">
             <tr>
-              <th>Type</th>
-              <th>Frequency</th>
-              <th>Server</th>
-              <th/>
+              <td>
+                <v-select 
+                  :items="task.types"
+                  v-model="newTask.Type"
+                  @change="taskTypeChanged()" />
+              </td>
+              <td>
+                <v-select 
+                  :items="task.frequencies"
+                  v-model="newTask.ScheduleName"
+                  @change="updateCron()" />
+              </td>
+              <td>
+                <v-select 
+                  v-if="newTask.Type != 'reboot'"
+                  :items="servers"
+                  :loading="task.serversLoading"
+                  no-data-text="No servers available"
+                  item-text="Name"
+                  item-value="ID"
+                  v-model="newTask.NamedServerID"
+                  @change="updateCron()" />
+                <span v-else>N/A</span>
+              </td>
+
+              <td rowspan="2">
+                <v-btn @click="addTask" color="success" icon small>
+                  <v-icon>add</v-icon>
+                </v-btn>
+              </td>
             </tr>
-          </thead>
-          <tr v-for="(_task, _i) in node.Tasks" :key="_i">
-            <td>{{ _task.Type }}</td>
-            <td>{{ _task.Schedule }}</td>
-            <td>{{ (_task.NamedServer && _task.NamedServer.Name) || "–" }}</td>
-            <td>
-              <button @click="removeTask(_i)" class="caution">
-                Remove
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <select v-model="newTask.Type" @change="taskTypeChanged()">
-                <option value="ping">Ping</option>
-                <option value="speedTest">Speed test</option>
-                <option value="reboot">Reboot</option>
-              </select>
-            </td>
-            <td>
-              <select v-model="newTask.ScheduleName" @change="updateCron()">
-                <option value="daily">Daily</option>
-                <option value="everyHours">Every X hour(s)</option>
-                <option value="everyMinutes">Every X minute(s)</option>
-                <option value="advanced">Advanced</option>
-              </select>
-            </td>
-            <td>
-              <select v-model="newTask.NamedServerID" v-if="newTask.Type != 'reboot'">
-                <option v-if="newTask.NamedServerID == 0" value="0" disabled>retrieving servers...</option>
-                <option v-if="newTask.NamedServerID == -1" value="-1" disabled>No servers available</option>
-                <option v-for="_server in servers" :key="_server.ID" :value="_server.ID">
-                  {{ _server.Name }}
-                </option>
-              </select>
-              <span v-else>N/A</span>
-            </td>
-            <td>
-              <button @click="addTask">Add</button>
-            </td>
-          </tr>
-          <tr v-if="newTask.ScheduleName">
-            <td/>
-            <td v-if="newTask.ScheduleName == 'daily'" class="no-wrap">
-              Starting at 
-              <vue-timepicker v-model="custom.startTime" @change="convertStartTimeToCron()" hide-clear-button></vue-timepicker>
-              hours.
-            </td>
-            <td v-else-if="newTask.ScheduleName == 'everyHours'" class="no-wrap">
-              Every
-              <select v-model="custom.everyHours" @change="convertHoursToCron()">
-                <option v-for="_hr in Array.from(Array(12).keys())" :key="_hr" :value="_hr + 1">
-                  {{ _hr + 1 }}
-                </option>
-              </select> 
-              hour(s).
-            </td>
-            <td v-else-if="newTask.ScheduleName == 'everyMinutes'" class="no-wrap">
-              Every
-              <select v-model="custom.everyMinutes" @change="convertMinutesToCron()">
-                <option v-for="_min in Array.from(Array(30).keys())" :key="_min" :value="_min + 1">
-                  {{ _min + 1 }}
-                </option>
-              </select> 
-              minute(s).
-            </td>
-            <td v-else class="no-wrap">
-              Cron schedule: 
-              <input v-model="custom.cron" v-autofocus>
-            </td>
-          </tr>
-        </DataTable>
-      </dd>
-      
-      <dt>Tags</dt>
-      <dd>
-        <DataTable>
-          <tr>
-            <td>
-              <span v-for="(_tag, _i) in node.Tags" :key="_tag.ID">
-                {{ _i > 0 ? ', ': ''}}{{ _tag.Name }}
-              </span>
-            </td>
-            <td>
-              <router-link v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" tag="button">
-                <span v-if="node.Tags">{{ node.Tags.length ? 'manage' : 'add' }}</span>
-              </router-link>
-            </td>
-          </tr>
-        </DataTable>
-      </dd>
-      
-      <dt>Business hours</dt>
-      <dd>
-        <DataTable>
-          <tr>
-            <td v-if="! isBizHoursEditable">
-              <span v-if="node.BusinessStartTime && node.BusinessCloseTime">
-                {{ node.BusinessStartTime }} – {{ node.BusinessCloseTime }} GMT
-              </span>
-            </td>
-            <td v-else>
-              <vue-timepicker v-model="bizHours.start" :minute-interval="15" hide-clear-button></vue-timepicker> – <vue-timepicker v-model="bizHours.end" :minute-interval="15" hide-clear-button></vue-timepicker> GMT
-            </td>
 
-            <td v-if="! isBizHoursEditable">
-              <button @click="updateBizHours">{{ node.BusinessStartTime && node.BusinessCloseTime ? 'update' : 'add' }}</button>
-            </td>
-            <td v-else>
-              <button @click="saveBizHours">save</button>
-            </td>
-          </tr>
-        </DataTable>
+            <tr no-border-top>
+              <td></td>
+              <td>
+                <v-layout v-if="newTask.ScheduleName == 'daily'" row align-center class="pb-3">
+                  <v-dialog ref="dialog" v-model="task.custom.dialog" persistent width="290">
+                    <v-text-field
+                      slot="activator"
+                      label="Starting at"
+                      v-model="task.custom.startTime"
+                      prepend-icon="access_time"
+                      readonly />
+                    <v-time-picker v-model="task.custom.startTime" actions>
+                      <v-spacer />
+                      <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
+                    </v-time-picker>
+                  </v-dialog>
+                </v-layout>
+                <v-layout v-else-if="newTask.ScheduleName == 'everyHours'" row align-center min-width>
+                  Every
+                  <v-select 
+                    :items="task.hours"
+                    v-model="task.custom.everyHours"
+                    class="px-3" />
+                  hour(s).
+                </v-layout>
+                <v-layout v-else-if="newTask.ScheduleName == 'everyMinutes'" row align-center min-width>
+                  Every
+                  <v-select 
+                    :items="task.minutes"
+                    v-model="task.custom.everyMinutes"
+                    class="px-3"  />
+                  minute(s).
+                </v-layout>
+                <v-layout v-else row align-center>
+                  <v-text-field label="Cron schedule" v-model="task.custom.cron" />
+                </v-layout>
+              </td>
+              <td></td>
+            </tr>
+          </template>
+          <template slot="no-data">
+            No tasks at this time.
+          </template>
+        </v-data-table> 
       </dd>
 
-      <dt>First seen</dt>
-      <dd v-if="node.FirstSeen">{{ node.FirstSeen | format }}</dd>
-      <dd v-else>–</dd>
-      
-      <dt>Last seen</dt>
-      <dd v-if="node.LastSeen">{{ node.LastSeen | format }}</dd>
-      <dd v-else>–</dd>
-      
-      <dt>Uptime</dt>
-      <dd v-if="node.Uptime">
-        {{ node.Uptime | duration }}
+      <dt class="title pt-4">Tags</dt>
+      <dd v-if="node.Tags && node.Tags.length" class="pl-5 pt-2">
+        <v-layout align-center>
+          <v-chip v-for="_tag in node.Tags" :key="_tag.ID">
+            {{ _tag.Name }}
+          </v-chip>
+          <v-btn v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" color="secondary" icon small>
+            <v-icon small>edit</v-icon>
+          </v-btn>
+        </v-layout>
       </dd>
-      <dd v-else>–</dd>
-      
-      <dt>Running version</dt>
-      <dd><code>{{ node.RunningVersion && node.RunningVersion.Number || '–' }}</code></dd>
-      
-      <dt>Configured version</dt>
-      <dd>
-        <DataTable>
-          <tr>
-            <td>
-              <select v-model="node.ConfiguredVersionID">        
-                <option v-for="_version in versions" :key="_version.ID" :value="_version.ID">
-                  {{ _version.Number }}
-                </option>
-              </select>
-            </td>
-            <td>
-              <button @click="updateVersion">Set</button>
-            </td>
-          </tr>
-        </DataTable>
+      <dd v-else class="pl-5 pt-2">
+        <v-layout align-center>
+          –
+          <v-btn v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" color="secondary" icon small>
+            <v-icon small>library_add</v-icon>
+          </v-btn>
+        </v-layout>
       </dd>
-      
-      <dt>Configured by</dt>
-      <dd>{{ node.ConfiguredBy || 'N/A' }}</dd>
-      
-      <dt>OS</dt>
-      <dd><code>{{ node.OS }}</code></dd>
-      
-      <dt>Architecture</dt>
-      <dd><code>{{ node.Arch }}</code></dd>
-    </DefinitionList>
-  </section>
+
+      <dt class="title pt-4">Business hours</dt>
+      <dd v-if="isBizHoursEditable" class="pl-5 pt-2">
+        <v-layout row align-center>
+          <v-dialog ref="dialog" v-model="bizHours.dialog" persistent width="290">
+            <v-text-field
+              slot="activator"
+              label="Starting at"
+              v-model="node.BusinessStartTime"
+              prepend-icon="access_time"
+              readonly />
+            <v-time-picker v-model="node.BusinessStartTime" actions>
+              <v-spacer />
+              <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
+            </v-time-picker>
+          </v-dialog>
+          
+          <v-dialog ref="dialog" v-model="bizHours.dialog" persistent width="290">
+            <v-text-field
+              slot="activator"
+              label="Ending at"
+              v-model="node.BusinessCloseTime"
+              prepend-icon="access_time"
+              readonly />
+            <v-time-picker v-model="node.BusinessCloseTime" actions>
+              <v-spacer />
+              <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
+            </v-time-picker>
+          </v-dialog>
+          GMT
+          <v-btn @click="isBizHoursEditable = false; updateNode()" color="secondary" icon small class="ml-3">
+            <v-icon small>save</v-icon>
+          </v-btn>
+        </v-layout>
+      </dd>
+      <dd v-else class="pl-5 pt-2">
+        <v-layout align-center>
+          <span v-if="node.BusinessStartTime && node.BusinessCloseTime">
+            {{ node.BusinessStartTime }} – {{ node.BusinessCloseTime }} GMT
+          </span>
+          <v-btn @click="isBizHoursEditable = true" color="secondary" icon small>
+            <v-icon small>edit</v-icon>
+          </v-btn>
+        </v-layout>
+      </dd>
+
+      <dt class="title pt-4">First seen</dt>
+      <dd v-if="node.FirstSeen" class="pl-5 pt-2">{{ node.FirstSeen | format }}</dd>
+      <dd v-else class="pl-5 pt-2">–</dd>
+
+      <dt class="title pt-4">Last seen</dt>
+      <dd v-if="node.LastSeen" class="pl-5 pt-2">{{ node.LastSeen | format }}</dd>
+      <dd v-else class="pl-5 pt-2">–</dd>
+
+      <dt class="title pt-4">Uptime</dt>
+      <dd v-if="node.Uptime" class="pl-5 pt-2">{{ node.Uptime | duration }}</dd>
+      <dd v-else class="pl-5 pt-2">–</dd>
+
+      <dt class="title pt-4">Running version</dt>
+      <dd class="pl-5 pt-2">{{ node.RunningVersion && node.RunningVersion.Number || '–' }}</dd>
+
+      <dt class="title pt-4">Configured version</dt>
+      <dd class="pl-5 pt-2">
+        <v-layout align-center min-width>
+          <v-select 
+            :items="versions"
+            :loading="! versions.length" 
+            item-text="Number"
+            item-value="ID"
+            v-model="node.ConfiguredVersionID" />
+
+          <v-btn @click="updateNode" color="secondary" icon small class="ml-3">
+            <v-icon small>save</v-icon>
+          </v-btn>
+        </v-layout>
+      </dd>
+
+      <dt class="title pt-4">Configured by</dt>
+      <dd class="pl-5 pt-2">{{ node.ConfiguredBy || '–' }}</dd>
+
+      <dt class="title pt-4">Operating system</dt>
+      <dd class="pl-5 pt-2">{{ node.OS }}</dd>
+
+      <dt class="title pt-4">Architecture</dt>
+      <dd class="pl-5 pt-2">{{ node.Arch }}</dd>
+    </dl>
+  </v-container>
 </template>
 
 <script>
 import API from "@/shared/api";
-import DataTable from "@/components/DataTable";
-import DefinitionList from "@/components/DefinitionList";
-import { autofocus } from "@/shared/directives";
 import { format, duration } from "@/shared/filters";
-import VueTimepicker from "vue2-timepicker";
 
 export default {
-  components: {
-    DataTable,
-    DefinitionList,
-    VueTimepicker
-  },
-  directives: {
-    autofocus
-  },
   filters: {
     format,
     duration
@@ -259,50 +264,120 @@ export default {
   data() {
     return {
       node: {},
+      task: {
+        headers: [
+          {
+            text: "Type",
+            value: "Type",
+            width: "20%"
+          },
+          {
+            text: "Frequency",
+            sortable: false
+          },
+          {
+            text: "Server",
+            sortable: false
+          },
+          {
+            sortable: false
+          }
+        ],
+        types: [
+          {
+            text: "Ping",
+            value: "ping"
+          },
+          {
+            text: "Speed test",
+            value: "speedTest"
+          },
+          {
+            text: "Reboot",
+            value: "reboot"
+          }
+        ],
+        frequencies: [
+          {
+            text: "Daily",
+            value: "daily"
+          },
+          {
+            text: "Every X hour(s)",
+            value: "everyHours"
+          },
+          {
+            text: "Every X minutes(s)",
+            value: "everyMinutes"
+          },
+          {
+            text: "Advanced",
+            value: "advanced"
+          }
+        ],
+        hours: Array.from(Array(12).keys()).map(num => String(num + 1)),
+        minutes: Array.from(Array(30).keys()).map(num => String(num + 1)),
+        custom: {
+          everyHours: "12",
+          everyMinutes: "15",
+          startTime: "23:45",
+          cron: "45 23 * * *",
+          dialog: false
+        },
+        serversLoading: true
+      },
       newTask: {
         Type: "ping",
         ScheduleName: "daily",
         NamedServerID: 0
       },
       isNicknameEditable: false,
-      newNickname: "",
       isNotesEditable: false,
-      newNotes: "",
       versions: [],
       servers: [],
-      typedServers: [],
-      custom: {
-        everyHours: 12,
-        everyMinutes: 15,
-        startTime: {
-          HH: "23",
-          mm: "45"
-        },
-        cron: ""
-      },
       isBizHoursEditable: false,
       bizHours: {
-        start: {},
-        end: {}
+        dialog: false
       }
     };
+  },
+  watch: {
+    "task.custom.startTime": function(newValue) {
+      const mm = newValue.split(":")[0];
+      const HH = newValue.split(":")[1];
+
+      this.task.custom.cron = `${mm} ${HH} * * *`;
+    },
+    "task.custom.everyHours": function(newValue) {
+      this.task.custom.cron = `0 */${newValue} * * *`;
+    },
+    "task.custom.everyMinutes": function(newValue) {
+      this.task.custom.cron = `*/${newValue} * * * *`;
+    }
   },
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.id}`);
     this.versions = await API.get("version");
     this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
+    this.task.serversLoading = false;
 
     this.newTask.NamedServerID = (this.servers[0] && this.servers[0].ID) || -1;
   },
   methods: {
+    updateNode: async function() {
+      this.node = await API.put(`node/${this.node.ID}`, this.node);
+    },
     taskTypeChanged: async function() {
       this.newTask.NamedServerID = 0;
 
       if (this.newTask.Type != "reboot") {
         this.servers = [];
+        this.task.serversLoading = true;
         this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
         this.newTask.NamedServerID =
           (this.servers[0] && this.servers[0].ID) || -1;
+
+        this.task.serversLoading = false;
       }
     },
     updateCron: function() {
@@ -322,65 +397,33 @@ export default {
 
       this.node.Tasks.push({
         Type: this.newTask.Type,
-        Schedule: this.custom.cron,
+        Schedule: this.task.custom.cron,
         NamedServerID: this.newTask.NamedServerID
       });
 
-      this.node = await API.put(`node/${this.node.ID}`, this.node);
+      this.updateNode();
     },
     convertStartTimeToCron: function() {
+      const mm = this.task.custom.startTime.split(":")[0];
+      const HH = this.task.custom.startTime.split(":")[1];
       // daily at 2345 => 45 23 * * *
-      this.custom.cron = `${this.custom.startTime.mm} ${
-        this.custom.startTime.HH
-      } * * *`;
+      this.task.custom.cron = `${mm} ${HH} * * *`;
     },
     convertHoursToCron: function() {
       // every 7 hours => 0 */7 * * *
-      this.custom.cron = `0 */${this.custom.everyHours} * * *`;
+      this.task.custom.cron = `0 */${this.task.custom.everyHours} * * *`;
     },
     convertMinutesToCron: function() {
       // every 2 minutes => */2 * * * *
-      this.custom.cron = `*/${this.custom.everyMinutes} * * * *`;
+      this.task.custom.cron = `*/${this.task.custom.everyMinutes} * * * *`;
     },
-    removeTask: async function(i) {
-      this.node.Tasks.splice(i, 1); // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
+    removeTask: async function(id) {
+      if (confirm("Are you sure?")) {
+        // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
+        this.node.Tasks = this.node.Tasks.filter(task => task.ID != id);
 
-      this.node = await API.put(`node/${this.node.ID}`, this.node);
-    },
-    updateNickname: async function() {
-      this.node = await API.put(`node/${this.node.ID}`, this.node);
-
-      this.isNicknameEditable = false;
-    },
-    updateNotes: async function() {
-      this.node = await API.put(`node/${this.node.ID}`, this.node);
-
-      this.isNotesEditable = false;
-    },
-    updateVersion: async function() {
-      this.node = await API.put(`node/${this.node.ID}`, this.node);
-    },
-    updateBizHours: function() {
-      this.bizHours.start.HH = this.node.BusinessStartTime.split(":")[0];
-      this.bizHours.start.mm = this.node.BusinessStartTime.split(":")[1] || "";
-
-      this.bizHours.end.HH = this.node.BusinessCloseTime.split(":")[0];
-      this.bizHours.end.mm = this.node.BusinessCloseTime.split(":")[1] || "";
-
-      this.isBizHoursEditable = true;
-    },
-    saveBizHours: async function() {
-      this.node.BusinessStartTime = `${this.bizHours.start.HH}:${
-        this.bizHours.start.mm
-      }`;
-
-      this.node.BusinessCloseTime = `${this.bizHours.end.HH}:${
-        this.bizHours.end.mm
-      }`;
-
-      this.node = await API.put(`node/${this.node.ID}`, this.node);
-
-      this.isBizHoursEditable = false;
+        this.updateNode();
+      }
     }
   },
   computed: {
@@ -395,6 +438,16 @@ export default {
 </script>
 
 <style scoped>
+dd > .layout {
+  max-width: 50%;
+}
+dd > .layout.min-width,
+td > .layout.min-width {
+  max-width: min-content;
+}
+.v-table tfoot tr[no-border-top] {
+  border-top: initial;
+}
 td.no-wrap {
   white-space: nowrap;
 }
