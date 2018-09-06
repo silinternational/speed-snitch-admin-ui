@@ -24,6 +24,9 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: "Count"
+              },
+              ticks: {
+                stepSize: 1
               }
             }
           ]
