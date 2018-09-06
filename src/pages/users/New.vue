@@ -38,6 +38,7 @@
 
 <script>
 import API from "@/shared/api";
+import roles from "@/shared/roles";
 
 export default {
   data() {
@@ -47,7 +48,7 @@ export default {
         Email: "",
         Role: "admin"
       },
-      roles: ["superAdmin", "admin"]
+      roles: roles
     };
   },
   methods: {

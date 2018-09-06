@@ -41,12 +41,13 @@
 
 <script>
 import API from "@/shared/api";
+import roles from "@/shared/roles";
 
 export default {
   data() {
     return {
       user: {},
-      roles: ["superAdmin", "admin"]
+      roles: roles
     };
   },
   async mounted() {

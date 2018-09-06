@@ -12,7 +12,7 @@
       <template slot="items" slot-scope="props">
         <td>{{ props.item.Name }}</td>
         <td>{{ props.item.Email }}</td>
-        <td>{{ props.item.Role }}</td>
+        <td>{{ props.item.Role | prettyRole }}</td>
         <td class="justify-center layout px-0">
           <v-btn @click="props.expanded = !props.expanded" flat icon title="Details" color="primary">
             <v-icon v-if="! props.expanded">expand_more</v-icon>
@@ -46,8 +46,12 @@
 
 <script>
 import API from "@/shared/api";
+import roles from "@/shared/roles";
 
 export default {
+  filters: {
+    prettyRole: uglyRole => roles.find(role => uglyRole == role.value).text
+  },
   data() {
     return {
       users: [],
