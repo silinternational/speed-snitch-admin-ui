@@ -244,7 +244,7 @@
       <dd class="pl-5 pt-2">{{ node.ConfiguredBy || '–' }}</dd>
 
       <dt class="title pt-4">Operating system</dt>
-      <dd class="pl-5 pt-2">{{ node.OS }}</dd>
+      <dd class="pl-5 pt-2"><PlatformLogo :uname="node.OS" /></dd>
 
       <dt class="title pt-4">Architecture</dt>
       <dd class="pl-5 pt-2">{{ node.Arch }}</dd>
@@ -255,8 +255,12 @@
 <script>
 import API from "@/shared/api";
 import { format, duration } from "@/shared/filters";
+import PlatformLogo from "@/components/PlatformLogo";
 
 export default {
+  components: {
+    PlatformLogo
+  },
   filters: {
     format,
     duration

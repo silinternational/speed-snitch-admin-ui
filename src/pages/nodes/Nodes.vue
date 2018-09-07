@@ -16,7 +16,7 @@
           <td>{{ props.item.LastSeen | timeago }}</td>
           <td>{{ props.item.Uptime | duration }}</td>
           <td>{{ props.item.RunningVersion.Number || '–' }}</td>
-          <td>{{ props.item.OS }}/{{ props.item.Arch }}</td>
+          <td><PlatformLogo :uname="props.item.OS" /></td>
         </tr>
       </template>
       <template slot="no-data">
@@ -38,7 +38,7 @@
           <td>{{ props.item.LastSeen | timeago }}</td>
           <td>{{ props.item.Uptime | duration }}</td>
           <td>{{ props.item.RunningVersion.Number || '–' }}</td>
-          <td>{{ props.item.OS }}/{{ props.item.Arch }}</td>
+          <td><PlatformLogo :uname="props.item.OS" /></td>
         </tr>
       </template>
       <template slot="no-data">
@@ -52,10 +52,12 @@
 import API from "@/shared/api";
 import Info from "@/components/Info";
 import { timeago, duration } from "@/shared/filters";
+import PlatformLogo from "@/components/PlatformLogo";
 
 export default {
   components: {
-    Info
+    Info,
+    PlatformLogo
   },
   filters: {
     timeago,
@@ -90,7 +92,7 @@ export default {
           value: "RunningVersion.Number"
         },
         {
-          text: "OS/Arch",
+          text: "Platform",
           value: "OS"
         }
       ],
