@@ -1,5 +1,5 @@
 <template>
-    <LineChart :chart-data="chartInfo" :options="options"/>
+  <LineChart :chart-data="chartInfo" :options="options"/>
 </template>
 
 <script>
@@ -14,9 +14,8 @@ export default {
   data() {
     return {
       options: {
-        title: {
-          display: true,
-          text: "Network downtime"
+        legend: {
+          display: false
         },
         scales: {
           yAxes: [

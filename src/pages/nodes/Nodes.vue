@@ -11,7 +11,9 @@
           </td>
           <td>{{ props.item.Nickname || '–'}}</td>
           <td>
-            <v-btn :href="`#/nodes/${ props.item.ID }/charts`" icon>📈</v-btn>
+            <v-btn :href="`#/nodes/${ props.item.ID }/charts`" icon color="secondary" small>
+              <v-icon small>show_chart</v-icon>
+            </v-btn>
           </td>
           <td>{{ props.item.LastSeen | timeago }}</td>
           <td>{{ props.item.Uptime | duration }}</td>
@@ -33,7 +35,9 @@
           </td>
           <td>{{ props.item.Nickname || '–' }}</td>
           <td>
-            <v-btn :href="`#/nodes/${ props.item.ID }/charts`" icon>📈</v-btn>
+            <v-btn :href="`#/nodes/${ props.item.ID }/charts`" icon color="secondary" small>
+              <v-icon small>show_chart</v-icon>
+            </v-btn>
           </td>
           <td>{{ props.item.LastSeen | timeago }}</td>
           <td>{{ props.item.Uptime | duration }}</td>

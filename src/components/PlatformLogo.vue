@@ -18,7 +18,7 @@ export default {
 <style scoped>
 img {
   height: 100%;
-  max-height: 48px;
+  max-height: 36px;
   padding: 0.5em;
 }
 </style>

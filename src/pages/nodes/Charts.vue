@@ -34,30 +34,78 @@
         v-model="viewBizData" />
     </v-layout>
 
-    <hr>
+    <v-layout v-if="rawData.length" class="elevation-3 my-5">
+      <v-container>
+        <v-layout align-center justify-space-between class="pb-3">
+          <h2 class="headline secondary--text">Speed<span v-if="viewBizData"> (business hours)</span></h2>
 
-    <SpeedChart v-if="!viewBizData && rawData.length" :data="rawData" />
-    <SpeedChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
+          <v-btn :href="`${api.baseURL}/report/node/${node.ID}/raw?type=speedTest&start=${range.start}&end=${range.end}`" flat color="secondary">
+            Download raw data <v-icon right>cloud_download</v-icon>
+          </v-btn>
+        </v-layout>
+
+        <SpeedChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
+        <SpeedChartBiz v-else :data="rawData" :range="range" :node="node" />
+      </v-container>
+    </v-layout>
     
-    <hr v-if="rawData.length">
-    <LatencyChart v-if="!viewBizData && rawData.length" :data="rawData" />
-    <LatencyChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
+    <v-layout v-if="rawData.length" class="elevation-3 my-5">
+      <v-container>
+        <v-layout align-center justify-space-between class="pb-3">
+          <h2 class="headline secondary--text">Latency<span v-if="viewBizData"> (business hours)</span></h2>
 
-    <hr v-if="rawData.length">
-    <PacketLossChart v-if="!viewBizData && rawData.length" :data="rawData" />
-    <PacketLossChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
+          <v-btn :href="`${api.baseURL}/report/node/${node.ID}/raw?type=ping&start=${range.start}&end=${range.end}`" flat color="secondary">
+            Download raw data <v-icon right>cloud_download</v-icon>
+          </v-btn>
+        </v-layout>
 
-    <hr v-if="rawData.length">
-    <RestartsChart v-if="!viewBizData && rawData.length" :data="rawData" />
-    <RestartsChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
+        <LatencyChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
+        <LatencyChartBiz v-else :data="rawData" :range="range" :node="node" />
 
-    <hr v-if="rawData.length">
-    <NetworkOutagesChart v-if="!viewBizData && rawData.length" :data="rawData" />
-    <NetworkOutagesChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
+        <v-layout class="py-3">
+          <h2 class="headline secondary--text">Packet loss<span v-if="viewBizData"> (business hours)</span></h2>
+        </v-layout>
+        <PacketLossChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
+        <PacketLossChartBiz v-else :data="rawData" :range="range" :node="node" />
+      </v-container>
+    </v-layout>
 
-    <hr v-if="rawData.length">
-    <NetworkDowntimeChart v-if="!viewBizData && rawData.length" :data="rawData" />
-    <NetworkDowntimeChartBiz v-if="viewBizData && rawData.length" :data="rawData" />
+    <v-layout v-if="rawData.length" class="elevation-3 my-5">
+      <v-container>
+        <v-layout align-center justify-space-between class="pb-3">
+          <h2 class="headline secondary--text">Restarts<span v-if="viewBizData"> (business hours)</span></h2>
+
+          <v-btn :href="`${api.baseURL}/report/node/${node.ID}/raw?type=restarted&start=${range.start}&end=${range.end}`" flat color="secondary">
+            Download raw data <v-icon right>cloud_download</v-icon>
+          </v-btn>
+        </v-layout>
+
+        <RestartsChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
+        <RestartsChartBiz v-else :data="rawData" :range="range" :node="node" />
+      </v-container>
+    </v-layout>
+
+    <v-layout v-if="rawData.length" class="elevation-3 my-5">
+      <v-container>
+        <v-layout align-center justify-space-between class="pb-3">
+          <h2 class="headline secondary--text">Network outages<span v-if="viewBizData"> (business hours)</span></h2>
+
+          <v-btn :href="`${api.baseURL}/report/node/${node.ID}/raw?type=downtime&start=${range.start}&end=${range.end}`" flat color="secondary">
+            Download raw data <v-icon right>cloud_download</v-icon>
+          </v-btn>
+        </v-layout>
+
+        <NetworkOutagesChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
+        <NetworkOutagesChartBiz v-else :data="rawData" :range="range" :node="node" />
+
+        <v-layout class="py-3">
+          <h2 class="headline secondary--text">Network downtime<span v-if="viewBizData"> (business hours)</span></h2>
+        </v-layout>
+
+        <NetworkDowntimeChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
+        <NetworkDowntimeChartBiz v-else :data="rawData" :range="range" :node="node" />
+      </v-container>
+    </v-layout>
   </v-container>
 </template>
 
@@ -103,7 +151,8 @@ export default {
       },
       today: moment().format("YYYY-MM-DD"),
       rawData: [],
-      viewBizData: false
+      viewBizData: false,
+      api: API.defaults
     };
   },
   async mounted() {
@@ -126,10 +175,6 @@ export default {
 <style scoped>
 .layout > .v-select {
   max-width: 21ch; /* "Business hours only" length plus space */
-}
-
-hr {
-  margin: 2em 0;
 }
 </style>
 
