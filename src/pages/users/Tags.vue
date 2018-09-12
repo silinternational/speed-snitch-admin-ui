@@ -12,7 +12,7 @@
             <Truncate>{{ props.item.Description }}</Truncate>
           </td>
           <td>
-            <v-icon @click="remove(props.index)" color="error" title="Disassociate">remove_circle</v-icon>
+            <v-icon @click="remove(props.item.ID)" color="error" title="Disassociate">remove_circle</v-icon>
           </td>
         </tr>
       </template>
@@ -86,8 +86,8 @@ export default {
       this.user = await API.put(`user/${this.user.ID}`, this.user);
       this.loading = false;
     },
-    remove: async function(i) {
-      this.user.Tags.splice(i, 1); // remove the requested tag id from existing ids for the PUT of the entire node again...don't like this, would prefer to have endpoints for tags...
+    remove: async function(id) {
+      this.user.Tags = this.user.Tags.filter(tag => tag.ID != id);
 
       this.loading = true;
       this.user = await API.put(`user/${this.user.ID}`, this.user);
