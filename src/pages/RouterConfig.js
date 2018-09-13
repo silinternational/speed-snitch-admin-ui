@@ -17,6 +17,9 @@ import EditUser from "@/pages/users/Edit";
 import Versions from "@/pages/versions/Versions";
 import NewVersion from "@/pages/versions/New";
 import EditVersion from "@/pages/versions/Edit";
+import Events from "@/pages/events/Events";
+import NewEvent from "@/pages/events/New";
+import EditEvent from "@/pages/events/Edit";
 
 Vue.use(Router);
 
@@ -93,6 +96,18 @@ export default new Router({
     {
       path: "/versions/new",
       component: NewVersion
+    },
+    {
+      path: "/events",
+      component: Events
+    },
+    {
+      path: "/events/:id/edit",
+      component: EditEvent
+    },
+    {
+      path: "/events/new",
+      component: NewEvent
     }
   ]
 });
