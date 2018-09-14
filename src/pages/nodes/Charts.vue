@@ -44,8 +44,8 @@
           </v-btn>
         </v-layout>
 
-        <SpeedChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
-        <SpeedChartBiz v-else :data="rawData" :range="range" :node="node" />
+        <SpeedChart v-if="!viewBizData" :data="rawData" :range="range" :annotation="annotation" />
+        <SpeedChartBiz v-else :data="rawData" :range="range" :annotation="annotation" />
       </v-container>
     </v-layout>
     
@@ -59,14 +59,14 @@
           </v-btn>
         </v-layout>
 
-        <LatencyChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
-        <LatencyChartBiz v-else :data="rawData" :range="range" :node="node" />
+        <LatencyChart v-if="!viewBizData" :data="rawData" :range="range" :annotation="annotation" />
+        <LatencyChartBiz v-else :data="rawData" :range="range" :annotation="annotation" />
 
         <v-layout class="py-3">
           <h2 class="headline secondary--text">Packet loss<span v-if="viewBizData"> (business hours)</span></h2>
         </v-layout>
-        <PacketLossChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
-        <PacketLossChartBiz v-else :data="rawData" :range="range" :node="node" />
+        <PacketLossChart v-if="!viewBizData" :data="rawData" :range="range" :annotation="annotation" />
+        <PacketLossChartBiz v-else :data="rawData" :range="range" :annotation="annotation" />
       </v-container>
     </v-layout>
 
@@ -80,8 +80,8 @@
           </v-btn>
         </v-layout>
 
-        <RestartsChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
-        <RestartsChartBiz v-else :data="rawData" :range="range" :node="node" />
+        <RestartsChart v-if="!viewBizData" :data="rawData" :range="range" :annotation="annotation" />
+        <RestartsChartBiz v-else :data="rawData" :range="range" :annotation="annotation" />
       </v-container>
     </v-layout>
 
@@ -95,15 +95,15 @@
           </v-btn>
         </v-layout>
 
-        <NetworkOutagesChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
-        <NetworkOutagesChartBiz v-else :data="rawData" :range="range" :node="node" />
+        <NetworkOutagesChart v-if="!viewBizData" :data="rawData" :range="range" :annotation="annotation" />
+        <NetworkOutagesChartBiz v-else :data="rawData" :range="range" :annotation="annotation" />
 
         <v-layout class="py-3">
           <h2 class="headline secondary--text">Network downtime<span v-if="viewBizData"> (business hours)</span></h2>
         </v-layout>
 
-        <NetworkDowntimeChart v-if="!viewBizData" :data="rawData" :range="range" :node="node" />
-        <NetworkDowntimeChartBiz v-else :data="rawData" :range="range" :node="node" />
+        <NetworkDowntimeChart v-if="!viewBizData" :data="rawData" :range="range" :annotation="annotation" />
+        <NetworkDowntimeChartBiz v-else :data="rawData" :range="range" :annotation="annotation" />
       </v-container>
     </v-layout>
   </v-container>
@@ -152,7 +152,11 @@ export default {
       today: moment().format("YYYY-MM-DD"),
       rawData: [],
       viewBizData: false,
-      api: API.defaults
+      api: API.defaults,
+      annotation: {
+        annotations: []
+      },
+      events: []
     };
   },
   async mounted() {
@@ -167,6 +171,28 @@ export default {
           this.range.start
         }&end=${this.range.end}`
       );
+
+      this.events = await API.get(
+        `report/node/${this.$route.params.id}/event?start=${
+          this.range.start
+        }&end=${this.range.end}`
+      );
+
+      this.events.forEach(event => {
+        this.annotation.annotations.push({
+          type: "line",
+          mode: "vertical",
+          borderColor: "red",
+          borderWidth: 0.5,
+          scaleID: "x-axis-0",
+          value: moment(event.Date).format("MMM DD"),
+          label: {
+            enabled: true,
+            position: "top",
+            content: event.Name
+          }
+        });
+      });
     }
   }
 };

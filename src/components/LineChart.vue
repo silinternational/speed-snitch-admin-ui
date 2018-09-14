@@ -2,6 +2,12 @@
 import { Line, mixins } from "vue-chartjs";
 import Chart from "chart.js";
 
+import Vue from "vue";
+
+// needed to import this plugin to make it work.
+import chartjsPluginAnnotation from "chartjs-plugin-annotation";
+Vue.use(chartjsPluginAnnotation); // did this to avoid the lint errors
+
 export default {
   extends: Line,
   mixins: [mixins.reactiveProp],

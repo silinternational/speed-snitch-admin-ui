@@ -1,6 +1,8 @@
 <template>
   <v-container>
-    <h1 class="display-1 secondary--text pb-3">Add a new system-wide event</h1>
+    <h1 class="display-1 secondary--text pb-3">
+      <span>Add a new {{ node.Nickname || 'system-wide' }} event</span>
+    </h1>
 
     <v-container>
       <v-form @submit.prevent="add" ref="form">
@@ -11,10 +13,7 @@
           required 
           :autofocus="true" />
 
-        <v-textarea 
-          label="Description" 
-          v-model="newEvent.Description" 
-          class="pt-3" />
+        <v-textarea label="Description" v-model="newEvent.Description" class="pt-3" />
 
         <v-menu>
           <v-text-field
@@ -30,7 +29,7 @@
         </v-menu>
 
         <v-layout align-center justify-space-between class="pt-3">
-          <v-btn to="/events" color="secondary">Cancel</v-btn>
+          <v-btn :to="$route.params.id ? `/nodes/${this.$route.params.id}` : '/events'" color="secondary">Cancel</v-btn>
 
           <v-btn type="submit" color="primary">Add</v-btn>
         </v-layout>
@@ -50,9 +49,10 @@ export default {
       newEvent: {
         Name: "",
         Description: "",
-        NodeID: 0,
+        NodeID: Number(this.$route.params.id) || 0,
         Date: null
       },
+      node: {},
       today: moment().format("YYYY-MM-DD")
     };
   },
@@ -60,12 +60,21 @@ export default {
     prettyDate: vm =>
       vm.newEvent.Date ? format(vm.newEvent.Date, "MMM D, YYYY") : null
   },
+  async mounted() {
+    if (this.$route.params.id) {
+      this.node = await API.get(`node/${this.$route.params.id}`);
+    }
+  },
   methods: {
     add: async function() {
       if (this.$refs.form.validate()) {
         await API.post("reportingevent", this.newEvent);
 
-        this.$router.push("/events");
+        if (this.$route.params.id) {
+          this.$router.push(`/nodes/${this.$route.params.id}`);
+        } else {
+          this.$router.push("/events");
+        }
       }
     }
   }

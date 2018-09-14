@@ -46,6 +46,14 @@ export default new Router({
       component: Charts
     },
     {
+      path: "/nodes/:id/events/new",
+      component: NewEvent
+    },
+    {
+      path: "/nodes/:nodeId/events/:eventId/edit",
+      component: EditEvent
+    },
+    {
       path: "/servers",
       component: Servers
     },
@@ -102,7 +110,7 @@ export default new Router({
       component: Events
     },
     {
-      path: "/events/:id/edit",
+      path: "/events/:eventId/edit", // didn't use :id since this component is also used by "nodes/:nodeId/events/:eventId/edit"
       component: EditEvent
     },
     {

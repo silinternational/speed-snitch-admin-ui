@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <h1 class="display-1 secondary--text pb-3">Change a system-wide event</h1>
+    <h1 class="display-1 secondary--text pb-3">
+      <span v-if="node.Nickname">Change a(n) {{ node.Nickname }} event</span>
+      <span v-else>Change a system-wide event</span>
+    </h1>
 
     <v-container>
       <v-form @submit.prevent="save" ref="form">
@@ -11,12 +14,7 @@
           required 
           :autofocus="true" />
 
-        <v-textarea 
-          label="Description" 
-          v-model="event.Description" 
-          :rules="[v => !!v || 'Description is required']"
-          required
-          class="pt-3" />
+        <v-textarea label="Description" v-model="event.Description" class="pt-3" />
 
           <v-menu>
             <v-text-field
@@ -32,7 +30,7 @@
           </v-menu>
 
         <v-layout align-center justify-space-between class="pt-3">
-          <v-btn to="/events" color="secondary">Cancel</v-btn>
+          <v-btn :to="$route.params.nodeId ? `/nodes/${this.$route.params.nodeId}` : '/events'" color="secondary">Cancel</v-btn>
 
           <v-btn type="submit" color="primary">Save</v-btn>
         </v-layout>
@@ -50,6 +48,7 @@ export default {
   data() {
     return {
       event: {},
+      node: {},
       today: moment().format("YYYY-MM-DD")
     };
   },
@@ -58,14 +57,22 @@ export default {
       vm.event.Date ? format(vm.event.Date, "MMM D, YYYY") : null
   },
   async mounted() {
-    this.event = await API.get(`reportingevent/${this.$route.params.id}`);
+    this.event = await API.get(`reportingevent/${this.$route.params.eventId}`);
+
+    if (this.$route.params.nodeId) {
+      this.node = await API.get(`node/${this.$route.params.nodeId}`);
+    }
   },
   methods: {
     save: async function() {
       if (this.$refs.form.validate()) {
         await API.put(`reportingevent/${this.event.ID}`, this.event);
 
-        this.$router.push("/events");
+        if (this.$route.params.nodeId) {
+          this.$router.push(`/nodes/${this.$route.params.nodeId}`);
+        } else {
+          this.$router.push("/events");
+        }
       }
     }
   }
@@ -75,6 +82,9 @@ export default {
 <style scoped>
 /* v-container */
 .container {
+  max-width: 70ch;
+}
+.container > form {
   max-width: 50ch;
 }
 </style>

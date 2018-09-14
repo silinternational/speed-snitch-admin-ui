@@ -221,6 +221,39 @@
       <dd v-if="node.Uptime" class="pl-5 pt-2">{{ node.Uptime | duration }}</dd>
       <dd v-else class="pl-5 pt-2">–</dd>
 
+      <dt class="title pt-4">Events</dt>
+      <dd class="pl-5 pt-2">
+        <v-data-table :headers="event.headers" :items="event.associated" :pagination.sync="event.initialSort" 
+                      :loading="event.loading" hide-actions class="elevation-1">
+          <template slot="items" slot-scope="props">
+            <td>{{ props.item.Name }}</td>
+            <td><Truncate>{{ props.item.Description || '–' }}</Truncate></td>
+            <td>{{ props.item.Date | format('MMM D, YYYY') }}</td>
+            <td class="layout justify-center px-0">
+              <v-btn :href="`#/nodes/${ node.ID }/events/${ props.item.ID }/edit`" flat icon title="Update this event" color="secondary">
+                <v-icon small>edit</v-icon>
+              </v-btn>
+              <v-btn @click="removeEvent(props.item.ID)" icon>
+                <v-icon color="error" small>delete</v-icon>
+              </v-btn>
+            </td>
+          </template>
+          <template slot="footer">
+            <tr>
+              <td colspan="3" />
+              <td class="layout justify-center px-0">
+                <v-btn :to="`${ node.ID }/events/new`" color="secondary" flat>
+                  Add event
+                </v-btn>
+              </td>
+            </tr>
+          </template>
+          <template slot="no-data">
+            No events at this time.
+          </template>
+        </v-data-table> 
+      </dd>
+
       <dt class="title pt-4">Running version</dt>
       <dd class="pl-5 pt-2">{{ node.RunningVersion && node.RunningVersion.Number || '–' }}</dd>
 
@@ -255,10 +288,12 @@
 <script>
 import API from "@/shared/api";
 import { format, duration } from "@/shared/filters";
+import Truncate from "@/components/Truncate";
 import PlatformLogo from "@/components/PlatformLogo";
 
 export default {
   components: {
+    Truncate,
     PlatformLogo
   },
   filters: {
@@ -342,6 +377,32 @@ export default {
       isBizHoursEditable: false,
       bizHours: {
         dialog: false
+      },
+      event: {
+        headers: [
+          {
+            text: "Name",
+            value: "Name"
+          },
+          {
+            text: "Description",
+            value: "Description"
+          },
+          {
+            text: "Date",
+            value: "Timestamp"
+          },
+          {
+            sortable: false
+          }
+        ],
+        initialSort: {
+          sortBy: "Timestamp",
+          descending: true
+        },
+        associated: [],
+        loading: true,
+        new: {}
       }
     };
   },
@@ -366,6 +427,11 @@ export default {
     this.task.serversLoading = false;
 
     this.newTask.NamedServerID = (this.servers[0] && this.servers[0].ID) || -1;
+
+    this.event.associated = await API.get(
+      `reportingevent?node_id=${this.node.ID}`
+    );
+    this.event.loading = false;
   },
   methods: {
     updateNode: async function() {
@@ -427,6 +493,18 @@ export default {
         this.node.Tasks = this.node.Tasks.filter(task => task.ID != id);
 
         this.updateNode();
+      }
+    },
+    removeEvent: async function(id) {
+      if (confirm("Are you sure?")) {
+        // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
+        await API.delete(`reportingevent/${id}`);
+
+        this.event.loading = true;
+        this.event.associated = await API.get(
+          `reportingevent?node_id=${this.node.ID}`
+        );
+        this.event.loading = false;
       }
     }
   },

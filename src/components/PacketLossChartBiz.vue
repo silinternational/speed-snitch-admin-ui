@@ -10,7 +10,7 @@ export default {
   components: {
     LineChart
   },
-  props: ["data"],
+  props: ["data", "annotation"],
   data() {
     return {
       options: {
@@ -23,7 +23,8 @@ export default {
               }
             }
           ]
-        }
+        },
+        annotation: this.annotation
       }
     };
   },
