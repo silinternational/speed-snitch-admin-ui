@@ -28,10 +28,14 @@
       <v-btn @click="getChartData" color="secondary">See chart</v-btn>
     </v-layout>
 
-    <v-layout row align-center justify-center>
+    <v-layout column align-center>
       <v-select 
         :items="[{text: 'All available data', value: false}, {text: 'Business hours only', value: true}]"
         v-model="viewBizData" />
+      
+      <span v-if="viewBizData" class="caption">
+        ({{ node.BusinessStartTime }} – {{ node.BusinessCloseTime }} GMT)
+      </span>
     </v-layout>
 
     <v-layout v-if="rawData.length" class="elevation-3 my-5">
