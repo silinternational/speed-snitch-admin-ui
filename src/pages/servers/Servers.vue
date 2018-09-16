@@ -77,14 +77,20 @@ export default {
     };
   },
   async mounted() {
-    this.servers = await API.get("namedserver");
-    this.loading = false;
+    this.getServers();
   },
   methods: {
+    getServers: async function() {
+      this.loading = true;
+      this.servers = await API.get("namedserver");
+      this.loading = false;
+    },
     remove: async function(id) {
-      confirm("Are you sure?") && (await API.delete(`namedserver/${id}`));
+      if (confirm("Are you sure?")) {
+        await API.delete(`namedserver/${id}`);
 
-      this.$router.go();
+        this.getServers();
+      }
     }
   }
 };

@@ -56,14 +56,20 @@ export default {
     };
   },
   async mounted() {
-    this.tags = await API.get("tag");
-    this.loading = false;
+    this.getTags();
   },
   methods: {
+    getTags: async function() {
+      this.loading = true;
+      this.tags = await API.get("tag");
+      this.loading = false;
+    },
     remove: async function(id) {
-      confirm("Are you sure?") && (await API.delete(`tag/${id}`));
+      if (confirm("Are you sure?")) {
+        await API.delete(`tag/${id}`);
 
-      this.$router.go();
+        this.getTags();
+      }
     }
   }
 };

@@ -82,7 +82,7 @@ export default {
       if (confirm("Are you sure?")) {
         await API.delete(`reportingevent/${id}`);
 
-        this.getEvents(); //TODO: would like to see this update pattern used everywhere instead of $router.go()
+        this.getEvents();
       }
     }
   }

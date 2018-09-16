@@ -76,14 +76,20 @@ export default {
     };
   },
   async mounted() {
-    this.users = await API.get("user");
-    this.loading = false;
+    this.getUsers();
   },
   methods: {
+    getUsers: async function() {
+      this.loading = true;
+      this.users = await API.get("user");
+      this.loading = false;
+    },
     remove: async function(id) {
-      confirm("Are you sure?") && (await API.delete(`user/${id}`));
+      if (confirm("Are you sure?")) {
+        await API.delete(`user/${id}`);
 
-      this.$router.go();
+        this.getUsers();
+      }
     }
   }
 };

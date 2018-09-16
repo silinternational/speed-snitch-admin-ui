@@ -56,14 +56,20 @@ export default {
     };
   },
   async mounted() {
-    this.versions = await API.get("version");
-    this.loading = false;
+    this.getVersions();
   },
   methods: {
+    getVersions: async function() {
+      this.loading = true;
+      this.versions = await API.get("version");
+      this.loading = false;
+    },
     remove: async function(id) {
-      confirm("Are you sure?") && (await API.delete(`version/${id}`));
+      if (confirm("Are you sure?")) {
+        await API.delete(`version/${id}`);
 
-      this.$router.go();
+        this.getVersions();
+      }
     }
   }
 };
