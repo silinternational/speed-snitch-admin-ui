@@ -18,7 +18,7 @@
           <td>{{ props.item.LastSeen | timeago }}</td>
           <td>{{ props.item.Uptime | duration }}</td>
           <td>{{ props.item.RunningVersion.Number || '–' }}</td>
-          <td><PlatformLogo :uname="props.item.OS" /></td>
+          <td><PlatformLogo :uname="props.item.OS" :architecture="props.item.Arch" /></td>
         </tr>
       </template>
       <template slot="no-data">
@@ -42,7 +42,7 @@
           <td>{{ props.item.LastSeen | timeago }}</td>
           <td>{{ props.item.Uptime | duration }}</td>
           <td>{{ props.item.RunningVersion.Number || '–' }}</td>
-          <td><PlatformLogo :uname="props.item.OS" /></td>
+          <td><PlatformLogo :uname="props.item.OS" :architecture="props.item.Arch" /></td>
         </tr>
       </template>
       <template slot="no-data">
