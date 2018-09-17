@@ -47,7 +47,7 @@ export default {
             .format("MMM DD")
         );
 
-        counts.push(point.NetworkOutagesCount);
+        counts.push(point.BizNetworkOutagesCount);
       });
 
       return {

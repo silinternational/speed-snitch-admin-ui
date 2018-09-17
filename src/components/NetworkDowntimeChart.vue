@@ -1,5 +1,5 @@
 <template>
-    <LineChart :chart-data="chartInfo" :options="options"/>
+  <LineChart :chart-data="chartInfo" :options="options"/>
 </template>
 
 <script>
@@ -10,13 +10,12 @@ export default {
   components: {
     LineChart
   },
-  props: ["data"],
+  props: ["data", "annotation"],
   data() {
     return {
       options: {
-        title: {
-          display: true,
-          text: "Network downtime"
+        legend: {
+          display: false
         },
         scales: {
           yAxes: [
@@ -27,7 +26,8 @@ export default {
               }
             }
           ]
-        }
+        },
+        annotation: this.annotation
       }
     };
   },

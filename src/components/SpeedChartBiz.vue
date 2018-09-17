@@ -50,13 +50,13 @@ export default {
             .format("MMM DD")
         );
 
-        download.maxes.push(point.DownloadMax.toFixed(1));
-        download.avgs.push(point.DownloadAvg.toFixed(1));
-        download.mins.push(point.DownloadMin.toFixed(1));
+        download.maxes.push(point.BizDownloadMax.toFixed(1));
+        download.avgs.push(point.BizDownloadAvg.toFixed(1));
+        download.mins.push(point.BizDownloadMin.toFixed(1));
 
-        upload.maxes.push(point.UploadMax.toFixed(1));
-        upload.avgs.push(point.UploadAvg.toFixed(1));
-        upload.mins.push(point.UploadMin.toFixed(1));
+        upload.maxes.push(point.BizUploadMax.toFixed(1));
+        upload.avgs.push(point.BizUploadAvg.toFixed(1));
+        upload.mins.push(point.BizUploadMin.toFixed(1));
       });
 
       return {

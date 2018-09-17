@@ -1,5 +1,5 @@
 <template>
-    <LineChart :chart-data="chartInfo" :options="options"/>
+  <LineChart :chart-data="chartInfo" :options="options"/>
 </template>
 
 <script>
@@ -10,13 +10,12 @@ export default {
   components: {
     LineChart
   },
-  props: ["data"],
+  props: ["data", "annotation"],
   data() {
     return {
       options: {
-        title: {
-          display: true,
-          text: "Restarts"
+        legend: {
+          display: false
         },
         scales: {
           yAxes: [
@@ -24,10 +23,14 @@ export default {
               scaleLabel: {
                 display: true,
                 labelString: "Count"
+              },
+              ticks: {
+                stepSize: 1
               }
             }
           ]
-        }
+        },
+        annotation: this.annotation
       }
     };
   },

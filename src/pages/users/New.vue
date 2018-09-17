@@ -1,48 +1,46 @@
 <template>
-  <section>
-    <h1>Add a new user</h1>
+  <v-container>
+    <h1 class="display-1 secondary--text pb-3">Add a new user</h1>
 
-    <form @submit.prevent="add">
-      <label>
-        Name: <input v-model="newUser.Name" v-autofocus>
-      </label>
-      
-      <label>
-        Email: <input type="email" v-model="newUser.Email">
-      </label>
-      
-      <label>
-        Role:
-        <select v-model="newUser.Role">
-          <option v-for="_role in roles" :key="_role" :value="_role">{{ _role }}</option>
-        </select>
-      </label>
+    <v-form @submit.prevent="add" ref="form">
+      <v-text-field 
+        label="Name" 
+        v-model="newUser.Name" 
+        :rules="[v => !!v || 'Name is required']"
+        required 
+        :autofocus="true" />
 
-      <ButtonBar>
-        <router-link to="/users" tag="button">Back</router-link>
-        
-        <Spacer/>
-        
-        <button>Add</button>
-      </ButtonBar>
-    </form>
-  </section>
+      <v-text-field 
+        label="Email" 
+        v-model="newUser.Email" 
+        :rules="[
+          v => !!v || 'Email is required',
+          // W3C's HTML5 type=email regex
+          v => /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(v) || 'Invalid email'
+        ]"
+        required
+        class="pt-3" />
+      
+      <v-select 
+        label="Role"
+        v-model="newUser.Role" 
+        :items="roles"
+        class="pt-3"></v-select>
+
+      <v-layout align-center justify-space-between class="pt-3">
+        <v-btn to="/users" color="secondary">Cancel</v-btn>
+
+        <v-btn type="submit" color="primary">Add</v-btn>
+      </v-layout>
+    </v-form>
+  </v-container>
 </template>
 
 <script>
-import ButtonBar from "@/components/ButtonBar";
-import Spacer from "@/components/Spacer";
 import API from "@/shared/api";
-import { autofocus } from "@/shared/directives";
+import roles from "@/shared/roles";
 
 export default {
-  components: {
-    ButtonBar,
-    Spacer
-  },
-  directives: {
-    autofocus
-  },
   data() {
     return {
       newUser: {
@@ -50,26 +48,24 @@ export default {
         Email: "",
         Role: "admin"
       },
-      roles: ["superAdmin", "admin"]
+      roles: roles
     };
   },
   methods: {
     add: async function() {
-      const user = await API.post(`user`, this.newUser);
+      if (this.$refs.form.validate()) {
+        await API.post("user", this.newUser);
 
-      this.$router.push(`/users?new=${user.ID}`);
+        this.$router.push("/users");
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-form > * {
-  padding-bottom: 1em;
+/* v-container */
+.container {
+  max-width: 50ch;
 }
 </style>

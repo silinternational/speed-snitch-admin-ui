@@ -5,22 +5,21 @@ import Node from "@/pages/nodes/Node";
 import NodeTags from "@/pages/nodes/Tags";
 import Charts from "@/pages/nodes/Charts";
 import Servers from "@/pages/servers/Servers";
-import Server from "@/pages/servers/Server";
 import NewServer from "@/pages/servers/New";
 import EditServer from "@/pages/servers/Edit";
 import Tags from "@/pages/tags/Tags";
-import Tag from "@/pages/tags/Tag";
 import NewTag from "@/pages/tags/New";
 import EditTag from "@/pages/tags/Edit";
 import Users from "@/pages/users/Users";
-import User from "@/pages/users/User";
 import UserTags from "@/pages/users/Tags";
 import NewUser from "@/pages/users/New";
 import EditUser from "@/pages/users/Edit";
 import Versions from "@/pages/versions/Versions";
-import Version from "@/pages/versions/Version";
 import NewVersion from "@/pages/versions/New";
 import EditVersion from "@/pages/versions/Edit";
+import Events from "@/pages/events/Events";
+import NewEvent from "@/pages/events/New";
+import EditEvent from "@/pages/events/Edit";
 
 Vue.use(Router);
 
@@ -47,6 +46,14 @@ export default new Router({
       component: Charts
     },
     {
+      path: "/nodes/:id/events/new",
+      component: NewEvent
+    },
+    {
+      path: "/nodes/:nodeId/events/:eventId/edit",
+      component: EditEvent
+    },
+    {
       path: "/servers",
       component: Servers
     },
@@ -59,10 +66,6 @@ export default new Router({
       component: NewServer
     },
     {
-      path: "/servers/:id",
-      component: Server
-    },
-    {
       path: "/tags",
       component: Tags
     },
@@ -73,10 +76,6 @@ export default new Router({
     {
       path: "/tags/new",
       component: NewTag
-    },
-    {
-      path: "/tags/:id",
-      component: Tag
     },
     {
       path: "/users",
@@ -95,10 +94,6 @@ export default new Router({
       component: NewUser
     },
     {
-      path: "/users/:id",
-      component: User
-    },
-    {
       path: "/versions",
       component: Versions
     },
@@ -111,8 +106,16 @@ export default new Router({
       component: NewVersion
     },
     {
-      path: "/versions/:id",
-      component: Version
+      path: "/events",
+      component: Events
+    },
+    {
+      path: "/events/:eventId/edit", // didn't use :id since this component is also used by "nodes/:nodeId/events/:eventId/edit"
+      component: EditEvent
+    },
+    {
+      path: "/events/new",
+      component: NewEvent
     }
   ]
 });

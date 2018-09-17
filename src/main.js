@@ -1,4 +1,6 @@
+import "@babel/polyfill";
 import Vue from "vue";
+import "./plugins/vuetify";
 import App from "@/pages/App";
 import configuredRouter from "@/pages/RouterConfig";
 import API from "@/shared/api";
@@ -13,5 +15,5 @@ function startApp(user = {}) {
   new Vue({
     render: h => h(App),
     router: configuredRouter
-  }).$mount(`#${App.data().id}`);
+  }).$mount(`#app`);
 }

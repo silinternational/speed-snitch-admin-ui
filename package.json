@@ -1,34 +1,35 @@
 {
   "name": "speed-snitch-admin-ui",
   "version": "1.0.0",
-  "description": "Speed snitch Administration",
-  "author": "Billy Clark <billy_clark@sil.org>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist && npm prune"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "chart.js": "^2.7.2",
+    "chartjs-plugin-annotation": "^0.5.7",
     "moment": "^2.22.1",
-    "normalize.css": "^8.0.0",
-    "vue": "^2.5.16",
-    "vue-chartjs": "^3.3.2",
+    "vue": "^2.5.17",
+    "vue-chartjs": "^3.4.0",
     "vue-router": "^3.0.1",
-    "vue2-timepicker": "^0.1.4",
-    "vuejs-datepicker": "^1.5.2"
+    "vuetify": "^1.2.3"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.0-beta.15",
-    "@vue/cli-plugin-eslint": "^3.0.0-beta.15",
-    "@vue/cli-service": "^3.0.0-beta.15",
-    "vue-template-compiler": "^2.5.16",
-    "rimraf": "^2.6.2"
+    "@babel/polyfill": "^7.0.0",
+    "@vue/cli-plugin-babel": "^3.0.1",
+    "@vue/cli-plugin-eslint": "^3.0.1",
+    "@vue/cli-service": "^3.0.1",
+    "babel-plugin-transform-imports": "^1.5.1",
+    "rimraf": "^2.6.2",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.1",
+    "vue-cli-plugin-vuetify": "^0.1.6",
+    "vue-template-compiler": "^2.5.17"
   },
-  "TODO:": "does it make more sense to have eslint settings built into project like this or in vscode??? I'm going to uninstall the vscode extension for now",
   "eslintConfig": {
     "root": true,
     "env": {
@@ -52,5 +53,8 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "author": "Billy Clark <billy_clark@sil.org>",
+  "description": "Speed snitch Administration",
+  "TODO:": "does it make more sense to have eslint settings built into project like this or in vscode??? I'm going to uninstall the vscode extension for now"
 }

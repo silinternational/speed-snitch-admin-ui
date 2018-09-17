@@ -22,10 +22,7 @@ export default {
             {
               scaleLabel: {
                 display: true,
-                labelString: "Count"
-              },
-              ticks: {
-                stepSize: 1
+                labelString: "Seconds"
               }
             }
           ]
@@ -47,7 +44,7 @@ export default {
             .format("MMM DD")
         );
 
-        counts.push(point.NetworkOutagesCount);
+        counts.push(point.BizNetworkDowntimeSeconds);
       });
 
       return {
@@ -55,7 +52,7 @@ export default {
         // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
         datasets: [
           {
-            label: `Outages`,
+            label: `Downtime`,
             borderColor: "rgba(255, 130, 0, 0.6)",
             data: counts
           }

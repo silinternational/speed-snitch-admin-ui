@@ -47,7 +47,7 @@ export default {
             .format("MMM DD")
         );
 
-        counts.push(point.NetworkOutagesCount);
+        counts.push(point.BizRestartsCount);
       });
 
       return {
@@ -55,7 +55,7 @@ export default {
         // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
         datasets: [
           {
-            label: `Outages`,
+            label: `Restarts`,
             borderColor: "rgba(255, 130, 0, 0.6)",
             data: counts
           }

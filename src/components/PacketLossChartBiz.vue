@@ -19,7 +19,7 @@ export default {
             {
               scaleLabel: {
                 display: true,
-                labelString: "Megabits per second"
+                labelString: "Percentage of packets lost (%)"
               }
             }
           ]
@@ -31,16 +31,9 @@ export default {
   computed: {
     chartInfo: vm => {
       const labels = [],
-        download = {
-          maxes: [],
-          avgs: [],
-          mins: []
-        },
-        upload = {
-          maxes: [],
-          avgs: [],
-          mins: []
-        };
+        maxes = [],
+        avgs = [],
+        mins = [];
 
       vm.data.forEach(point => {
         labels.push(
@@ -50,13 +43,9 @@ export default {
             .format("MMM DD")
         );
 
-        download.maxes.push(point.DownloadMax.toFixed(1));
-        download.avgs.push(point.DownloadAvg.toFixed(1));
-        download.mins.push(point.DownloadMin.toFixed(1));
-
-        upload.maxes.push(point.UploadMax.toFixed(1));
-        upload.avgs.push(point.UploadAvg.toFixed(1));
-        upload.mins.push(point.UploadMin.toFixed(1));
+        maxes.push(point.BizPacketLossMax.toFixed(1));
+        avgs.push(point.BizPacketLossAvg.toFixed(1));
+        mins.push(point.BizPacketLossMin.toFixed(1));
       });
 
       return {
@@ -64,34 +53,19 @@ export default {
         // http://www.chartjs.org/docs/latest/charts/line.html#dataset-properties
         datasets: [
           {
-            label: `Max download (${max(download.maxes)} Mbps)`,
+            label: `Max loss (${max(maxes)} %)`,
             borderColor: "rgba(255, 130, 0, 0.6)",
-            data: download.maxes
+            data: maxes
           },
           {
-            label: `Average download (${avg(download.avgs)} Mbps)`,
+            label: `Average loss (${avg(avgs)} %)`,
             borderColor: "rgba(255, 130, 0, 1)",
-            data: download.avgs
+            data: avgs
           },
           {
-            label: `Min download (${min(download.mins)} Mbps)`,
+            label: `Min loss (${min(mins)} %)`,
             borderColor: "rgba(255, 130, 0, 0.2)",
-            data: download.mins
-          },
-          {
-            label: `Max upload (${max(upload.maxes)} Mbps)`,
-            borderColor: "rgba(3, 74, 97, 0.6)",
-            data: upload.maxes
-          },
-          {
-            label: `Average upload (${avg(upload.avgs)} Mbps)`,
-            borderColor: "rgba(3, 74, 97, 1)",
-            data: upload.avgs
-          },
-          {
-            label: `Min upload (${min(upload.mins)} Mbps)`,
-            borderColor: "rgba(3, 74, 97, 0.2)",
-            data: upload.mins
+            data: mins
           }
         ]
       };
