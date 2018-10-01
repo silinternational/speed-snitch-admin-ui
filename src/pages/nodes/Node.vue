@@ -99,7 +99,8 @@
             </tr>
 
             <tr no-border-top>
-              <td></td>
+              <td>
+              </td>
               <td>
                 <v-layout v-if="newTask.ScheduleName == 'daily'" row align-center class="pb-3">
                   <v-dialog ref="dialog" v-model="task.custom.dialog" persistent width="290">
@@ -135,7 +136,17 @@
                   <v-text-field label="Cron schedule" v-model="task.custom.cron" />
                 </v-layout>
               </td>
-              <td></td>
+              <td>
+                <span v-if="newTask.Type == 'speedTest'" class="caption">
+                  <v-icon color="warning" class="pr-1">warning</v-icon>
+                  <span v-if="newTask.ScheduleName == 'advanced'">
+                     When estimating your monthly usage, please note each test will use approximately <span class="body-2">{{ task.mbPerTest }} MB</span>.
+                  </span>
+                  <span v-else>
+                    This configuration will use approximately <span class="body-2">{{ gbPerMonth }} GB</span> per month.
+                  </span>
+                </span>
+              </td>
             </tr>
           </template>
           <template slot="no-data">
@@ -286,10 +297,10 @@
 </template>
 
 <script>
-import API from "@/shared/api";
-import { format, duration } from "@/shared/filters";
-import Truncate from "@/components/Truncate";
-import PlatformLogo from "@/components/PlatformLogo";
+import API from '@/shared/api';
+import { format, duration } from '@/shared/filters';
+import Truncate from '@/components/Truncate';
+import PlatformLogo from '@/components/PlatformLogo';
 
 export default {
   components: {
@@ -306,16 +317,16 @@ export default {
       task: {
         headers: [
           {
-            text: "Type",
-            value: "Type",
-            width: "20%"
+            text: 'Type',
+            value: 'Type',
+            width: '20%'
           },
           {
-            text: "Frequency",
+            text: 'Frequency',
             sortable: false
           },
           {
-            text: "Server",
+            text: 'Server',
             sortable: false
           },
           {
@@ -324,50 +335,51 @@ export default {
         ],
         types: [
           {
-            text: "Ping",
-            value: "ping"
+            text: 'Ping',
+            value: 'ping'
           },
           {
-            text: "Speed test",
-            value: "speedTest"
+            text: 'Speed test',
+            value: 'speedTest'
           },
           {
-            text: "Reboot",
-            value: "reboot"
+            text: 'Reboot',
+            value: 'reboot'
           }
         ],
         frequencies: [
           {
-            text: "Daily",
-            value: "daily"
+            text: 'Daily',
+            value: 'daily'
           },
           {
-            text: "Every X hour(s)",
-            value: "everyHours"
+            text: 'Every X hour(s)',
+            value: 'everyHours'
           },
           {
-            text: "Every X minutes(s)",
-            value: "everyMinutes"
+            text: 'Every X minutes(s)',
+            value: 'everyMinutes'
           },
           {
-            text: "Advanced",
-            value: "advanced"
+            text: 'Advanced',
+            value: 'advanced'
           }
         ],
         hours: Array.from(Array(12).keys()).map(num => String(num + 1)),
         minutes: Array.from(Array(30).keys()).map(num => String(num + 1)),
         custom: {
-          everyHours: "12",
-          everyMinutes: "15",
-          startTime: "23:45",
-          cron: "45 23 * * *",
+          everyHours: '12',
+          everyMinutes: '15',
+          startTime: '23:45',
+          cron: '45 23 * * *',
           dialog: false
         },
-        serversLoading: true
+        serversLoading: true,
+        mbPerTest: 112
       },
       newTask: {
-        Type: "ping",
-        ScheduleName: "daily",
+        Type: 'ping',
+        ScheduleName: 'daily',
         NamedServerID: 0
       },
       isNicknameEditable: false,
@@ -381,23 +393,23 @@ export default {
       event: {
         headers: [
           {
-            text: "Name",
-            value: "Name"
+            text: 'Name',
+            value: 'Name'
           },
           {
-            text: "Description",
-            value: "Description"
+            text: 'Description',
+            value: 'Description'
           },
           {
-            text: "Date",
-            value: "Timestamp"
+            text: 'Date',
+            value: 'Timestamp'
           },
           {
             sortable: false
           }
         ],
         initialSort: {
-          sortBy: "Timestamp",
+          sortBy: 'Timestamp',
           descending: true
         },
         associated: [],
@@ -407,22 +419,22 @@ export default {
     };
   },
   watch: {
-    "task.custom.startTime": function(newValue) {
-      const mm = newValue.split(":")[0];
-      const HH = newValue.split(":")[1];
+    'task.custom.startTime': function(newValue) {
+      const mm = newValue.split(':')[0];
+      const HH = newValue.split(':')[1];
 
       this.task.custom.cron = `${mm} ${HH} * * *`;
     },
-    "task.custom.everyHours": function(newValue) {
+    'task.custom.everyHours': function(newValue) {
       this.task.custom.cron = `0 */${newValue} * * *`;
     },
-    "task.custom.everyMinutes": function(newValue) {
+    'task.custom.everyMinutes': function(newValue) {
       this.task.custom.cron = `*/${newValue} * * * *`;
     }
   },
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.id}`);
-    this.versions = await API.get("version");
+    this.versions = await API.get('version');
     this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
     this.task.serversLoading = false;
 
@@ -440,7 +452,7 @@ export default {
     taskTypeChanged: async function() {
       this.newTask.NamedServerID = 0;
 
-      if (this.newTask.Type != "reboot") {
+      if (this.newTask.Type != 'reboot') {
         this.servers = [];
         this.task.serversLoading = true;
         this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
@@ -452,10 +464,10 @@ export default {
     },
     updateCron: function() {
       switch (this.newTask.ScheduleName) {
-        case "everyHours":
+        case 'everyHours':
           this.convertHoursToCron();
           break;
-        case "everyMinutes":
+        case 'everyMinutes':
           this.convertMinutesToCron();
           break;
         default:
@@ -474,8 +486,8 @@ export default {
       this.updateNode();
     },
     convertStartTimeToCron: function() {
-      const mm = this.task.custom.startTime.split(":")[0];
-      const HH = this.task.custom.startTime.split(":")[1];
+      const mm = this.task.custom.startTime.split(':')[0];
+      const HH = this.task.custom.startTime.split(':')[1];
       // daily at 2345 => 45 23 * * *
       this.task.custom.cron = `${mm} ${HH} * * *`;
     },
@@ -488,7 +500,7 @@ export default {
       this.task.custom.cron = `*/${this.task.custom.everyMinutes} * * * *`;
     },
     removeTask: async function(id) {
-      if (confirm("Are you sure?")) {
+      if (confirm('Are you sure?')) {
         // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
         this.node.Tasks = this.node.Tasks.filter(task => task.ID != id);
 
@@ -496,7 +508,7 @@ export default {
       }
     },
     removeEvent: async function(id) {
-      if (confirm("Are you sure?")) {
+      if (confirm('Are you sure?')) {
         // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
         await API.delete(`reportingevent/${id}`);
 
@@ -514,7 +526,21 @@ export default {
         vm.node.Coordinates
       }&zoom=10&size=640x200&sensor=false&markers=${vm.node.Coordinates}&key=${
         process.env.VUE_APP_GOOGLE_MAPS_API_KEY
-      }`
+      }`,
+    gbPerMonth: vm => {
+      const daysPerMonth = 30;
+      var testsPerDay = 1;
+
+      if (vm.newTask.ScheduleName == 'everyHours') {
+        testsPerDay = 24 / vm.task.custom.everyHours;
+      } else if (vm.newTask.ScheduleName == 'everyMinutes') {
+        testsPerDay = (60 / vm.task.custom.everyMinutes) * 24;
+      }
+
+      const mbPerMonth = vm.task.mbPerTest * testsPerDay * daysPerMonth;
+
+      return Number(mbPerMonth / 1000).toLocaleString();
+    }
   }
 };
 </script>
