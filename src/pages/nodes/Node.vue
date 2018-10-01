@@ -99,8 +99,7 @@
             </tr>
 
             <tr no-border-top>
-              <td>
-              </td>
+              <td></td>
               <td>
                 <v-layout v-if="newTask.ScheduleName == 'daily'" row align-center class="pb-3">
                   <v-dialog ref="dialog" v-model="task.custom.dialog" persistent width="290">
