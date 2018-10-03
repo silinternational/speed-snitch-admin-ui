@@ -56,7 +56,10 @@
         <v-data-table :headers="task.headers" :items="node.Tasks" hide-actions class="elevation-1">
           <template slot="items" slot-scope="props">
             <td>{{ props.item.Type }}</td>
-            <td>{{ props.item.Schedule }}</td>
+            <td>
+              {{ props.item.Schedule }}
+              <a :href="`https://crontab.guru/#${props.item.Schedule}`" target="_blank" class="caption pl-2">(in plain english)</a>
+            </td>
             <td>{{ (props.item.NamedServer && props.item.NamedServer.Name) || "–" }}</td>
             <td class="justify-center layout px-0">
               <v-btn @click="removeTask(props.item.ID)" icon>
@@ -485,8 +488,8 @@ export default {
       this.updateNode();
     },
     convertStartTimeToCron: function() {
-      const mm = this.task.custom.startTime.split(':')[0];
-      const HH = this.task.custom.startTime.split(':')[1];
+      const HH = this.task.custom.startTime.split(':')[0];
+      const mm = this.task.custom.startTime.split(':')[1];
       // daily at 2345 => 45 23 * * *
       this.task.custom.cron = `${mm} ${HH} * * *`;
     },
