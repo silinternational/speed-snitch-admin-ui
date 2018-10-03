@@ -422,16 +422,13 @@ export default {
   },
   watch: {
     'task.custom.startTime': function(newValue) {
-      const mm = newValue.split(':')[0];
-      const HH = newValue.split(':')[1];
-
-      this.task.custom.cron = `${mm} ${HH} * * *`;
+      this.convertStartTimeToCron(newValue);
     },
     'task.custom.everyHours': function(newValue) {
-      this.task.custom.cron = `0 */${newValue} * * *`;
+      this.convertHoursToCron(newValue);
     },
     'task.custom.everyMinutes': function(newValue) {
-      this.task.custom.cron = `*/${newValue} * * * *`;
+      this.convertMinutesToCron(newValue);
     }
   },
   async mounted() {
@@ -487,19 +484,21 @@ export default {
 
       this.updateNode();
     },
-    convertStartTimeToCron: function() {
-      const HH = this.task.custom.startTime.split(':')[0];
-      const mm = this.task.custom.startTime.split(':')[1];
+    convertStartTimeToCron: function(startTime = this.task.custom.startTime) {
+      const HH = startTime.split(':')[0];
+      const mm = startTime.split(':')[1];
       // daily at 2345 => 45 23 * * *
       this.task.custom.cron = `${mm} ${HH} * * *`;
     },
-    convertHoursToCron: function() {
+    convertHoursToCron: function(everyHours = this.task.custom.everyHours) {
       // every 7 hours => 0 */7 * * *
-      this.task.custom.cron = `0 */${this.task.custom.everyHours} * * *`;
+      this.task.custom.cron = `0 */${everyHours} * * *`;
     },
-    convertMinutesToCron: function() {
+    convertMinutesToCron: function(
+      everyMinutes = this.task.custom.everyMinutes
+    ) {
       // every 2 minutes => */2 * * * *
-      this.task.custom.cron = `*/${this.task.custom.everyMinutes} * * * *`;
+      this.task.custom.cron = `*/${everyMinutes} * * * *`;
     },
     removeTask: async function(id) {
       if (confirm('Are you sure?')) {
