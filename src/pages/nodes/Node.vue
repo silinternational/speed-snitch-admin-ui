@@ -3,8 +3,8 @@
     <v-layout align-center justify-space-between row fill-height class="pb-4">
       <h1 class="display-1 secondary--text">Node</h1>
 
-      <v-btn :to="`${ node.ID }/charts`" color="secondary" round>
-        charts <v-icon right>show_chart</v-icon>
+      <v-btn :to="`${ node.ID }/charts`" color="secondary" round>charts
+        <v-icon right>show_chart</v-icon>
       </v-btn>
     </v-layout>
 
@@ -18,7 +18,7 @@
       </dd>
       <dd v-else class="pl-5 pt-2">
         <v-layout align-center>
-          <v-text-field v-model="node.Nickname" :autofocus="true" />
+          <v-text-field v-model="node.Nickname" :autofocus="true"/>
           <v-btn @click="isNicknameEditable = false; updateNode()" color="secondary" icon small>
             <v-icon small>save</v-icon>
           </v-btn>
@@ -26,8 +26,10 @@
       </dd>
 
       <dt class="title pt-2">Location</dt>
-      <dd  class="pl-5 pt-2">{{ node.Location }}</dd>
-      <dd class="pl-5 pt-2"><img :src="mapUrl"></dd>
+      <dd class="pl-5 pt-2">{{ node.Location }}</dd>
+      <dd class="pl-5 pt-2">
+        <img :src="mapUrl">
+      </dd>
 
       <dt class="title pt-4">MAC address</dt>
       <dd class="pl-5 pt-2">{{ node.MacAddr }}</dd>
@@ -44,7 +46,7 @@
       </dd>
       <dd v-else class="pl-5 pt-2">
         <v-layout align-center>
-          <v-text-field v-model="node.Notes" :autofocus="true" />
+          <v-text-field v-model="node.Notes" :autofocus="true"/>
           <v-btn @click="isNotesEditable = false; updateNode()" color="secondary" icon small>
             <v-icon small>save</v-icon>
           </v-btn>
@@ -58,7 +60,11 @@
             <td>{{ props.item.Type }}</td>
             <td>
               {{ props.item.Schedule }}
-              <a :href="`https://crontab.guru/#${props.item.Schedule}`" target="_blank" class="caption pl-2">(in plain english)</a>
+              <a
+                :href="`https://crontab.guru/#${props.item.Schedule}`"
+                target="_blank"
+                class="caption pl-2"
+              >(in plain english)</a>
             </td>
             <td>{{ (props.item.NamedServer && props.item.NamedServer.Name) || "–" }}</td>
             <td class="justify-center layout px-0">
@@ -70,19 +76,17 @@
           <template slot="footer">
             <tr>
               <td>
-                <v-select 
-                  :items="task.types"
-                  v-model="newTask.Type"
-                  @change="taskTypeChanged()" />
+                <v-select :items="task.types" v-model="newTask.Type" @change="taskTypeChanged()"/>
               </td>
               <td>
-                <v-select 
+                <v-select
                   :items="task.frequencies"
                   v-model="newTask.ScheduleName"
-                  @change="updateCron()" />
+                  @change="updateCron()"
+                />
               </td>
               <td>
-                <v-select 
+                <v-select
                   v-if="newTask.Type != 'reboot'"
                   :items="servers"
                   :loading="task.serversLoading"
@@ -90,7 +94,8 @@
                   item-text="Name"
                   item-value="ID"
                   v-model="newTask.NamedServerID"
-                  @change="updateCron()" />
+                  @change="updateCron()"
+                />
                 <span v-else>N/A</span>
               </td>
 
@@ -111,67 +116,81 @@
                       label="Starting at"
                       v-model="task.custom.startTime"
                       prepend-icon="access_time"
-                      readonly />
+                      readonly
+                    />
                     <v-time-picker v-model="task.custom.startTime" actions>
-                      <v-spacer />
+                      <v-spacer/>
                       <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
                     </v-time-picker>
                   </v-dialog>
                 </v-layout>
-                <v-layout v-else-if="newTask.ScheduleName == 'everyHours'" row align-center min-width>
-                  Every
-                  <v-select 
-                    :items="task.hours"
-                    v-model="task.custom.everyHours"
-                    class="px-3" />
-                  hour(s).
+                <v-layout
+                  v-else-if="newTask.ScheduleName == 'everyHours'"
+                  row
+                  align-center
+                  min-width
+                >Every
+                  <v-select :items="task.hours" v-model="task.custom.everyHours" class="px-3"/>hour(s).
                 </v-layout>
-                <v-layout v-else-if="newTask.ScheduleName == 'everyMinutes'" row align-center min-width>
-                  Every
-                  <v-select 
-                    :items="task.minutes"
-                    v-model="task.custom.everyMinutes"
-                    class="px-3"  />
-                  minute(s).
+                <v-layout
+                  v-else-if="newTask.ScheduleName == 'everyMinutes'"
+                  row
+                  align-center
+                  min-width
+                >Every
+                  <v-select :items="task.minutes" v-model="task.custom.everyMinutes" class="px-3"/>minute(s).
                 </v-layout>
                 <v-layout v-else row align-center>
-                  <v-text-field label="Cron schedule" v-model="task.custom.cron" />
+                  <v-text-field label="Cron schedule" v-model="task.custom.cron"/>
                 </v-layout>
               </td>
               <td>
                 <span v-if="newTask.Type == 'speedTest'" class="caption">
                   <v-icon color="warning" class="pr-1">warning</v-icon>
                   <span v-if="newTask.ScheduleName == 'advanced'">
-                     When estimating your monthly usage, please note each test will use approximately <span class="body-2">{{ task.mbPerTest }} MB</span>.
+                    When estimating your monthly usage, please note each test will use approximately
+                    <span
+                      class="body-2"
+                    >{{ task.mbPerTest }} MB</span>.
                   </span>
                   <span v-else>
-                    This configuration will use approximately <span class="body-2">{{ gbPerMonth }} GB</span> per month.
+                    This configuration will use approximately
+                    <span
+                      class="body-2"
+                    >{{ gbPerMonth }} GB</span> per month.
                   </span>
                 </span>
               </td>
             </tr>
           </template>
-          <template slot="no-data">
-            No tasks at this time.
-          </template>
-        </v-data-table> 
+          <template slot="no-data">No tasks at this time.</template>
+        </v-data-table>
       </dd>
 
       <dt class="title pt-4">Tags</dt>
       <dd v-if="node.Tags && node.Tags.length" class="pl-5 pt-2">
         <v-layout align-center>
-          <v-chip v-for="_tag in node.Tags" :key="_tag.ID">
-            {{ _tag.Name }}
-          </v-chip>
-          <v-btn v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" color="secondary" icon small>
+          <v-chip v-for="_tag in node.Tags" :key="_tag.ID">{{ _tag.Name }}</v-chip>
+          <v-btn
+            v-if="$user.Role == 'superAdmin'"
+            :to="`${ node.ID }/tags`"
+            color="secondary"
+            icon
+            small
+          >
             <v-icon small>edit</v-icon>
           </v-btn>
         </v-layout>
       </dd>
       <dd v-else class="pl-5 pt-2">
-        <v-layout align-center>
-          –
-          <v-btn v-if="$user.Role == 'superAdmin'" :to="`${ node.ID }/tags`" color="secondary" icon small>
+        <v-layout align-center>–
+          <v-btn
+            v-if="$user.Role == 'superAdmin'"
+            :to="`${ node.ID }/tags`"
+            color="secondary"
+            icon
+            small
+          >
             <v-icon small>library_add</v-icon>
           </v-btn>
         </v-layout>
@@ -186,36 +205,43 @@
               label="Starting at"
               v-model="node.BusinessStartTime"
               prepend-icon="access_time"
-              readonly />
+              readonly
+            />
             <v-time-picker v-model="node.BusinessStartTime" actions>
-              <v-spacer />
+              <v-spacer/>
               <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
             </v-time-picker>
           </v-dialog>
-          
+
           <v-dialog ref="dialog" v-model="bizHours.dialog" persistent width="290">
             <v-text-field
               slot="activator"
               label="Ending at"
               v-model="node.BusinessCloseTime"
               prepend-icon="access_time"
-              readonly />
+              readonly
+            />
             <v-time-picker v-model="node.BusinessCloseTime" actions>
-              <v-spacer />
+              <v-spacer/>
               <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
             </v-time-picker>
-          </v-dialog>
-          GMT
-          <v-btn @click="isBizHoursEditable = false; updateNode()" color="secondary" icon small class="ml-3">
+          </v-dialog>GMT
+          <v-btn
+            @click="isBizHoursEditable = false; updateNode()"
+            color="secondary"
+            icon
+            small
+            class="ml-3"
+          >
             <v-icon small>save</v-icon>
           </v-btn>
         </v-layout>
       </dd>
       <dd v-else class="pl-5 pt-2">
         <v-layout align-center>
-          <span v-if="node.BusinessStartTime && node.BusinessCloseTime">
-            {{ node.BusinessStartTime }} – {{ node.BusinessCloseTime }} GMT
-          </span>
+          <span
+            v-if="node.BusinessStartTime && node.BusinessCloseTime"
+          >{{ node.BusinessStartTime }} – {{ node.BusinessCloseTime }} GMT</span>
           <v-btn @click="isBizHoursEditable = true" color="secondary" icon small>
             <v-icon small>edit</v-icon>
           </v-btn>
@@ -236,14 +262,28 @@
 
       <dt class="title pt-4">Events</dt>
       <dd class="pl-5 pt-2">
-        <v-data-table :headers="event.headers" :items="event.associated" :pagination.sync="event.initialSort" 
-                      :loading="event.loading" hide-actions class="elevation-1">
+        <v-data-table
+          :headers="event.headers"
+          :items="event.associated"
+          :pagination.sync="event.initialSort"
+          :loading="event.loading"
+          hide-actions
+          class="elevation-1"
+        >
           <template slot="items" slot-scope="props">
             <td>{{ props.item.Name }}</td>
-            <td><Truncate>{{ props.item.Description || '–' }}</Truncate></td>
+            <td>
+              <Truncate>{{ props.item.Description || '–' }}</Truncate>
+            </td>
             <td>{{ props.item.Date | format('MMM D, YYYY') }}</td>
             <td class="layout justify-center px-0">
-              <v-btn :href="`#/nodes/${ node.ID }/events/${ props.item.ID }/edit`" flat icon title="Update this event" color="secondary">
+              <v-btn
+                :href="`#/nodes/${ node.ID }/events/${ props.item.ID }/edit`"
+                flat
+                icon
+                title="Update this event"
+                color="secondary"
+              >
                 <v-icon small>edit</v-icon>
               </v-btn>
               <v-btn @click="removeEvent(props.item.ID)" icon>
@@ -253,18 +293,14 @@
           </template>
           <template slot="footer">
             <tr>
-              <td colspan="3" />
+              <td colspan="3"/>
               <td class="layout justify-center px-0">
-                <v-btn :to="`${ node.ID }/events/new`" color="secondary" flat>
-                  Add event
-                </v-btn>
+                <v-btn :to="`${ node.ID }/events/new`" color="secondary" flat>Add event</v-btn>
               </td>
             </tr>
           </template>
-          <template slot="no-data">
-            No events at this time.
-          </template>
-        </v-data-table> 
+          <template slot="no-data">No events at this time.</template>
+        </v-data-table>
       </dd>
 
       <dt class="title pt-4">Running version</dt>
@@ -273,12 +309,13 @@
       <dt class="title pt-4">Configured version</dt>
       <dd class="pl-5 pt-2">
         <v-layout align-center min-width>
-          <v-select 
+          <v-select
             :items="versions"
-            :loading="! versions.length" 
+            :loading="! versions.length"
             item-text="Number"
             item-value="ID"
-            v-model="node.ConfiguredVersionID" />
+            v-model="node.ConfiguredVersionID"
+          />
 
           <v-btn @click="updateNode" color="secondary" icon small class="ml-3">
             <v-icon small>save</v-icon>
@@ -290,7 +327,9 @@
       <dd class="pl-5 pt-2">{{ node.ConfiguredBy || '–' }}</dd>
 
       <dt class="title pt-4">Operating system</dt>
-      <dd class="pl-5 pt-2"><PlatformLogo :uname="node.OS" :architecture="node.Arch" /></dd>
+      <dd class="pl-5 pt-2">
+        <PlatformLogo :uname="node.OS" :architecture="node.Arch"/>
+      </dd>
 
       <dt class="title pt-4">Architecture</dt>
       <dd class="pl-5 pt-2">{{ node.Arch }}</dd>
@@ -299,10 +338,10 @@
 </template>
 
 <script>
-import API from '@/shared/api';
-import { format, duration } from '@/shared/filters';
-import Truncate from '@/components/Truncate';
-import PlatformLogo from '@/components/PlatformLogo';
+import API from "@/shared/api";
+import { format, duration } from "@/shared/filters";
+import Truncate from "@/components/Truncate";
+import PlatformLogo from "@/components/PlatformLogo";
 
 export default {
   components: {
@@ -319,16 +358,16 @@ export default {
       task: {
         headers: [
           {
-            text: 'Type',
-            value: 'Type',
-            width: '20%'
+            text: "Type",
+            value: "Type",
+            width: "20%"
           },
           {
-            text: 'Frequency',
+            text: "Frequency",
             sortable: false
           },
           {
-            text: 'Server',
+            text: "Server",
             sortable: false
           },
           {
@@ -337,51 +376,51 @@ export default {
         ],
         types: [
           {
-            text: 'Ping',
-            value: 'ping'
+            text: "Ping",
+            value: "ping"
           },
           {
-            text: 'Speed test',
-            value: 'speedTest'
+            text: "Speed test",
+            value: "speedTest"
           },
           {
-            text: 'Reboot',
-            value: 'reboot'
+            text: "Reboot",
+            value: "reboot"
           }
         ],
         frequencies: [
           {
-            text: 'Daily',
-            value: 'daily'
+            text: "Daily",
+            value: "daily"
           },
           {
-            text: 'Every X hour(s)',
-            value: 'everyHours'
+            text: "Every X hour(s)",
+            value: "everyHours"
           },
           {
-            text: 'Every X minutes(s)',
-            value: 'everyMinutes'
+            text: "Every X minutes(s)",
+            value: "everyMinutes"
           },
           {
-            text: 'Advanced',
-            value: 'advanced'
+            text: "Advanced",
+            value: "advanced"
           }
         ],
         hours: Array.from(Array(12).keys()).map(num => String(num + 1)),
         minutes: Array.from(Array(30).keys()).map(num => String(num + 1)),
         custom: {
-          everyHours: '12',
-          everyMinutes: '15',
-          startTime: '23:45',
-          cron: '45 23 * * *',
+          everyHours: "12",
+          everyMinutes: "15",
+          startTime: "23:45",
+          cron: "45 23 * * *",
           dialog: false
         },
         serversLoading: true,
         mbPerTest: 112
       },
       newTask: {
-        Type: 'ping',
-        ScheduleName: 'daily',
+        Type: "ping",
+        ScheduleName: "daily",
         NamedServerID: 0
       },
       isNicknameEditable: false,
@@ -395,23 +434,23 @@ export default {
       event: {
         headers: [
           {
-            text: 'Name',
-            value: 'Name'
+            text: "Name",
+            value: "Name"
           },
           {
-            text: 'Description',
-            value: 'Description'
+            text: "Description",
+            value: "Description"
           },
           {
-            text: 'Date',
-            value: 'Timestamp'
+            text: "Date",
+            value: "Timestamp"
           },
           {
             sortable: false
           }
         ],
         initialSort: {
-          sortBy: 'Timestamp',
+          sortBy: "Timestamp",
           descending: true
         },
         associated: [],
@@ -421,19 +460,19 @@ export default {
     };
   },
   watch: {
-    'task.custom.startTime': function(newValue) {
+    "task.custom.startTime": function(newValue) {
       this.convertStartTimeToCron(newValue);
     },
-    'task.custom.everyHours': function(newValue) {
+    "task.custom.everyHours": function(newValue) {
       this.convertHoursToCron(newValue);
     },
-    'task.custom.everyMinutes': function(newValue) {
+    "task.custom.everyMinutes": function(newValue) {
       this.convertMinutesToCron(newValue);
     }
   },
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.id}`);
-    this.versions = await API.get('version');
+    this.versions = await API.get("version");
     this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
     this.task.serversLoading = false;
 
@@ -451,7 +490,7 @@ export default {
     taskTypeChanged: async function() {
       this.newTask.NamedServerID = 0;
 
-      if (this.newTask.Type != 'reboot') {
+      if (this.newTask.Type != "reboot") {
         this.servers = [];
         this.task.serversLoading = true;
         this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
@@ -463,10 +502,10 @@ export default {
     },
     updateCron: function() {
       switch (this.newTask.ScheduleName) {
-        case 'everyHours':
+        case "everyHours":
           this.convertHoursToCron();
           break;
-        case 'everyMinutes':
+        case "everyMinutes":
           this.convertMinutesToCron();
           break;
         default:
@@ -485,8 +524,8 @@ export default {
       this.updateNode();
     },
     convertStartTimeToCron: function(startTime = this.task.custom.startTime) {
-      const HH = startTime.split(':')[0];
-      const mm = startTime.split(':')[1];
+      const HH = startTime.split(":")[0];
+      const mm = startTime.split(":")[1];
       // daily at 2345 => 45 23 * * *
       this.task.custom.cron = `${mm} ${HH} * * *`;
     },
@@ -501,7 +540,7 @@ export default {
       this.task.custom.cron = `*/${everyMinutes} * * * *`;
     },
     removeTask: async function(id) {
-      if (confirm('Are you sure?')) {
+      if (confirm("Are you sure?")) {
         // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
         this.node.Tasks = this.node.Tasks.filter(task => task.ID != id);
 
@@ -509,7 +548,7 @@ export default {
       }
     },
     removeEvent: async function(id) {
-      if (confirm('Are you sure?')) {
+      if (confirm("Are you sure?")) {
         // remove the requested task from existing tasks for the PUT of the entire node again...don't like this, would prefer to have endpoints for tasks...
         await API.delete(`reportingevent/${id}`);
 
@@ -532,9 +571,9 @@ export default {
       const daysPerMonth = 30;
       var testsPerDay = 1;
 
-      if (vm.newTask.ScheduleName == 'everyHours') {
+      if (vm.newTask.ScheduleName == "everyHours") {
         testsPerDay = 24 / vm.task.custom.everyHours;
-      } else if (vm.newTask.ScheduleName == 'everyMinutes') {
+      } else if (vm.newTask.ScheduleName == "everyMinutes") {
         testsPerDay = (60 / vm.task.custom.everyMinutes) * 24;
       }
 
@@ -562,3 +601,13 @@ td.no-wrap {
 }
 </style>
 
+<style>
+/* the "every <v-select> Hour(s)/Minute(s) was not wide enough only in Firefox on Linux systems 
+   because of the default vuetify implementation of overflow-y: auto; 
+
+   This will override that and does not negatively affect other browser/os combinations.
+*/
+#app > div.v-menu__content.menuable__content__active.theme--light {
+  overflow-y: scroll;
+}
+</style>
