@@ -199,7 +199,7 @@
       <dt class="title pt-4">Business hours</dt>
       <dd v-if="isBizHoursEditable" class="pl-5 pt-2">
         <v-layout row align-center>
-          <v-dialog ref="dialog" v-model="bizHours.dialog" persistent width="290">
+          <v-dialog ref="dialogStart" v-model="bizHours.dialogStart" persistent width="290">
             <v-text-field
               slot="activator"
               label="Starting at"
@@ -209,11 +209,11 @@
             />
             <v-time-picker v-model="node.BusinessStartTime" actions>
               <v-spacer/>
-              <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
+              <v-btn flat color="primary" @click="$refs.dialogStart.save()">OK</v-btn>
             </v-time-picker>
           </v-dialog>
 
-          <v-dialog ref="dialog" v-model="bizHours.dialog" persistent width="290">
+          <v-dialog ref="dialogEnd" v-model="bizHours.dialogEnd" persistent width="290">
             <v-text-field
               slot="activator"
               label="Ending at"
@@ -223,7 +223,7 @@
             />
             <v-time-picker v-model="node.BusinessCloseTime" actions>
               <v-spacer/>
-              <v-btn flat color="primary" @click="$refs.dialog.save()">OK</v-btn>
+              <v-btn flat color="primary" @click="$refs.dialogEnd.save()">OK</v-btn>
             </v-time-picker>
           </v-dialog>GMT
           <v-btn
@@ -429,7 +429,8 @@ export default {
       servers: [],
       isBizHoursEditable: false,
       bizHours: {
-        dialog: false
+        dialogStart: false,
+        dialogEnd: false
       },
       event: {
         headers: [
@@ -472,6 +473,7 @@ export default {
   },
   async mounted() {
     this.node = await API.get(`node/${this.$route.params.id}`);
+    this.dealWithWackedBizHourDefaults()
     this.versions = await API.get("version");
     this.servers = await API.get(`namedserver?type=${this.newTask.Type}`);
     this.task.serversLoading = false;
@@ -558,6 +560,12 @@ export default {
         );
         this.event.loading = false;
       }
+    },
+    dealWithWackedBizHourDefaults: function() {
+      // unless the api changes the defauls to either something meaningful or simply doesn't return them at all, the props
+      // must be changed to ensure a decent UX.  Let's hope nobody ever wants midnight in their biz hours.
+      this.node.BusinessStartTime = this.node.BusinessStartTime === '00:00' ? null : this.node.BusinessStartTime;
+      this.node.BusinessCloseTime = this.node.BusinessCloseTime === '00:00' ? null : this.node.BusinessCloseTime;
     }
   },
   computed: {
