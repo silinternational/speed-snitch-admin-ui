@@ -18,3 +18,6 @@ clean:
 	docker-compose kill
 	docker-compose rm -f
 	npm run clean
+
+update:
+	docker-compose run --rm node npm update
