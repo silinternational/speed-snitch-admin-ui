@@ -1,3 +1,7 @@
+# Archived
+
+This project is archived and is no longer maintained.
+
 # speed-snitch-admin-ui
 
 Speed snitch administrator UI
